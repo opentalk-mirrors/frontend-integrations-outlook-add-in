@@ -6,15 +6,15 @@
   xsi:type="MailApp">
   <Id>1bdf2a93-3fdc-47fa-b533-70e7850359a4</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Contoso</ProviderName>
+  <ProviderName>OpenTalk GmbH</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="OpenTalk" />
-  <Description DefaultValue="A template to get started." />
+  <Description DefaultValue="OpenTalk Outlook Add-In" />
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-128.png" />
-  <SupportUrl DefaultValue="https://www.contoso.com/help" />
+  <SupportUrl DefaultValue="https://opentalk.eu/contact-our-support-team" />
   <AppDomains>
-    <AppDomain>https://www.contoso.com</AppDomain>
+    <AppDomain>https://opentalk.eu</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Mailbox" />
