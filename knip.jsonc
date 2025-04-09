@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
+  "ignoreDependencies": [
+    "@fluentui/react-components",
+    "@fluentui/react-icons",
+    "@types/office-js",
+    "@types/office-runtime",
+    "@types/webpack",
+    "eslint-plugin-office-addins",
+    "eslint-plugin-react",
+    "office-addin-cli",
+    "office-addin-prettier-config",
+  ]
+}
