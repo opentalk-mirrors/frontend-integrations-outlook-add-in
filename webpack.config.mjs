@@ -2,6 +2,7 @@ import devCerts from "office-addin-dev-certs";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import webpack from "webpack";
+import DotenvWebpackPlugin from "dotenv-webpack";
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
@@ -84,6 +85,10 @@ export default async (env, options) => {
       }),
       new webpack.ProvidePlugin({
         Promise: ["es6-promise", "Promise"],
+      }),
+      new DotenvWebpackPlugin({
+        path: dev ? ".env" : undefined,
+        systemvars: true,
       }),
     ],
     devServer: {
