@@ -1,9 +1,6 @@
-import * as React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./components/App";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
-
-/* global document, Office, module, require, HTMLElement */
 
 const title = "Contoso Task Pane Add-in";
 
@@ -19,9 +16,9 @@ Office.onReady(() => {
   );
 });
 
-if ((module as any).hot) {
-  (module as any).hot.accept("./components/App", () => {
-    const NextApp = require("./components/App").default;
-    root?.render(NextApp);
+if (module.hot) {
+  module.hot.accept("./components/App", async () => {
+    const { default: NextApp } = await import("./components/App");
+    root?.render(<NextApp title={title} />);
   });
 }

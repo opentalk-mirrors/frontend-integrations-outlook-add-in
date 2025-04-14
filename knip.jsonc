@@ -6,9 +6,7 @@
     "@types/office-js",
     "@types/office-runtime",
     "@types/webpack",
-    "eslint-plugin-office-addins",
-    "eslint-plugin-react",
+    "@types/webpack-env",
     "office-addin-cli",
-    "office-addin-prettier-config",
   ]
 }
