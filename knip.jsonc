@@ -1,12 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema-jsonc.json",
+  "entry": [
+    "src/taskpane/**/*.{js,jsx,ts,tsx}",
+  ],
   "ignoreDependencies": [
-    "@fluentui/react-components",
     "@fluentui/react-icons",
     "@types/office-js",
     "@types/office-runtime",
     "@types/webpack",
     "@types/webpack-env",
-    "office-addin-cli",
+    "office-addin-cli"
   ]
 }
