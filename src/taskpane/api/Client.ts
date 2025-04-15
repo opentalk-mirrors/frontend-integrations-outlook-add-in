@@ -1,3 +1,4 @@
+import { REDIRECT_QUERY } from "../constants";
 import {
   ClientWellKnownResponseBody,
   GetLoginResponseBody,
@@ -14,6 +15,7 @@ import {
 } from "./types/client";
 import convertToSnakeCase from "snakecase-keys";
 import convertToCamelCase from "camelcase-keys";
+import { callbackAsPromise } from "../utils/OfficeHelpers";
 
 const OT_CLIENT = "ot-client";
 const clientId = process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID;
@@ -133,7 +135,30 @@ export class Client {
       });
     }
 
-    window.open(authResponse.verificationUriComplete, "_blank")?.focus();
+    const options: Office.DialogOptions = {
+      promptBeforeOpen: false,
+      // The iFrame provided by Office.js is limited and not able to display
+      // the confirmation page.
+      displayInIframe: false,
+    };
+    // Office.js enforces the target domain of the dialog to be the same as the
+    // host page, so we can not open the login page directly. Instead we open
+    // a page on the same host that redirects to the actual login page (which
+    // is encouraged by Microsoft). We pass the URI of the login page as a
+    // query parameter.
+    const searchParams = new URLSearchParams({
+      [REDIRECT_QUERY]: encodeURI(authResponse.verificationUriComplete),
+    });
+    const uri = `https://${window.location.host}/login.html?${searchParams.toString()}`;
+    let dialog = await callbackAsPromise(
+      (callback: (result: Office.AsyncResult<Office.Dialog>) => void) =>
+        Office.context.ui.displayDialogAsync(uri, options, callback)
+    );
+    // Office.js does not provide a way to determine wether or not a dialog has
+    // already been closed (e.g. by user interaction) but throws an error when
+    // trying to close one that has. To work around this, we subscribe to the
+    // event that is invoked when the dialog is closed and set it to null.
+    dialog.addEventHandler(Office.EventType.DialogEventReceived, (_) => (dialog = null));
 
     const pollTokens = async (interval: number) => {
       const tokenResponse = await this.typedRequest<DeviceAccessTokenSuccess>(
@@ -154,6 +179,7 @@ export class Client {
         client.accessTokenExpires = Math.floor(now + Number(tokenResponse.expiresIn));
         client.refreshTokenExpires = Math.floor(now + Number(tokenResponse.refreshExpiresIn));
         localStorage.setItem(OT_CLIENT, JSON.stringify(client));
+        dialog?.close();
 
         return client;
       }
