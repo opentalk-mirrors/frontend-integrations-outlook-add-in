@@ -13,8 +13,8 @@
   },
   "scripts": {
     "lint": "pnpm eslint",
-    "fmt": "pnpm prettier --write \"./*.{mjs, tsx,ts}\" \"./**/*.{js, jsx, tsx,ts}\"",
-    "fmt:ci": "pnpm prettier --check \"./*.{mjs, tsx,ts}\" \"./**/*.{js, jsx, tsx,ts}\"",
+    "fmt": "pnpm prettier --write \"**/*.{mjs,js,jsx,ts,tsx}\"",
+    "fmt:ci": "pnpm prettier --check \"**/*.{mjs,js,jsx,ts,tsx}\"",
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
