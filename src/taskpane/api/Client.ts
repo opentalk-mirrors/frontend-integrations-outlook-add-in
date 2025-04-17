@@ -1,0 +1,322 @@
+import {
+  ClientWellKnownResponseBody,
+  GetLoginResponseBody,
+  HttpMethod,
+  PostClientAuthentificationResponseBody,
+  DeviceAccessTokenSuccess,
+  DeviceAccessTokenErrorType,
+  DeviceAccessTokenError,
+  RequestError,
+  isRequestError,
+  ErrorSeverity,
+  ContextualizedRequestError,
+  isErrorWithContext,
+} from "./types/client";
+import convertToSnakeCase from "snakecase-keys";
+import convertToCamelCase from "camelcase-keys";
+
+const OT_CLIENT = "ot-client";
+const clientId = process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID;
+const hostUrl = process.env.OPENTALK_OUTLOOK_HOST_URL;
+
+export class Client {
+  private otHost: string;
+  private oidcDeviceAuthorizationEndpoint: string;
+  private oidcTokenEndpoint: string;
+  private otControllerHost: string;
+  private otOidcHost: string;
+  private accessToken: string;
+  private accessTokenExpires: number;
+  private refreshToken: string;
+  private refreshTokenExpires: number;
+
+  private constructor(otHost: string) {
+    // Prevents trailing slashes at the end of the host URL since the configuration does not allow them
+    this.otHost = otHost.replace(/\/$/, "");
+  }
+
+  private static fromJSON(json: string): Client {
+    const obj: Client = JSON.parse(json);
+    const client = new Client(obj.otHost);
+    client.oidcDeviceAuthorizationEndpoint = obj.oidcDeviceAuthorizationEndpoint;
+    client.oidcTokenEndpoint = obj.oidcTokenEndpoint;
+    client.otControllerHost = obj.otControllerHost;
+    client.accessToken = obj.accessToken;
+    client.accessTokenExpires = obj.accessTokenExpires;
+    client.refreshToken = obj.refreshToken;
+    client.refreshTokenExpires = obj.refreshTokenExpires;
+    return client;
+  }
+
+  // Load from localStorage or authenticate fresh
+  public static async load(): Promise<Client> {
+    const clientValueStr = localStorage.getItem(OT_CLIENT);
+
+    if (clientValueStr) {
+      const client = Client.fromJSON(clientValueStr);
+      // Return the client when the refresh token is not expired,
+      // otherwise reauthenticate
+      if (client.isAuthenticated()) {
+        return client;
+      }
+    }
+
+    const authenticateResponse = await this.authenticate();
+    if (isErrorWithContext(authenticateResponse)) {
+      throw authenticateResponse;
+    }
+    return authenticateResponse;
+  }
+
+  // Static API access methods
+  public async get<T>(endpoint: string): Promise<T> {
+    return await this.fetchWithAuth<T>(endpoint, "GET");
+  }
+
+  public async post<T>(endpoint: string, payload?: unknown): Promise<T> {
+    return await this.fetchWithAuth<T>(endpoint, "POST", payload);
+  }
+
+  public static clearSession(): void {
+    localStorage.removeItem(OT_CLIENT);
+  }
+
+  // Internal OIDC flow
+  public static async authenticate(): Promise<Client | ContextualizedRequestError> {
+    const client = new Client(hostUrl);
+
+    const wellKnownResponse = await this.typedRequest<ClientWellKnownResponseBody>(
+      client.otHost,
+      "/.well-known/opentalk/client",
+      "GET"
+    );
+    if (isRequestError(wellKnownResponse)) {
+      return wellKnownResponse.withContext({
+        message: `Failed to fetch well-known OIDC config from '${client.otHost}'. Is the host configured correctly?`,
+        severity: ErrorSeverity.Fatal,
+      });
+    }
+    client.otControllerHost = wellKnownResponse.opentalkController.baseUrl;
+
+    const getLoginResponse = await this.typedRequest<GetLoginResponseBody>(
+      client.otControllerHost,
+      "/v1/auth/login",
+      "GET"
+    );
+    if (isRequestError(getLoginResponse)) {
+      return getLoginResponse.withContext({
+        message: "Failed to fetch login endpoint",
+        severity: ErrorSeverity.Fatal,
+      });
+    }
+
+    client.otOidcHost = getLoginResponse.oidc.url;
+
+    const oidcConfiguration = await fetch(
+      `${client.otOidcHost}/.well-known/openid-configuration`
+    ).then((resp) => resp.json());
+
+    client.oidcDeviceAuthorizationEndpoint = oidcConfiguration["device_authorization_endpoint"];
+    client.oidcTokenEndpoint = oidcConfiguration["token_endpoint"];
+
+    const authResponse = await this.typedRequest<PostClientAuthentificationResponseBody>(
+      client.oidcDeviceAuthorizationEndpoint,
+      "",
+      "POST",
+      // Not sending audience as we do not use external providers, but can be possible in the future
+      new URLSearchParams({ client_id: clientId, scope: "profile email openid" })
+    );
+    if (isRequestError(authResponse)) {
+      return authResponse.withContext({
+        message: "Failed to post auth request",
+        severity: ErrorSeverity.Fatal,
+      });
+    }
+
+    window.open(authResponse.verificationUriComplete, "_blank")?.focus();
+
+    const pollTokens = async (interval: number) => {
+      const tokenResponse = await this.typedRequest<DeviceAccessTokenSuccess>(
+        client.oidcTokenEndpoint,
+        "",
+        "POST",
+        new URLSearchParams({
+          device_code: authResponse.deviceCode,
+          client_id: clientId,
+          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+        })
+      );
+
+      if (!isRequestError(tokenResponse)) {
+        client.accessToken = tokenResponse.accessToken;
+        client.refreshToken = tokenResponse.refreshToken;
+        const now = Date.now() / 1000;
+        client.accessTokenExpires = Math.floor(now + Number(tokenResponse.expiresIn));
+        client.refreshTokenExpires = Math.floor(now + Number(tokenResponse.refreshExpiresIn));
+        localStorage.setItem(OT_CLIENT, JSON.stringify(client));
+
+        return client;
+      }
+
+      if (isDeviceAccessTokenError(tokenResponse.inner)) {
+        switch (tokenResponse.inner.error) {
+          case DeviceAccessTokenErrorType.AuthorizationPending:
+            await sleep(interval);
+            return await pollTokens(interval);
+          case DeviceAccessTokenErrorType.SlowDown: {
+            interval += 5000;
+            await sleep(interval);
+            return await pollTokens(interval);
+          }
+          case DeviceAccessTokenErrorType.AccessDenied:
+          case DeviceAccessTokenErrorType.ExpiredToken:
+            return new RequestError(
+              tokenResponse.statusCode,
+              tokenResponse.statusText,
+              tokenResponse.inner
+            ).withContext({
+              message: `Device authorization failed: ${tokenResponse.inner.errorResponse}`,
+              severity: ErrorSeverity.Fatal,
+            });
+          default:
+            break;
+        }
+      }
+
+      return new RequestError(
+        tokenResponse.statusCode,
+        tokenResponse.statusText,
+        tokenResponse.inner
+      ).withContext({
+        message: `Unknown token response error:\n${tokenResponse.inner}`,
+        severity: ErrorSeverity.Fatal,
+      });
+    };
+
+    return await pollTokens(authResponse.interval);
+  }
+
+  // Shared request helper
+  private static async typedRequest<T>(
+    host: string,
+    endPoint: string,
+    method: HttpMethod,
+    payload: BodyInit = undefined,
+    headers: HeadersInit = undefined
+  ): Promise<T | RequestError> {
+    const resp = await fetch(`${host}${endPoint}`, {
+      method,
+      body: payload,
+      headers,
+    });
+
+    if (resp.status === 401) {
+      this.clearSession();
+    }
+
+    if (!resp.ok) return await RequestError.fromResponse(resp);
+
+    const jsonResponse = await resp.json();
+    const convertedResponse = convertToCamelCase(jsonResponse, { deep: true });
+
+    return convertedResponse;
+  }
+
+  private async getAccessToken(): Promise<string> {
+    if (this.accessTokenExpires - 30 > Date.now()) {
+      return this.accessToken;
+    }
+
+    const response = await Client.typedRequest<DeviceAccessTokenSuccess>(
+      this.oidcTokenEndpoint,
+      "",
+      "POST",
+      new URLSearchParams({
+        refresh_token: this.refreshToken,
+        client_id: clientId,
+        grant_type: "refresh_token",
+      })
+    );
+    if (isRequestError(response)) {
+      console.error("Failed to fetch access token", response);
+      throw Error("Failed to fetch access token");
+    }
+
+    this.accessToken = response.accessToken;
+    const now = Date.now() / 1000;
+    this.accessTokenExpires = Math.floor(now + response.expiresIn);
+    this.refreshToken = response.refreshToken;
+    this.refreshTokenExpires = Math.floor(now + response.refreshExpiresIn);
+
+    if (this.accessToken) {
+      localStorage.setItem(OT_CLIENT, JSON.stringify(this));
+    } else {
+      Client.clearSession();
+    }
+
+    return this.accessToken;
+  }
+
+  public isAuthenticated(): boolean {
+    return !!this.refreshToken && this.refreshTokenExpires * 1000 > Date.now();
+  }
+
+  private async fetchWithAuth<T>(
+    endpoint: string,
+    method: HttpMethod,
+    payload?: unknown
+  ): Promise<T> {
+    const token = await this.getAccessToken();
+    const headers = createHeaders({ "Content-Type": "application/json" });
+
+    headers.set("Accept", "application/json");
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const verifiedPayload = convertToValidPayload(payload);
+    const response = await Client.typedRequest(
+      this.otControllerHost,
+      `/v1/${endpoint}`,
+      method,
+      verifiedPayload ? JSON.stringify(verifiedPayload) : undefined,
+      headers
+    );
+    return response as T;
+  }
+}
+
+const createHeaders = (headers?: HeadersInit) => {
+  if (headers) {
+    return !(headers instanceof Headers) ? new Headers(headers) : headers;
+  } else {
+    return new Headers();
+  }
+};
+const convertToValidPayload = (payload: unknown): string | undefined => {
+  if (!payload) {
+    return undefined;
+  }
+
+  // Check if payload is an object, which can be safely passed to convertToSnakeCase
+  if (typeof payload !== "object" || Array.isArray(payload)) {
+    throw new Error("Payload invalid");
+  }
+
+  const cased = convertToSnakeCase(payload as Record<string, unknown>);
+  return JSON.stringify(cased);
+};
+
+const isDeviceAccessTokenError = (response: unknown): response is DeviceAccessTokenError => {
+  return (
+    typeof response === "object" &&
+    "error" in response &&
+    typeof response.error === "string" &&
+    Object.values(DeviceAccessTokenErrorType).includes(response.error as DeviceAccessTokenErrorType)
+  );
+};
+
+const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
