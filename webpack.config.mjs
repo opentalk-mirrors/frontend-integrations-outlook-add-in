@@ -23,6 +23,10 @@ export default async (env, options) => {
         import: ["./src/taskpane/index.tsx", "./src/taskpane/taskpane.html"],
         dependOn: "react",
       },
+      login: {
+        import: ["./src/taskpane/login/login.tsx", "./src/taskpane/login/login.html"],
+        dependOn: "react",
+      },
     },
     output: {
       clean: true,
@@ -63,6 +67,11 @@ export default async (env, options) => {
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
         chunks: ["polyfill", "taskpane", "react"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "login.html",
+        template: "./src/taskpane/login/login.html",
+        chunks: ["login", "react"],
       }),
       new CopyWebpackPlugin({
         patterns: [
