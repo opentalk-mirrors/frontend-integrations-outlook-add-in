@@ -20,11 +20,11 @@ export default async (env, options) => {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
       react: ["react", "react-dom"],
       taskpane: {
-        import: ["./src/taskpane/index.tsx", "./src/taskpane/taskpane.html"],
+        import: ["./src/index.tsx", "./src/taskpane/taskpane.html"],
         dependOn: "react",
       },
       login: {
-        import: ["./src/taskpane/login/login.tsx", "./src/taskpane/login/login.html"],
+        import: ["./src/login/login.tsx", "./src/login/login.html"],
         dependOn: "react",
       },
     },
@@ -70,7 +70,7 @@ export default async (env, options) => {
       }),
       new HtmlWebpackPlugin({
         filename: "login.html",
-        template: "./src/taskpane/login/login.html",
+        template: "./src/login/login.html",
         chunks: ["login", "react"],
       }),
       new CopyWebpackPlugin({
