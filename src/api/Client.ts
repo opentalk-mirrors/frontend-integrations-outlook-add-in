@@ -71,12 +71,16 @@ export class Client {
   }
 
   // Static API access methods
-  public async get<T>(endpoint: string): Promise<T> {
-    return this.fetchWithAuth<T>(endpoint, "GET");
+  public async get<T>(endpoint: string, params?: unknown): Promise<T> {
+    return this.fetchWithAuth<T>(endpoint, "GET", params);
   }
 
-  public async post<T>(endpoint: string, payload?: unknown): Promise<T> {
-    return this.fetchWithAuth<T>(endpoint, "POST", payload);
+  public async post<T>(endpoint: string, payload?: unknown, params?: unknown): Promise<T> {
+    return this.fetchWithAuth<T>(endpoint, "POST", payload, params);
+  }
+
+  public async delete<T>(endPoint: string, payload?: unknown, params?: unknown): Promise<T> {
+    return this.fetchWithAuth<T>(endPoint, "DELETE", payload, params);
   }
 
   public static clearSession(): void {
@@ -294,7 +298,8 @@ export class Client {
   private async fetchWithAuth<T>(
     endpoint: string,
     method: HttpMethod,
-    payload?: unknown
+    payload?: unknown,
+    queryParams?: unknown
   ): Promise<T> {
     const token = await this.getAccessToken();
     const headers = createHeaders({ "Content-Type": "application/json" });
@@ -306,9 +311,11 @@ export class Client {
     }
 
     const verifiedPayload = convertToValidPayload(payload);
+    const params = convertToQueryParams(queryParams);
+
     const response = await Client.typedRequest(
       this.otControllerHost,
-      `/v1/${endpoint}`,
+      `/v1/${endpoint}${params}`,
       method,
       verifiedPayload ? JSON.stringify(verifiedPayload) : undefined,
       headers
@@ -324,6 +331,7 @@ const createHeaders = (headers?: HeadersInit) => {
     return new Headers();
   }
 };
+
 const convertToValidPayload = (payload: unknown) => {
   if (!payload) {
     return undefined;
@@ -336,6 +344,20 @@ const convertToValidPayload = (payload: unknown) => {
 
   const cased = convertToSnakeCase(payload as Record<string, unknown>);
   return cased;
+};
+
+const convertToQueryParams = (params: unknown) => {
+  if (!params) {
+    return "";
+  }
+
+  // Check if params is an object, which can be safely passed to convertToSnakeCase
+  if (typeof params !== "object" || Array.isArray(params)) {
+    throw new Error("Query params invalid");
+  }
+
+  const cased = convertToSnakeCase(params as Record<string, string>);
+  return "?" + new URLSearchParams(cased).toString();
 };
 
 const isDeviceAccessTokenError = (response: unknown): response is DeviceAccessTokenError => {

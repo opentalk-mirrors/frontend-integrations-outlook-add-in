@@ -47,3 +47,7 @@ export type EmailUser = {
 };
 
 export type ParticipantOption = EmailUser | User;
+
+export interface UsersFindQueryParams {
+  q: string;
+}
