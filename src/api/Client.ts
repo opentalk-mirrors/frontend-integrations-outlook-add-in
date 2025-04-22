@@ -72,11 +72,11 @@ export class Client {
 
   // Static API access methods
   public async get<T>(endpoint: string): Promise<T> {
-    return await this.fetchWithAuth<T>(endpoint, "GET");
+    return this.fetchWithAuth<T>(endpoint, "GET");
   }
 
   public async post<T>(endpoint: string, payload?: unknown): Promise<T> {
-    return await this.fetchWithAuth<T>(endpoint, "POST", payload);
+    return this.fetchWithAuth<T>(endpoint, "POST", payload);
   }
 
   public static clearSession(): void {
@@ -229,7 +229,7 @@ export class Client {
     method: HttpMethod,
     payload: BodyInit = undefined,
     headers: HeadersInit = undefined
-  ): Promise<T | RequestError> {
+  ): Promise<T | null | RequestError> {
     const resp = await fetch(`${host}${endPoint}`, {
       method,
       body: payload,
@@ -242,14 +242,18 @@ export class Client {
 
     if (!resp.ok) return await RequestError.fromResponse(resp);
 
-    const jsonResponse = await resp.json();
+    const jsonResponse = await safeJson(resp);
+    if (!jsonResponse) {
+      return null;
+    }
+
     const convertedResponse = convertToCamelCase(jsonResponse, { deep: true });
 
     return convertedResponse;
   }
 
   private async getAccessToken(): Promise<string> {
-    if (this.accessTokenExpires - 30 > Date.now()) {
+    if (this.accessTokenExpires - 30 > Date.now() / 1000) {
       return this.accessToken;
     }
 
@@ -320,7 +324,7 @@ const createHeaders = (headers?: HeadersInit) => {
     return new Headers();
   }
 };
-const convertToValidPayload = (payload: unknown): string | undefined => {
+const convertToValidPayload = (payload: unknown) => {
   if (!payload) {
     return undefined;
   }
@@ -331,7 +335,7 @@ const convertToValidPayload = (payload: unknown): string | undefined => {
   }
 
   const cased = convertToSnakeCase(payload as Record<string, unknown>);
-  return JSON.stringify(cased);
+  return cased;
 };
 
 const isDeviceAccessTokenError = (response: unknown): response is DeviceAccessTokenError => {
@@ -346,3 +350,8 @@ const isDeviceAccessTokenError = (response: unknown): response is DeviceAccessTo
 const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+async function safeJson(response: Response) {
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}

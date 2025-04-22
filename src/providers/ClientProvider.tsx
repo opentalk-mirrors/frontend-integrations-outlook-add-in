@@ -1,11 +1,13 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { Client } from "../api/Client";
 import { ErrorContext, ContextualizedRequestError } from "../api/types/client";
+import { Tariff } from "../api/types/tariff";
 
 interface ClientState {
   client: Client | null;
   isLoading: boolean;
   error?: ErrorContext;
+  tariff?: Tariff;
 }
 
 export const ClientContext = createContext<ClientState>(null);
@@ -20,6 +22,7 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
   const [client, setClient] = useState<Client>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ErrorContext>();
+  const [tariff, setTariff] = useState<Tariff>();
 
   useEffect(() => {
     setIsLoading(true);
@@ -27,6 +30,9 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
       .then((client) => {
         setClient(client);
         setIsLoading(false);
+        client.get<Tariff>("users/me/tariff").then((response) => {
+          setTariff(response);
+        });
       })
       .catch((error: ContextualizedRequestError) => {
         setIsLoading(false);
@@ -35,7 +41,9 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <ClientContext.Provider value={{ client, isLoading, error }}>{children}</ClientContext.Provider>
+    <ClientContext.Provider value={{ client, isLoading, error, tariff }}>
+      {children}
+    </ClientContext.Provider>
   );
 };
 

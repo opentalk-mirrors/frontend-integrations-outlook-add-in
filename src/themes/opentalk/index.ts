@@ -569,7 +569,7 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
           }),
           label: ({ theme }) => ({
             fontWeight: 500,
-            fontFamily: "Opentalk",
+            // fontFamily: "Opentalk",
             fontSize: theme.typography.pxToRem(22),
             [theme.breakpoints.down("md")]: {
               fontSize: theme.typography.pxToRem(18),
@@ -802,7 +802,7 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
     },
     typography: (palette) => ({
       allVariants: {
-        fontFamily: ["Opentalk", "serif"].join(","),
+        // fontFamily: ["Opentalk", "serif"].join(","),
         color: palette.text.primary,
         fontWeight: 500,
         lineHeight: 1.25,
@@ -830,7 +830,7 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
       },
     },
     body1: {
-      fontFamily: ["Opentalk", "serif"].join(","),
+      // fontFamily: ["Opentalk", "serif"].join(","),
       fontWeight: 500,
       fontSize: theme.typography.pxToRem(16),
       [theme.breakpoints.down("md")]: {

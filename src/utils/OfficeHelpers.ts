@@ -14,3 +14,28 @@ export function callbackAsPromise<T>(
     });
   });
 }
+
+/**
+ * Wraps Office setAsync method so you can await for the value to be set
+ * @param setter The setAsync function that you want to await
+ * @param value The value that needs to be passed to the setAsync function
+ * @param options The options for the setAsync function (if it is supported)
+ * @returns
+ */
+export function setAsyncAsPromise<T>(
+  setter: (
+    value: T,
+    optionsOrCallback: unknown,
+    callback?: (result: Office.AsyncResult<void>) => void
+  ) => void,
+  value: T,
+  options?: unknown
+): Promise<void> {
+  return callbackAsPromise<void>((callback) => {
+    if (options === undefined) {
+      setter(value, callback);
+    } else {
+      setter(value, options, callback);
+    }
+  });
+}
