@@ -1,7 +1,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import ClientProvider from "./providers/ClientProvider";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { createOpenTalkTheme } from "./themes/opentalk";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
 const root = rootElement ? createRoot(rootElement) : undefined;
@@ -9,11 +10,12 @@ const root = rootElement ? createRoot(rootElement) : undefined;
 /* Render application after Office initializes */
 Office.onReady(() => {
   root?.render(
-    <FluentProvider theme={webLightTheme}>
-      <ClientProvider>
+    <ClientProvider>
+      <ThemeProvider theme={createOpenTalkTheme()}>
+        <CssBaseline />
         <App />
-      </ClientProvider>
-    </FluentProvider>
+      </ThemeProvider>
+    </ClientProvider>
   );
 });
 
