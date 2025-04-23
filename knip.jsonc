@@ -4,7 +4,6 @@
     "src/**/*.{js,jsx,ts,tsx}",
   ],
   "ignoreDependencies": [
-    "@fluentui/react-icons",
     "@types/office-js",
     "@types/office-runtime",
     "@types/webpack",

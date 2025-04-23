@@ -28,8 +28,9 @@
     "deps:unused": "knip --include dependencies,files"
   },
   "dependencies": {
-    "@fluentui/react-components": "^9.61.6",
-    "@fluentui/react-icons": "^2.0.292",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.2",
     "core-js": "^3.41.0",
     "es6-promise": "^4.2.8",
     "react": "^18.3.1",
