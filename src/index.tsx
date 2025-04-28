@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import "./index.css";
 import App from "./App";
 import ClientProvider from "./providers/ClientProvider";
 import { CssBaseline, ThemeProvider } from "@mui/material";
