@@ -139,7 +139,9 @@ const EventCreationPage: FC = () => {
           </List>
         )}
       </Stack>
-      <Button onClick={handleSave}>Create OpenTalk meeting</Button>
+      <Button onClick={handleSave} sx={{ marginTop: 1 }}>
+        Create OpenTalk meeting
+      </Button>
     </Container>
   );
 };

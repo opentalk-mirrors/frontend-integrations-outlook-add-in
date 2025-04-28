@@ -34,9 +34,7 @@ const UserListItem: FunctionComponent<UserListItemProps> = ({ props, option, act
           </Typography>
         </Stack>
       ) : (
-        <Typography variant="caption" noWrap>
-          {option.email}
-        </Typography>
+        <Typography noWrap>{option.email}</Typography>
       )}
       {action !== undefined && action}
     </Box>

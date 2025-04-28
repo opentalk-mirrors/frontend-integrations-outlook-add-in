@@ -1,0 +1,20 @@
+/* opentalk - regular */
+@font-face {
+    font-family: 'Opentalk';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+    url('../assets/fonts/opentalk/regular/opentalk-regular.woff2') format('woff2'),
+    url('../assets/fonts/opentalk/regular/opentalk-regular.woff') format('woff');
+  }
+  
+  /* opentalk - bold */
+  @font-face {
+    font-family: 'Opentalk';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url('../assets/fonts/opentalk/bold/opentalk-bold.woff2') format('woff2'),
+    url('../assets/fonts/opentalk/bold/opentalk-bold.woff') format('woff');
+  }
+  
