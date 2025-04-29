@@ -37,6 +37,7 @@ export enum EventType {
   Instance = "instance",
   Exception = "exception",
 }
+
 interface BaseEvent {
   id: string;
   title: string;
@@ -89,3 +90,13 @@ export interface SingleEvent extends BaseEvent, TimedEvent {
 }
 
 export type Event = SingleEvent | RecurringEvent | TimelessEvent | TimedEvent;
+
+interface SuppressEmailNotification {
+  suppressEmailNotification: boolean;
+}
+
+export type CreateEventQueryParams = SuppressEmailNotification;
+
+export interface DeleteEventQueryParams extends SuppressEmailNotification {
+  forceDeleteReferenceIfExternalServicesFail: boolean;
+}

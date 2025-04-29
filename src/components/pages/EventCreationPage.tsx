@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Stack, styled, Button, List } from "@mui/material";
+import { Stack, Button, List } from "@mui/material";
 
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
 import { useClientContext } from "../../providers/ClientProvider";
@@ -8,14 +8,9 @@ import { UserAutocomplete } from "../UserAutocomplete/UserAutocomplete";
 import { ParticipantOption } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
-
-const Container = styled(Stack)(({ theme }) => ({
-  minHeight: "100vh",
-  padding: theme.spacing(1, 1, 0),
-  display: "flex",
-  flexDirection: "column",
-  rowGap: "5px",
-}));
+import { CreateEventQueryParams } from "../../api/types/events";
+import { OPENTALK_EVENT_ID } from "../../constants";
+import Container from "./container";
 
 const EventCreationPage: FC = () => {
   const client = useClientContext();
@@ -70,13 +65,11 @@ const EventCreationPage: FC = () => {
         showMeetingDetails: meetingDetailsEnabled,
       };
 
-      const response = await client.client?.post<Event>("events", payload);
+      const event = await client.client?.post<Event>("events", payload);
       const invitePromises = selectedUsers.map(async (user) => {
         const invitee = "id" in user ? { invitee: user.id, role: "user" } : { email: user.email };
-        return client.client?.post(
-          `events/${response.id}/invites?suppress_email_notification=true`,
-          invitee
-        );
+        const params: CreateEventQueryParams = { suppressEmailNotification: true };
+        return client.client?.post(`events/${event.id}/invites`, invitee, params);
       });
 
       Promise.all(invitePromises).then(async () => {
@@ -86,7 +79,7 @@ const EventCreationPage: FC = () => {
         }
       });
 
-      const roomLink = new URL(`/room/${response.room.id}`, process.env.OPENTALK_OUTLOOK_HOST_URL);
+      const roomLink = new URL(`/room/${event.room.id}`, process.env.OPENTALK_OUTLOOK_HOST_URL);
       await setAsyncAsPromise(item.location.setAsync, roomLink.toString());
 
       const meetingRoom = `Meeting room: <a href="${roomLink}">${roomLink}</a>`;
@@ -95,7 +88,18 @@ const EventCreationPage: FC = () => {
         coercionType: Office.CoercionType.Html,
       });
 
-      item.sendAsync();
+      // Store the event id as a custom property, so it can be retrieved from
+      // the event edit page.
+      const customProps = await callbackAsPromise(item.loadCustomPropertiesAsync);
+      customProps.set(OPENTALK_EVENT_ID, event.id);
+      // Calling saveAsync with callBackAsPromise does throw an error
+      customProps.saveAsync((result) => {
+        if (result.status === Office.AsyncResultStatus.Succeeded) {
+          item.sendAsync();
+          return;
+        }
+        console.error("Saving custom properties failed: ", result.error);
+      });
     } catch (error) {
       console.error("Unable to create event due to the following error: ", error);
     }

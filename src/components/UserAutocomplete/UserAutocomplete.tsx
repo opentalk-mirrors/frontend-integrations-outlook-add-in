@@ -4,6 +4,7 @@ import { ParticipantOption, User } from "../../api/types/user";
 import { Autocomplete as MuiAutocomplete, styled, TextField } from "@mui/material";
 import { debounce, differenceBy } from "lodash";
 import UserListItem, { getOptionLabel } from "./fragments/UserListItem";
+import { UsersFindQueryParams } from "../../api/types/user";
 
 const Autocomplete = styled(MuiAutocomplete)(({ theme }) => ({
   ".MuiFormLabel-root": {
@@ -37,7 +38,8 @@ export const UserAutocomplete = ({ selectedUsers, onUserSelect }: UserAutocomple
   const debounceFindUsers = useCallback(
     debounce(async (inputValue: string) => {
       if (inputValue.length > 2) {
-        const result = await client.client?.get<Array<User>>(`users/find?q=${inputValue}`);
+        const params: UsersFindQueryParams = { q: inputValue };
+        const result = await client.client?.get<Array<User>>("users/find", params);
         setFoundUsers(result);
       }
     }, 250),
