@@ -3,9 +3,9 @@ import { Stack, Button, List } from "@mui/material";
 
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
 import { useClientContext } from "../../providers/ClientProvider";
-import { CreateEventPayload, Event } from "../../api/types/events";
+import { CreateEventPayload } from "../../api/types/events";
 import { UserAutocomplete } from "../UserAutocomplete/UserAutocomplete";
-import { ParticipantOption } from "../../api/types/user";
+import { ParticipantOption, UserRole } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
 import { CreateEventQueryParams } from "../../api/types/events";
@@ -13,8 +13,8 @@ import { OPENTALK_EVENT_ID } from "../../constants";
 import Container from "./container";
 
 const EventCreationPage: FC = () => {
-  const client = useClientContext();
-  const isSharedFolderAvailable = !!client?.tariff?.modules.sharedFolder;
+  const { client, tariff } = useClientContext();
+  const isSharedFolderAvailable = !!tariff?.modules.sharedFolder;
 
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
@@ -65,11 +65,12 @@ const EventCreationPage: FC = () => {
         showMeetingDetails: meetingDetailsEnabled,
       };
 
-      const event = await client.client?.post<Event>("events", payload);
+      const event = await client?.events.create(payload);
       const invitePromises = selectedUsers.map(async (user) => {
-        const invitee = "id" in user ? { invitee: user.id, role: "user" } : { email: user.email };
+        const invitee =
+          "id" in user ? { invitee: user.id, role: UserRole.User } : { email: user.email };
         const params: CreateEventQueryParams = { suppressEmailNotification: true };
-        return client.client?.post(`events/${event.id}/invites`, invitee, params);
+        return client?.events.createInvitation(event.id, invitee, params);
       });
 
       Promise.all(invitePromises).then(async () => {

@@ -103,7 +103,21 @@ export enum DeviceAccessTokenErrorType {
   AccessDenied = "access_denied",
   ExpiredToken = "expired_token",
 }
+
 export interface DeviceAccessTokenError {
   error: DeviceAccessTokenErrorType;
   errorResponse: string;
+}
+
+export interface RequestParams {
+  endpoint: string;
+  queryParams?: unknown;
+}
+
+export interface RequestParamsWithPayload extends RequestParams {
+  payload?: unknown;
+}
+
+export interface FetchRequestParams extends RequestParamsWithPayload {
+  method: HttpMethod;
 }

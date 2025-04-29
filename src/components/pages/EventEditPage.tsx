@@ -27,7 +27,7 @@ const EventEditPage: FC = () => {
       suppressEmailNotification: true,
     };
     const eventId = customProps.get(OPENTALK_EVENT_ID);
-    await client.delete(`events/${eventId}`, undefined, params);
+    await client.events.delete(eventId, params);
     customProps.remove(OPENTALK_EVENT_ID);
     customProps.saveAsync(() => setShowDisclaimer(true));
   };

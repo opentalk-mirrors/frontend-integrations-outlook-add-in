@@ -31,7 +31,7 @@ interface UserAutocompleteProps {
 }
 
 export const UserAutocomplete = ({ selectedUsers, onUserSelect }: UserAutocompleteProps) => {
-  const client = useClientContext();
+  const client = useClientContext().client;
   const [foundUsers, setFoundUsers] = useState<Array<User>>([]);
   const [searchValue, setSearchValue] = useState<string>("");
 
@@ -39,7 +39,7 @@ export const UserAutocomplete = ({ selectedUsers, onUserSelect }: UserAutocomple
     debounce(async (inputValue: string) => {
       if (inputValue.length > 2) {
         const params: UsersFindQueryParams = { q: inputValue };
-        const result = await client.client?.get<Array<User>>("users/find", params);
+        const result = await client.users.find(params);
         setFoundUsers(result);
       }
     }, 250),
