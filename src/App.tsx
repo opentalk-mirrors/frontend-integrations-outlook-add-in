@@ -5,18 +5,18 @@ import { ErrorSeverity } from "./api/types/client";
 import EventEditPage from "./components/pages/EventEditPage";
 
 const App: FC = () => {
-  const clientState = useClientContext();
+  const { client, isLoading, error } = useClientContext();
 
-  if (clientState?.isLoading) {
+  if (isLoading) {
     return <p>Is loading</p>;
   }
 
-  if (clientState?.error && clientState.error.severity === ErrorSeverity.Fatal) {
-    return <p>{clientState.error.message}</p>;
+  if (error && error.severity === ErrorSeverity.Fatal) {
+    return <p>{error.message}</p>;
   }
 
   const page = "itemId" in Office.context.mailbox.item ? <EventEditPage /> : <EventCreationPage />;
-  return <>{clientState?.client?.isAuthenticated() && page}</>;
+  return <>{client?.auth.isAuthenticated() && page}</>;
 };
 
 export default App;

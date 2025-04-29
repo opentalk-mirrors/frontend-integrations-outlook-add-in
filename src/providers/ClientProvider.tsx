@@ -2,9 +2,18 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { Client } from "../api/Client";
 import { ErrorContext, ContextualizedRequestError } from "../api/types/client";
 import { Tariff } from "../api/types/tariff";
+import { EventsAPI } from "../api/Events";
+import { UsersAPI } from "../api/Users";
+import { AuthAPI } from "../api/Auth";
+
+interface APIClient {
+  auth: AuthAPI;
+  events: EventsAPI;
+  users: UsersAPI;
+}
 
 interface ClientState {
-  client: Client | null;
+  client: APIClient | null;
   isLoading: boolean;
   error?: ErrorContext;
   tariff?: Tariff;
@@ -19,7 +28,7 @@ export const useClientContext = () => {
 };
 
 const ClientProvider = ({ children }: { children: ReactNode }) => {
-  const [client, setClient] = useState<Client>(null);
+  const [client, setClient] = useState<APIClient>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ErrorContext>();
   const [tariff, setTariff] = useState<Tariff>();
@@ -28,11 +37,15 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     Client.load()
       .then((client) => {
-        setClient(client);
-        setIsLoading(false);
-        client.get<Tariff>("users/me/tariff").then((response) => {
+        const authAPI = new AuthAPI(client);
+        const eventsAPI = new EventsAPI(client);
+        const usersAPI = new UsersAPI(client);
+        setClient({ auth: authAPI, events: eventsAPI, users: usersAPI });
+        usersAPI.getTariff().then((response) => {
           setTariff(response);
         });
+
+        setIsLoading(false);
       })
       .catch((error: ContextualizedRequestError) => {
         setIsLoading(false);

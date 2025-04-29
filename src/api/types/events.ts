@@ -1,3 +1,5 @@
+import { UserRole } from "./user";
+
 export interface DateTime {
   datetime: string;
   timezone: string;
@@ -17,6 +19,17 @@ export interface CreateEventPayload {
   waitingRoom?: boolean;
   hasSharedFolder?: boolean;
 }
+
+type CreateEventInviteEmailPayload = {
+  email: string;
+};
+
+type CreateEventInviteUserPayload = {
+  invitee: string;
+  role: UserRole;
+};
+
+export type CreateEventInvitePayload = CreateEventInviteUserPayload | CreateEventInviteEmailPayload;
 
 /**
  * EventRoomInfo in an Event object

@@ -12,6 +12,9 @@ import {
   ErrorSeverity,
   ContextualizedRequestError,
   isErrorWithContext,
+  FetchRequestParams,
+  RequestParams,
+  RequestParamsWithPayload,
 } from "./types/client";
 import convertToSnakeCase from "snakecase-keys";
 import convertToCamelCase from "camelcase-keys";
@@ -70,17 +73,17 @@ export class Client {
     return authenticateResponse;
   }
 
-  // Static API access methods
-  public async get<T>(endpoint: string, params?: unknown): Promise<T> {
-    return this.fetchWithAuth<T>(endpoint, "GET", params);
+  // API access methods
+  public async get<T>({ endpoint, queryParams }: RequestParams): Promise<T> {
+    return this.fetchWithAuth<T>({ endpoint, method: "GET", queryParams });
   }
 
-  public async post<T>(endpoint: string, payload?: unknown, params?: unknown): Promise<T> {
-    return this.fetchWithAuth<T>(endpoint, "POST", payload, params);
+  public async post<T>({ endpoint, payload, queryParams }: RequestParamsWithPayload): Promise<T> {
+    return this.fetchWithAuth<T>({ endpoint, method: "POST", payload, queryParams });
   }
 
-  public async delete<T>(endPoint: string, payload?: unknown, params?: unknown): Promise<T> {
-    return this.fetchWithAuth<T>(endPoint, "DELETE", payload, params);
+  public async delete<T>({ endpoint, payload, queryParams }: RequestParamsWithPayload): Promise<T> {
+    return this.fetchWithAuth<T>({ endpoint, method: "DELETE", payload, queryParams });
   }
 
   public static clearSession(): void {
@@ -295,12 +298,12 @@ export class Client {
     return !!this.refreshToken && this.refreshTokenExpires * 1000 > Date.now();
   }
 
-  private async fetchWithAuth<T>(
-    endpoint: string,
-    method: HttpMethod,
-    payload?: unknown,
-    queryParams?: unknown
-  ): Promise<T> {
+  private async fetchWithAuth<T>({
+    endpoint,
+    method,
+    payload,
+    queryParams,
+  }: FetchRequestParams): Promise<T> {
     const token = await this.getAccessToken();
     const headers = createHeaders({ "Content-Type": "application/json" });
 
