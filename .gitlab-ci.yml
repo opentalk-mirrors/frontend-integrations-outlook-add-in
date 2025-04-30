@@ -74,6 +74,13 @@ lint:unused-deps:
   script:
     - pnpm knip --include dependencies
 
+lint:shellcheck:
+  stage: lint
+  before_script:
+    - apk update && apk add shellcheck git
+  script:
+    - git ls-files --exclude='*.sh' --ignored -c -z | xargs -0r shellcheck
+
 lint:commit-signature:
   stage: lint
   needs: []
