@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from "react";
+import { Box, Stack, Typography } from "@mui/material";
 import { useClientContext } from "../../providers/ClientProvider";
 import { OPENTALK_EVENT_ID } from "../../constants";
 import Button from "@mui/material/Button";
 import { DeleteEventQueryParams } from "../../api/types/events";
-import Container from "./container";
-import { Box, Stack, Typography } from "@mui/material";
 
 const EventEditPage: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -33,7 +32,7 @@ const EventEditPage: FC = () => {
   };
 
   return (
-    <Container>
+    <>
       {isLoading && <Typography>Loading...</Typography>}{" "}
       {showDisclaimer && (
         <Stack>
@@ -55,7 +54,7 @@ const EventEditPage: FC = () => {
         ) : (
           <p>This is not an OpenTalk meeting</p>
         ))}
-    </Container>
+    </>
   );
 };
 
