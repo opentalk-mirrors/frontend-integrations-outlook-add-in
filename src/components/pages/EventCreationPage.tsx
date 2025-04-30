@@ -10,7 +10,6 @@ import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
 import { CreateEventQueryParams } from "../../api/types/events";
 import { OPENTALK_EVENT_ID } from "../../constants";
-import Container from "./container";
 
 const EventCreationPage: FC = () => {
   const { client, tariff } = useClientContext();
@@ -107,7 +106,7 @@ const EventCreationPage: FC = () => {
   };
 
   return (
-    <Container>
+    <>
       <FormSwitch label="Waiting Room" flag={waitingRoomEnabled} setFlag={setWaitingRoomEnabled} />
       {isSharedFolderAvailable && (
         <FormSwitch
@@ -147,7 +146,7 @@ const EventCreationPage: FC = () => {
       <Button onClick={handleSave} sx={{ marginTop: 1 }}>
         Create OpenTalk meeting
       </Button>
-    </Container>
+    </>
   );
 };
 
