@@ -97,7 +97,9 @@ export const UserAutocomplete = ({ selectedUsers, onUserSelect }: UserAutocomple
           : (emailSuggestion as ParticipantOption[])
       }
       getOptionLabel={getOptionLabel}
-      renderOption={(props, option) => <UserListItem option={option} props={props} />}
+      renderOption={(props, option) => (
+        <UserListItem key={option.email} option={option} props={props} />
+      )}
       inputValue={searchValue || ""}
       value={null}
       onChange={(_, value) => value && handleSelect(value)}

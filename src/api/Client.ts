@@ -78,12 +78,16 @@ export class Client {
     return this.fetchWithAuth<T>({ endpoint, method: "GET", queryParams });
   }
 
-  public async post<T>({ endpoint, payload, queryParams }: RequestParamsWithPayload): Promise<T> {
-    return this.fetchWithAuth<T>({ endpoint, method: "POST", payload, queryParams });
+  public async post<T>(props: RequestParamsWithPayload): Promise<T> {
+    return this.fetchWithAuth<T>({ method: "POST", ...props });
   }
 
-  public async delete<T>({ endpoint, payload, queryParams }: RequestParamsWithPayload): Promise<T> {
-    return this.fetchWithAuth<T>({ endpoint, method: "DELETE", payload, queryParams });
+  public async patch<T>(props: RequestParamsWithPayload): Promise<T> {
+    return this.fetchWithAuth<T>({ method: "PATCH", ...props });
+  }
+
+  public async delete<T>(props: RequestParamsWithPayload): Promise<T> {
+    return this.fetchWithAuth<T>({ method: "DELETE", ...props });
   }
 
   public static clearSession(): void {

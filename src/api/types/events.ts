@@ -1,8 +1,31 @@
-import { UserRole } from "./user";
+import { User, UserRole } from "./user";
 
 export interface DateTime {
   datetime: string;
   timezone: string;
+}
+
+interface SharedFolderCredentials {
+  url: string;
+  password: string;
+}
+
+export interface SharedFolderData {
+  read: SharedFolderCredentials;
+  readWrite?: SharedFolderCredentials;
+}
+
+export enum InviteStatus {
+  Accepted = "accepted",
+  Tentative = "tentative",
+  Pending = "pending",
+  Declined = "declined",
+  Added = "added",
+}
+
+export interface EventInvite {
+  profile: User;
+  status: InviteStatus;
 }
 
 export interface CreateEventPayload {
@@ -20,7 +43,9 @@ export interface CreateEventPayload {
   hasSharedFolder?: boolean;
 }
 
-type CreateEventInviteEmailPayload = {
+export type UpdateEventPayload = Partial<CreateEventInvitePayload>;
+
+type EventInviteEmailPayload = {
   email: string;
 };
 
@@ -29,8 +54,9 @@ type CreateEventInviteUserPayload = {
   role: UserRole;
 };
 
-export type CreateEventInvitePayload = CreateEventInviteUserPayload | CreateEventInviteEmailPayload;
+export type CreateEventInvitePayload = CreateEventInviteUserPayload | EventInviteEmailPayload;
 
+export type DeleteEventInvitePayload = EventInviteEmailPayload;
 /**
  * EventRoomInfo in an Event object
  */
@@ -57,8 +83,10 @@ interface BaseEvent {
   description: string;
   room: EventRoomInfo;
   inviteesTruncated?: boolean;
-  showMeetingDetails?: boolean;
+  invitees?: Array<EventInvite>;
+  showMeetingDetails: boolean;
   isTimeIndependent?: boolean;
+  sharedFolder?: SharedFolderData;
   type: EventType;
   isFavorite: boolean;
   recurrenceId?: string;
@@ -104,12 +132,24 @@ export interface SingleEvent extends BaseEvent, TimedEvent {
 
 export type Event = SingleEvent | RecurringEvent | TimelessEvent | TimedEvent;
 
-interface SuppressEmailNotification {
+interface SuppressEmailNotificationQueryParam {
   suppressEmailNotification: boolean;
 }
 
-export type CreateEventQueryParams = SuppressEmailNotification;
+interface InviteesMaxQueryParam {
+  inviteesMax?: number;
+}
 
-export interface DeleteEventQueryParams extends SuppressEmailNotification {
+export type CreateEventQueryParams = SuppressEmailNotificationQueryParam;
+
+export type GetEventQueryParams = InviteesMaxQueryParam;
+
+export type UpdateEventQueryParams = SuppressEmailNotificationQueryParam & InviteesMaxQueryParam;
+
+export interface DeleteEventQueryParams extends SuppressEmailNotificationQueryParam {
   forceDeleteReferenceIfExternalServicesFail: boolean;
 }
+
+export type CreateEventInviteQueryParams = SuppressEmailNotificationQueryParam;
+
+export type DeleteEventInviteQueryParams = SuppressEmailNotificationQueryParam;
