@@ -5,28 +5,58 @@ import {
   CreateEventPayload,
   CreateEventQueryParams,
   DeleteEventQueryParams,
+  UpdateEventPayload,
+  UpdateEventQueryParams,
+  GetEventQueryParams,
+  DeleteEventInvitePayload,
+  CreateEventInviteQueryParams,
+  DeleteEventInviteQueryParams,
 } from "./types/events";
 
 export class EventsAPI {
   constructor(private client: Client) {}
 
-  public create(payload: CreateEventPayload, params?: CreateEventQueryParams) {
-    return this.client.post<Event>({ endpoint: "events", payload, queryParams: params });
+  public create(payload: CreateEventPayload, queryParams?: CreateEventQueryParams) {
+    return this.client.post<Event>({ endpoint: "events", payload, queryParams });
   }
 
-  public delete(eventId: string, params?: DeleteEventQueryParams) {
-    return this.client.delete({ endpoint: `events/${eventId}`, queryParams: params });
+  public get(eventId: string, queryParams?: GetEventQueryParams) {
+    return this.client.get<Event>({ endpoint: `events/${eventId}`, queryParams });
+  }
+
+  public update(
+    eventId: string,
+    payload: UpdateEventPayload,
+    queryParams?: UpdateEventQueryParams
+  ) {
+    return this.client.patch<Event>({ endpoint: `events/${eventId}`, payload, queryParams });
+  }
+
+  public delete(eventId: string, queryParams?: DeleteEventQueryParams) {
+    return this.client.delete({ endpoint: `events/${eventId}`, queryParams });
   }
 
   public createInvitation(
     eventId: string,
     payload: CreateEventInvitePayload,
-    params?: CreateEventQueryParams
+    queryParams?: CreateEventInviteQueryParams
   ) {
     return this.client.post({
       endpoint: `events/${eventId}/invites`,
       payload,
-      queryParams: params,
+      queryParams,
+    });
+  }
+
+  public deleteInvitation(
+    eventId: string,
+    payload: DeleteEventInvitePayload,
+    queryParams?: DeleteEventInviteQueryParams
+  ) {
+    return this.client.delete({
+      endpoint: `events/${eventId}/invites/email`,
+      payload,
+      queryParams,
     });
   }
 }
