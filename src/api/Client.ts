@@ -45,16 +45,16 @@ export class Client {
     this.config = config;
   }
 
-  private static fromJSON(json: string, config: Config): Client {
-    const obj: Client = JSON.parse(json);
-    const client = new Client(obj.otHost, config);
-    client.oidcDeviceAuthorizationEndpoint = obj.oidcDeviceAuthorizationEndpoint;
-    client.oidcTokenEndpoint = obj.oidcTokenEndpoint;
-    client.otControllerHost = obj.otControllerHost;
-    client.accessToken = obj.accessToken;
-    client.accessTokenExpires = obj.accessTokenExpires;
-    client.refreshToken = obj.refreshToken;
-    client.refreshTokenExpires = obj.refreshTokenExpires;
+  private static fromJSON(jsonStr: string, config: Config): Client {
+    const stateFromJson: Client = JSON.parse(jsonStr);
+    const client = new Client(stateFromJson.otHost, config);
+    client.oidcDeviceAuthorizationEndpoint = stateFromJson.oidcDeviceAuthorizationEndpoint;
+    client.oidcTokenEndpoint = stateFromJson.oidcTokenEndpoint;
+    client.otControllerHost = stateFromJson.otControllerHost;
+    client.accessToken = stateFromJson.accessToken;
+    client.accessTokenExpires = stateFromJson.accessTokenExpires;
+    client.refreshToken = stateFromJson.refreshToken;
+    client.refreshTokenExpires = stateFromJson.refreshTokenExpires;
     return client;
   }
 
