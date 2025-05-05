@@ -1,3 +1,8 @@
+export interface Config {
+  opentalkOutlookOidcClientId: string;
+  opentalkOutlookHostUrl: string;
+}
+
 interface ControllerBody {
   baseUrl: string;
 }

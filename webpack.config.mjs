@@ -99,9 +99,8 @@ export default async (env, options) => {
       new webpack.ProvidePlugin({
         Promise: ["es6-promise", "Promise"],
       }),
-      new DotenvWebpackPlugin({
-        path: dev ? ".env" : undefined,
-        systemvars: true,
+      new webpack.DefinePlugin({
+        PRODUCTION: JSON.stringify(!dev),
       }),
     ],
     devServer: {
@@ -119,6 +118,14 @@ export default async (env, options) => {
       port: process.env.npm_package_config_dev_server_port || 3000,
     },
   };
+
+  if (dev) {
+    const dotenv = new DotenvWebpackPlugin({
+      path: ".env",
+      systemvars: true,
+    });
+    config.plugins.push(dotenv);
+  }
 
   return config;
 };

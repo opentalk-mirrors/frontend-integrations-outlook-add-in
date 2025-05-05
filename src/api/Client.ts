@@ -15,14 +15,17 @@ import {
   FetchRequestParams,
   RequestParams,
   RequestParamsWithPayload,
+  Config,
 } from "./types/client";
 import convertToSnakeCase from "snakecase-keys";
 import convertToCamelCase from "camelcase-keys";
 import { callbackAsPromise } from "../utils/OfficeHelpers";
 
+// This is a global variable defined in webpack.config.mjs.
+// It is declared here to satisfy the TypeScript compiler.
+declare const PRODUCTION: boolean;
+
 const OT_CLIENT = "ot-client";
-const clientId = process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID;
-const hostUrl = process.env.OPENTALK_OUTLOOK_HOST_URL;
 
 export class Client {
   private otHost: string;
@@ -34,31 +37,57 @@ export class Client {
   private accessTokenExpires: number;
   private refreshToken: string;
   private refreshTokenExpires: number;
+  private config: Config;
 
-  private constructor(otHost: string) {
+  private constructor(otHost: string, config: Config) {
     // Prevents trailing slashes at the end of the host URL since the configuration does not allow them
     this.otHost = otHost.replace(/\/$/, "");
+    this.config = config;
   }
 
-  private static fromJSON(json: string): Client {
-    const obj: Client = JSON.parse(json);
-    const client = new Client(obj.otHost);
-    client.oidcDeviceAuthorizationEndpoint = obj.oidcDeviceAuthorizationEndpoint;
-    client.oidcTokenEndpoint = obj.oidcTokenEndpoint;
-    client.otControllerHost = obj.otControllerHost;
-    client.accessToken = obj.accessToken;
-    client.accessTokenExpires = obj.accessTokenExpires;
-    client.refreshToken = obj.refreshToken;
-    client.refreshTokenExpires = obj.refreshTokenExpires;
+  private static fromJSON(jsonStr: string, config: Config): Client {
+    const stateFromJson: Client = JSON.parse(jsonStr);
+    const client = new Client(stateFromJson.otHost, config);
+    client.oidcDeviceAuthorizationEndpoint = stateFromJson.oidcDeviceAuthorizationEndpoint;
+    client.oidcTokenEndpoint = stateFromJson.oidcTokenEndpoint;
+    client.otControllerHost = stateFromJson.otControllerHost;
+    client.accessToken = stateFromJson.accessToken;
+    client.accessTokenExpires = stateFromJson.accessTokenExpires;
+    client.refreshToken = stateFromJson.refreshToken;
+    client.refreshTokenExpires = stateFromJson.refreshTokenExpires;
     return client;
+  }
+
+  private static async loadConfig(): Promise<Config> {
+    if (!PRODUCTION) {
+      return {
+        opentalkOutlookHostUrl: process.env.OPENTALK_OUTLOOK_HOST_URL,
+        opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
+      };
+    }
+    const response = await Client.typedRequest<Config>(
+      `https://${location.host}`,
+      "/config.json",
+      "GET"
+    );
+    if (isRequestError(response)) {
+      const message = "Failed to fetch config";
+      console.error(message, response);
+      throw response.withContext({
+        message: message,
+        severity: ErrorSeverity.Fatal,
+      });
+    }
+    return response;
   }
 
   // Load from localStorage or authenticate fresh
   public static async load(): Promise<Client> {
+    const config = await this.loadConfig();
     const clientValueStr = localStorage.getItem(OT_CLIENT);
 
     if (clientValueStr) {
-      const client = Client.fromJSON(clientValueStr);
+      const client = Client.fromJSON(clientValueStr, config);
       // Return the client when the refresh token is not expired,
       // otherwise reauthenticate
       if (client.isAuthenticated()) {
@@ -66,7 +95,7 @@ export class Client {
       }
     }
 
-    const authenticateResponse = await this.authenticate();
+    const authenticateResponse = await this.authenticate(config);
     if (isErrorWithContext(authenticateResponse)) {
       throw authenticateResponse;
     }
@@ -95,8 +124,8 @@ export class Client {
   }
 
   // Internal OIDC flow
-  public static async authenticate(): Promise<Client | ContextualizedRequestError> {
-    const client = new Client(hostUrl);
+  public static async authenticate(config: Config): Promise<Client | ContextualizedRequestError> {
+    const client = new Client(config.opentalkOutlookHostUrl, config);
 
     const wellKnownResponse = await this.typedRequest<ClientWellKnownResponseBody>(
       client.otHost,
@@ -137,7 +166,10 @@ export class Client {
       "",
       "POST",
       // Not sending audience as we do not use external providers, but can be possible in the future
-      new URLSearchParams({ client_id: clientId, scope: "profile email openid" })
+      new URLSearchParams({
+        client_id: config.opentalkOutlookOidcClientId,
+        scope: "profile email openid",
+      })
     );
     if (isRequestError(authResponse)) {
       return authResponse.withContext({
@@ -178,7 +210,7 @@ export class Client {
         "POST",
         new URLSearchParams({
           device_code: authResponse.deviceCode,
-          client_id: clientId,
+          client_id: config.opentalkOutlookOidcClientId,
           grant_type: "urn:ietf:params:oauth:grant-type:device_code",
         })
       );
@@ -274,7 +306,7 @@ export class Client {
       "POST",
       new URLSearchParams({
         refresh_token: this.refreshToken,
-        client_id: clientId,
+        client_id: this.config.opentalkOutlookOidcClientId,
         grant_type: "refresh_token",
       })
     );

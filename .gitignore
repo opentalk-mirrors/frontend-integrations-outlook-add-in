@@ -29,3 +29,5 @@ sketch
 *.vsix
 
 .env
+# Webpack bulid output
+dist
