@@ -4,9 +4,6 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import webpack from "webpack";
 import DotenvWebpackPlugin from "dotenv-webpack";
 
-const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
-
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
   return { ca: httpsOptions.ca, key: httpsOptions.key, cert: httpsOptions.cert };
@@ -86,13 +83,6 @@ export default async (env, options) => {
           {
             from: "manifest*.xml",
             to: "[name]" + "[ext]",
-            transform(content) {
-              if (dev) {
-                return content;
-              } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
-              }
-            },
           },
         ],
       }),
