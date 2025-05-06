@@ -97,8 +97,8 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3(webpack@5.99.7)
       knip:
-        specifier: ^5.53.0
-        version: 5.53.0(@types/node@22.14.0)(typescript@5.8.3)
+        specifier: ^5.54.1
+        version: 5.54.1(@types/node@22.14.0)(typescript@5.8.3)
       madge:
         specifier: ^8.0.0
         version: 8.0.0(typescript@5.8.3)
@@ -2483,6 +2483,9 @@ packages:
     resolution: {integrity: sha512-CzbClwlXAuiRQAlUyfqPgvPoNKTckTPGfwZV4ZdAhVcP2lh9KUxJg2b5GkE7XbjKQ3YJnQ9z6D9ntLAlB+tP8g==}
     engines: {node: '>=0.8.0'}
 
+  fd-package-json@1.2.0:
+    resolution: {integrity: sha512-45LSPmWf+gC5tdCQMNH4s9Sr00bIkiD9aN7dc5hqkrEw1geRYyDQS1v1oMHAW3ysfxfndqGsrDREHHjNNbKUfA==}
+
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -2554,6 +2557,11 @@ packages:
   form-data@4.0.2:
     resolution: {integrity: sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==}
     engines: {node: '>= 6'}
+
+  formatly@0.2.3:
+    resolution: {integrity: sha512-WH01vbXEjh9L3bqn5V620xUAWs32CmK4IzWRRY6ep5zpa/mrisL4d9+pRVuETORVDTQw8OycSO1WC68PL51RaA==}
+    engines: {node: '>=18.3.0'}
+    hasBin: true
 
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -3166,8 +3174,8 @@ packages:
   klaw@3.0.0:
     resolution: {integrity: sha512-0Fo5oir+O9jnXu5EefYbVK+mHMBeEVEy2cmctR1O1NECcCkPRreJKrS6Qt/j3KC2C148Dfo9i3pCmCMsdqGr0g==}
 
-  knip@5.53.0:
-    resolution: {integrity: sha512-z8tTV59Rkwd/FRaSikKUIyLx9YY846muUJtmF+nM7e7f63LGyjqnSSsGBfE9RorqNanVqXvTjosGYkfKCmV7Nw==}
+  knip@5.54.1:
+    resolution: {integrity: sha512-5zrTw8ou8VO7xXl87CtI5csvmvKdlXX21+jKeicXt3OtPX19mqU2k5dyidUD+Vg3Tlmuf9IWHPGMgcwqjlIjpg==}
     engines: {node: '>=18.18.0'}
     hasBin: true
     peerDependencies:
@@ -4617,6 +4625,9 @@ packages:
   vscode-jsonrpc@4.0.0:
     resolution: {integrity: sha512-perEnXQdQOJMTDFNv+UF3h1Y0z4iSiaN9jIlb0OqIYgosPCZGYh/MCUlkFtV2668PL69lRDO32hmvL2yiidUYg==}
     engines: {node: '>=8.0.0 || >=10.0.0'}
+
+  walk-up-path@3.0.1:
+    resolution: {integrity: sha512-9YlCL/ynK3CTlrSRrDxZvUauLzAswPCrsaCgilqFevUYpeEW0/3ScEjaa3kbW/T0ghhkEr7mv+fpjqn1Y1YuTA==}
 
   walkdir@0.4.1:
     resolution: {integrity: sha512-3eBwRyEln6E1MSzcxcVpQIhRG8Q1jLvEqRmCZqS3dsfXEDR/AhOF4d+jHg1qvDCpYaVRZjENPQyrVxAkQqxPgQ==}
@@ -7969,6 +7980,10 @@ snapshots:
     dependencies:
       websocket-driver: 0.7.4
 
+  fd-package-json@1.2.0:
+    dependencies:
+      walk-up-path: 3.0.1
+
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -8063,6 +8078,10 @@ snapshots:
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
       mime-types: 2.1.35
+
+  formatly@0.2.3:
+    dependencies:
+      fd-package-json: 1.2.0
 
   forwarded@0.2.0: {}
 
@@ -8694,12 +8713,13 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
 
-  knip@5.53.0(@types/node@22.14.0)(typescript@5.8.3):
+  knip@5.54.1(@types/node@22.14.0)(typescript@5.8.3):
     dependencies:
       '@nodelib/fs.walk': 1.2.8
       '@types/node': 22.14.0
       enhanced-resolve: 5.18.1
       fast-glob: 3.3.3
+      formatly: 0.2.3
       jiti: 2.4.2
       js-yaml: 4.1.0
       minimist: 1.2.8
@@ -10331,6 +10351,8 @@ snapshots:
   vary@1.1.2: {}
 
   vscode-jsonrpc@4.0.0: {}
+
+  walk-up-path@3.0.1: {}
 
   walkdir@0.4.1: {}
 
