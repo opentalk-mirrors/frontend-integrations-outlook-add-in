@@ -38,6 +38,13 @@ http {
         return 404;
       }
 
+      location = /manifest.xml {
+        root /usr/share/nginx/html;
+        index manifest.xml;
+        add_header Cache-Control no-cache;
+        add_header Content-Disposition 'attachment; filename*="opentalk-outlook.xml"';
+      }
+
       # It consists entirely of subpages
       location ~* /.+ {
         root      /usr/share/nginx/html;

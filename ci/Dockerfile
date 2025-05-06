@@ -10,9 +10,6 @@ WORKDIR /addin
 RUN apk --no-cache add pnpm npm
 COPY . /addin
 
-ARG CONFIG_PORT=8000
-ENV CONFIG_PORT=${CONFIG_PORT}
-
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
 # Webpack is required for building
