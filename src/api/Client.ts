@@ -58,6 +58,10 @@ export class Client {
     return client;
   }
 
+  private static getBaseUri(): string {
+    return location.origin + location.pathname.split("/").slice(0, -1).join("/");
+  }
+
   private static async loadConfig(): Promise<Config> {
     if (!PRODUCTION) {
       return {
@@ -65,11 +69,8 @@ export class Client {
         opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
       };
     }
-    const response = await Client.typedRequest<Config>(
-      `https://${location.host}`,
-      "/config.json",
-      "GET"
-    );
+    const uri = this.getBaseUri();
+    const response = await Client.typedRequest<Config>(uri, "/config.json", "GET");
     if (isRequestError(response)) {
       const message = "Failed to fetch config";
       console.error(message, response);
@@ -192,7 +193,7 @@ export class Client {
     const searchParams = new URLSearchParams({
       [REDIRECT_QUERY]: encodeURI(authResponse.verificationUriComplete),
     });
-    const uri = `https://${window.location.host}/login.html?${searchParams.toString()}`;
+    const uri = `${this.getBaseUri()}/login.html?${searchParams.toString()}`;
     let dialog = await callbackAsPromise(
       (callback: (result: Office.AsyncResult<Office.Dialog>) => void) =>
         Office.context.ui.displayDialogAsync(uri, options, callback)
