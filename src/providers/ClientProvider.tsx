@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { Client } from "../api/Client";
-import { ErrorContext, ContextualizedRequestError } from "../api/types/client";
+import { ErrorContext, ContextualizedRequestError, Config } from "../api/types/client";
 import { Tariff } from "../api/types/tariff";
 import { EventsAPI } from "../api/Events";
 import { UsersAPI } from "../api/Users";
@@ -10,6 +10,7 @@ interface APIClient {
   auth: AuthAPI;
   events: EventsAPI;
   users: UsersAPI;
+  config: Config;
 }
 
 interface ClientState {
@@ -40,7 +41,7 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
         const authAPI = new AuthAPI(client);
         const eventsAPI = new EventsAPI(client);
         const usersAPI = new UsersAPI(client);
-        setClient({ auth: authAPI, events: eventsAPI, users: usersAPI });
+        setClient({ auth: authAPI, events: eventsAPI, users: usersAPI, config: client.config });
         usersAPI.getTariff().then((response) => {
           setTariff(response);
         });
