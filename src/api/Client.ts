@@ -28,7 +28,7 @@ declare const PRODUCTION: boolean;
 const OT_CLIENT = "ot-client";
 
 export class Client {
-  private otHost: string;
+  private otWebApp: string;
   private oidcDeviceAuthorizationEndpoint: string;
   private oidcTokenEndpoint: string;
   private otControllerHost: string;
@@ -39,15 +39,15 @@ export class Client {
   private refreshTokenExpires: number;
   public config: Config;
 
-  private constructor(otHost: string, config: Config) {
+  private constructor(otWebApp: string, config: Config) {
     // Prevents trailing slashes at the end of the host URL since the configuration does not allow them
-    this.otHost = otHost.replace(/\/$/, "");
+    this.otWebApp = otWebApp.replace(/\/$/, "");
     this.config = config;
   }
 
   private static fromJSON(jsonStr: string, config: Config): Client {
     const stateFromJson: Client = JSON.parse(jsonStr);
-    const client = new Client(stateFromJson.otHost, config);
+    const client = new Client(stateFromJson.otWebApp, config);
     client.oidcDeviceAuthorizationEndpoint = stateFromJson.oidcDeviceAuthorizationEndpoint;
     client.oidcTokenEndpoint = stateFromJson.oidcTokenEndpoint;
     client.otControllerHost = stateFromJson.otControllerHost;
@@ -65,7 +65,7 @@ export class Client {
   private static async loadConfig(): Promise<Config> {
     if (!PRODUCTION) {
       return {
-        opentalkOutlookHostUrl: process.env.OPENTALK_OUTLOOK_HOST_URL,
+        opentalkOutlookWebAppUrl: process.env.OPENTALK_OUTLOOK_WEBAPP_URL,
         opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
       };
     }
@@ -126,16 +126,16 @@ export class Client {
 
   // Internal OIDC flow
   public static async authenticate(config: Config): Promise<Client | ContextualizedRequestError> {
-    const client = new Client(config.opentalkOutlookHostUrl, config);
+    const client = new Client(config.opentalkOutlookWebAppUrl, config);
 
     const wellKnownResponse = await this.typedRequest<ClientWellKnownResponseBody>(
-      client.otHost,
+      client.otWebApp,
       "/.well-known/opentalk/client",
       "GET"
     );
     if (isRequestError(wellKnownResponse)) {
       return wellKnownResponse.withContext({
-        message: `Failed to fetch well-known OIDC config from '${client.otHost}'. Is the host configured correctly?`,
+        message: `Failed to fetch well-known OIDC config from '${client.otWebApp}'. Is the host configured correctly?`,
         severity: ErrorSeverity.Fatal,
       });
     }

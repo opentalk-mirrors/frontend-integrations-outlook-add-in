@@ -119,7 +119,7 @@ const EventComposePage: FC = () => {
       const event = await client?.events.create(payload);
       await sendInvites(selectedUsers, event.id);
 
-      const roomLink = new URL(`/room/${event.room.id}`, client?.config.opentalkOutlookHostUrl);
+      const roomLink = new URL(`/room/${event.room.id}`, client?.config.opentalkOutlookWebAppUrl);
       await setAsyncAsPromise(item.location.setAsync, roomLink.toString());
 
       const meetingRoom = `Meeting room: <a href="${roomLink}">${roomLink}</a>`;

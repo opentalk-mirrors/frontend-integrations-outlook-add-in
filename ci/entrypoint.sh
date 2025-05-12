@@ -10,7 +10,7 @@ HTML_ROOT=/usr/share/nginx/html
 cat >$HTML_ROOT/config.json << EOF
 {
   "opentalkOutlookOidcClientId": "${OPENTALK_OUTLOOK_OIDC_CLIENT_ID}",
-  "opentalkOutlookHostUrl": "${OPENTALK_OUTLOOK_HOST_URL}"
+  "opentalkOutlookWebAppUrl": "${OPENTALK_OUTLOOK_WEBAPP_URL}"
 }
 EOF
 
