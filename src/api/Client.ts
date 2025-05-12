@@ -37,7 +37,7 @@ export class Client {
   private accessTokenExpires: number;
   private refreshToken: string;
   private refreshTokenExpires: number;
-  private config: Config;
+  public config: Config;
 
   private constructor(otHost: string, config: Config) {
     // Prevents trailing slashes at the end of the host URL since the configuration does not allow them
