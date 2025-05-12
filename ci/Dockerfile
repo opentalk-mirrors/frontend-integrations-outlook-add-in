@@ -26,7 +26,7 @@ ENV USERID=1000
 ENV GROUPID=1000
 ENV PORT=80
 ENV OPENTALK_OUTLOOK_OIDC_CLIENT_ID=device
-ENV OPENTALK_OUTLOOK_HOST_URL=localhost:8000
+ENV OPENTALK_OUTLOOK_WEBAPP_URL=localhost:8000
 
 COPY ./ci/entrypoint.sh /docker-entrypoint.d/40-configure-app.sh
 RUN chmod +x /docker-entrypoint.d/40-configure-app.sh
