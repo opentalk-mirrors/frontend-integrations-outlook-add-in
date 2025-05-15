@@ -83,13 +83,12 @@
           <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html" />
         </bt:Urls>
         <bt:ShortStrings>
-          <bt:String id="AppointmentCreateGroupLabel" DefaultValue="Create OpenTalk Conference" />
-          <bt:String id="AppointmentViewGroupLabel" DefaultValue="Edit OpenTalk Conference" />
-          <bt:String id="TaskpaneButton.Label" DefaultValue="Show Task Pane" />
+          <bt:String id="AppointmentCreateGroupLabel" DefaultValue="Create OpenTalk Meeting" />
+          <bt:String id="TaskpaneButton.Label" DefaultValue="OpenTalk Meeting" />
         </bt:ShortStrings>
         <bt:LongStrings>
           <bt:String id="TaskpaneButton.Tooltip"
-            DefaultValue="Opens a pane that enables users to insert text." />
+            DefaultValue="Schedule an OpenTalk meeting." />
         </bt:LongStrings>
       </Resources>
     </VersionOverrides>
