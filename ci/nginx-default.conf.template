@@ -34,11 +34,12 @@ http {
       add_header Cache-Control no-cache;
 
       # The add-in does not have an index/root page
-      location / {
+      location ${LOCATION} {
         return 404;
       }
 
-      location = /manifest.xml {
+      location ~ ${LOCATION}manifest.xml {
+        rewrite ^${LOCATION}(.*)$ /$1 break;
         root /usr/share/nginx/html;
         index manifest.xml;
         add_header Cache-Control no-cache;
@@ -46,7 +47,8 @@ http {
       }
 
       # It consists entirely of subpages
-      location ~* /.+ {
+      location ~ ${LOCATION} {
+        rewrite ^${LOCATION}(.*)$ /$1 break;
         root      /usr/share/nginx/html;
         try_files $uri /index.html;
       }
