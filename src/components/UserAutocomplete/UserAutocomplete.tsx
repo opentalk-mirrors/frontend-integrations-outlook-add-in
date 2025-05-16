@@ -111,11 +111,9 @@ export const UserAutocomplete = ({ selectedUsers, onUserSelect }: UserAutocomple
           {...props}
           label="Invite participants"
           variant="outlined"
-          slotProps={{
-            input: {
-              ...InputProps,
-              endAdornment: null,
-            },
+          InputProps={{
+            ...InputProps,
+            endAdornment: null,
           }}
         />
       )}
