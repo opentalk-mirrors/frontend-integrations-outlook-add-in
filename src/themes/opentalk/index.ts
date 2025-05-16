@@ -240,10 +240,14 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
         },
         styleOverrides: {
           root: ({ theme }) => ({
-            padding: theme.spacing(0, 0.25, 0, 0),
+            padding: theme.spacing(0, 0, 0, 0.25),
             width: theme.typography.pxToRem(46),
             height: theme.typography.pxToRem(24),
             marginRight: 0,
+            [theme.breakpoints.down("sm")]: {
+              width: theme.typography.pxToRem(40),
+              height: theme.typography.pxToRem(20),
+            },
           }),
           switchBase: ({ theme }) => ({
             padding: theme.spacing(0.25),
@@ -280,6 +284,10 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               backgroundSize: 8,
+            },
+            [theme.breakpoints.down("sm")]: {
+              width: theme.typography.pxToRem(16),
+              height: theme.typography.pxToRem(16),
             },
           }),
           colorSecondary: ({ theme }) => ({
@@ -819,11 +827,17 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
       [theme.breakpoints.down("md")]: {
         fontSize: theme.typography.pxToRem(18),
       },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: theme.typography.pxToRem(16),
+      },
     },
     h2: {
       fontSize: theme.typography.pxToRem(16),
       [theme.breakpoints.down("md")]: {
         fontSize: theme.typography.pxToRem(14),
+      },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: theme.typography.pxToRem(12),
       },
     },
     body1: {
@@ -833,6 +847,9 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
       [theme.breakpoints.down("md")]: {
         fontSize: theme.typography.pxToRem(14),
       },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: theme.typography.pxToRem(12),
+      },
     },
     body2: {
       fontWeight: 400,
@@ -840,12 +857,18 @@ export function createOpenTalkTheme(mode: PaletteMode = "light") {
       [theme.breakpoints.down("md")]: {
         fontSize: theme.typography.pxToRem(14),
       },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: theme.typography.pxToRem(12),
+      },
     },
     caption: {
       fontSize: theme.typography.pxToRem(12),
       fontWeight: 400,
       [theme.breakpoints.down("md")]: {
         fontSize: theme.typography.pxToRem(12),
+      },
+      [theme.breakpoints.down("sm")]: {
+        fontSize: theme.typography.pxToRem(10),
       },
     },
   };
