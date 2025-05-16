@@ -138,6 +138,7 @@ const EventComposePage: FC = () => {
       // Calling saveAsync with callBackAsPromise does throw an error
       customProps.saveAsync((result) => {
         if (result.status === Office.AsyncResultStatus.Succeeded) {
+          setExistingEvent(event);
           item.sendAsync();
           return;
         }
@@ -185,7 +186,7 @@ const EventComposePage: FC = () => {
     } else {
       await createMeeting();
     }
-    setDisableButtons(true);
+    setDisableButtons(false);
   };
 
   const handleCancel = () => {
