@@ -97,8 +97,8 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3(webpack@5.99.8)
       knip:
-        specifier: ^5.56.0
-        version: 5.56.0(@types/node@22.14.0)(typescript@5.8.3)
+        specifier: ^5.57.0
+        version: 5.57.0(@types/node@22.14.0)(typescript@5.8.3)
       madge:
         specifier: ^8.0.0
         version: 8.0.0(typescript@5.8.3)
@@ -3172,8 +3172,8 @@ packages:
   klaw@3.0.0:
     resolution: {integrity: sha512-0Fo5oir+O9jnXu5EefYbVK+mHMBeEVEy2cmctR1O1NECcCkPRreJKrS6Qt/j3KC2C148Dfo9i3pCmCMsdqGr0g==}
 
-  knip@5.56.0:
-    resolution: {integrity: sha512-4RNCi41ax0zzl7jloxiUAcomwHIW+tj201jfr7TmHkSvb1/LkChsfXH0JOFFesVHhtSrMw6Dv4N6fmfFd4sJ0Q==}
+  knip@5.57.0:
+    resolution: {integrity: sha512-3i2neotCfFWOEGByzz8kzSFePZahelhwZfHXT5SM9FlpMxzN1PE8wV+M65Sl+itd2Z+v7FBXeVd96YLwXnviGg==}
     engines: {node: '>=18.18.0'}
     hasBin: true
     peerDependencies:
@@ -8587,7 +8587,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
 
-  knip@5.56.0(@types/node@22.14.0)(typescript@5.8.3):
+  knip@5.57.0(@types/node@22.14.0)(typescript@5.8.3):
     dependencies:
       '@nodelib/fs.walk': 1.2.8
       '@types/node': 22.14.0
