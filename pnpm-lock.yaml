@@ -52,8 +52,8 @@ importers:
         specifier: ^7.27.1
         version: 7.27.1(@babel/core@7.27.1)
       '@types/office-js':
-        specifier: ^1.0.501
-        version: 1.0.501
+        specifier: ^1.0.502
+        version: 1.0.502
       '@types/office-runtime':
         specifier: ^1.0.35
         version: 1.0.35
@@ -1318,8 +1318,8 @@ packages:
   '@types/node@22.14.0':
     resolution: {integrity: sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==}
 
-  '@types/office-js@1.0.501':
-    resolution: {integrity: sha512-sqGlefT7IxXfSeiPx4ddroGCFqPlrC7CYMxZ0yzsWkS+wo3VKygrh3PFxd6DqpOuIszhLf+/VE7NjxL8OgommA==}
+  '@types/office-js@1.0.502':
+    resolution: {integrity: sha512-meos5qYBP4fuh/+miHWPvr5hbv7kWQ8eyr1mTAdASQ4JY0AMRNyANW1U0cbzNyF8e9xnNMVDO0nef8HdBfX6Eg==}
 
   '@types/office-runtime@1.0.35':
     resolution: {integrity: sha512-qrP3bkDNoPY6WZMTOoutFdkZHdK91OUC1/Ohzw94bE8OD8pVoPjHKSoYaS+NlTFyXH3SNKYmQU+E6o966zARIA==}
@@ -6446,7 +6446,7 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
-  '@types/office-js@1.0.501': {}
+  '@types/office-js@1.0.502': {}
 
   '@types/office-runtime@1.0.35': {}
 
