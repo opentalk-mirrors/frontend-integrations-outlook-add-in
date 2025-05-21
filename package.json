@@ -31,7 +31,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^5.17.1",
-    "@types/lodash": "^4.17.16",
+    "@types/lodash": "^4.17.17",
     "core-js": "^3.41.0",
     "es6-promise": "^4.2.8",
     "lodash": "^4.17.21",
