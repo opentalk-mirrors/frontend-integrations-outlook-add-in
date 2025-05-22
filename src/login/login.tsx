@@ -1,9 +1,8 @@
 import { FC, useEffect } from "react";
-import { createRoot } from "react-dom/client";
 import { REDIRECT_QUERY } from "../constants";
+import ReactDOM from "react-dom";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
-const root = rootElement ? createRoot(rootElement) : undefined;
 
 const LoginPage: FC = () => {
   useEffect(() => {
@@ -16,4 +15,5 @@ const LoginPage: FC = () => {
   return <p>Redirecting to the login page. Please wait.</p>;
 };
 
-root?.render(<LoginPage />);
+// eslint-disable-next-line react/no-deprecated
+ReactDOM.render(<LoginPage />, rootElement);

@@ -1,28 +1,33 @@
-import { createRoot } from "react-dom/client";
+import "react-app-polyfill/ie11";
+import "whatwg-fetch";
+
+import ReactDOM from "react-dom";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import "./index.css";
 import App from "./App";
 import ClientProvider from "./providers/ClientProvider";
-import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createOpenTalkTheme } from "./themes/opentalk";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
-const root = rootElement ? createRoot(rootElement) : undefined;
 
 /* Render application after Office initializes */
 Office.onReady(() => {
-  root?.render(
+  // eslint-disable-next-line react/no-deprecated
+  ReactDOM.render(
     <ClientProvider>
       <ThemeProvider theme={createOpenTalkTheme()}>
         <CssBaseline />
         <App />
       </ThemeProvider>
-    </ClientProvider>
+    </ClientProvider>,
+    rootElement
   );
 });
 
 if (module.hot) {
   module.hot.accept("./App", async () => {
     const { default: NextApp } = await import("./App");
-    root?.render(<NextApp />);
+    // eslint-disable-next-line react/no-deprecated
+    ReactDOM.render(<NextApp />, rootElement);
   });
 }

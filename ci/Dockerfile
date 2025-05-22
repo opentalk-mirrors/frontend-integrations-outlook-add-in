@@ -14,7 +14,7 @@ COPY . /addin
 RUN pnpm install --frozen-lockfile --prod
 # Webpack is required for building
 RUN pnpm install -D webpack
-RUN pnpm build
+RUN pnpm --allow-build=core-js build
 
 FROM nginxinc/nginx-unprivileged:alpine-slim
 
