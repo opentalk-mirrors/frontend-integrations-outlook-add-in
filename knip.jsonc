@@ -8,6 +8,7 @@
     "@types/office-runtime",
     "@types/webpack",
     "@types/webpack-env",
-    "office-addin-cli"
+    "office-addin-cli",
+    "@babel/runtime-corejs3",
   ]
 }

@@ -17,9 +17,8 @@ import {
   RequestParamsWithPayload,
   Config,
 } from "./types/client";
-import convertToSnakeCase from "snakecase-keys";
-import convertToCamelCase from "camelcase-keys";
 import { callbackAsPromise } from "../utils/OfficeHelpers";
+import { toCamelCaseKeys, toSnakeCaseKeys } from "../utils/caseHelpers";
 
 // This is a global variable defined in webpack.config.mjs.
 // It is declared here to satisfy the TypeScript compiler.
@@ -291,7 +290,7 @@ export class Client {
       return null;
     }
 
-    const convertedResponse = convertToCamelCase(jsonResponse, { deep: true });
+    const convertedResponse = toCamelCaseKeys<T>(jsonResponse);
 
     return convertedResponse;
   }
@@ -382,7 +381,7 @@ const convertToValidPayload = (payload: unknown) => {
     throw new Error("Payload invalid");
   }
 
-  const cased = convertToSnakeCase(payload as Record<string, unknown>);
+  const cased = toSnakeCaseKeys(payload);
   return cased;
 };
 
@@ -396,7 +395,7 @@ const convertToQueryParams = (params: unknown) => {
     throw new Error("Query params invalid");
   }
 
-  const cased = convertToSnakeCase(params as Record<string, string>);
+  const cased = toSnakeCaseKeys(params as Record<string, string>);
   return "?" + new URLSearchParams(cased).toString();
 };
 

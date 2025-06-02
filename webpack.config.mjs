@@ -12,6 +12,9 @@ async function getHttpsOptions() {
 export default async (env, options) => {
   const dev = options.mode === "development";
   const config = {
+    optimization: {
+      minimize: false,
+    },
     devtool: "source-map",
     entry: {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
@@ -25,6 +28,7 @@ export default async (env, options) => {
         dependOn: "react",
       },
     },
+    target: ["web", "es5"],
     output: {
       clean: true,
     },
@@ -34,16 +38,11 @@ export default async (env, options) => {
     module: {
       rules: [
         {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
+          test: /\.(js|ts|tsx)$/,
+          use: "babel-loader",
+          exclude: function (modulePath) {
+            return /node_modules/.test(modulePath) && !/node_modules\/@mui/.test(modulePath);
           },
-        },
-        {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
-          use: ["ts-loader"],
         },
         {
           test: /\.html$/,
@@ -85,9 +84,6 @@ export default async (env, options) => {
             to: "[name]" + "[ext]",
           },
         ],
-      }),
-      new webpack.ProvidePlugin({
-        Promise: ["es6-promise", "Promise"],
       }),
       new webpack.DefinePlugin({
         PRODUCTION: JSON.stringify(!dev),
