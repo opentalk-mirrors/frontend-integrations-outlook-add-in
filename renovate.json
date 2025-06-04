@@ -6,5 +6,6 @@
   ],
   "reviewers": [
     "@opentalk/tools/renovate-reviewers/frontend"
-  ]
+  ],
+  "ignoreDeps": ["@mui/material"]
 }
