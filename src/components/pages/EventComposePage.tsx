@@ -21,7 +21,7 @@ const EVENT_INVITEES = 10;
 
 const EventComposePage: FC = () => {
   const { client, tariff } = useClientContext();
-  const isSharedFolderAvailable = !!tariff?.modules.sharedFolder;
+  const isSharedFolderAvailable = !!tariff?.modules?.sharedFolder;
 
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
