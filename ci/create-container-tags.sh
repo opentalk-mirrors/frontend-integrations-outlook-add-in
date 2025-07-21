@@ -58,6 +58,8 @@ create_tags() {
 
     # When this is the latest minor for a major branch create a tag for its major branch
     is_latest_major "$tag" "$all_tags" && tags+=("$major")
+    # Add each tag additionally prefixed with 'v'
+    tags+=("${tags[@]/#/v}")
 
     # When this is the latest release, create a "latest" tag
     is_latest "$tag" "$all_tags" && tags+=("latest")
