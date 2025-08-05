@@ -18,4 +18,4 @@ EOF
 # Escape all forward slashes by adding a backward slash in front of them
 url=$(echo "$OPENTALK_OUTLOOK_URL" | sed 's/\//\\\//g')
 # Replace the development url with the deployment url in the manifest
-sed --in-place "s/https:\/\/localhost:3000/$url/g" "$HTML_ROOT"/manifest.xml
+sed --in-place "s/https:\/\/localhost:3001/$url/g" "$HTML_ROOT"/manifest.xml

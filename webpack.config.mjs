@@ -101,7 +101,7 @@ export default async (env, options) => {
             ? options.https
             : await getHttpsOptions(),
       },
-      port: process.env.npm_package_config_dev_server_port || 3000,
+      port: process.env.npm_package_config_dev_server_port || 3001,
     },
   };
 
