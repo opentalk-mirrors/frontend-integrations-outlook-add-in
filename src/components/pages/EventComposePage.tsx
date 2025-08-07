@@ -38,24 +38,25 @@ const EventComposePage: FC = () => {
   const item = Office.context.mailbox.item;
 
   useEffect(() => {
-    Office.context.mailbox.item.loadCustomPropertiesAsync((result) => {
+    Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
       const customProps = result.value;
       setCustomProps(customProps);
       const eventId = customProps.get(OPENTALK_EVENT_ID);
       if (eventId) {
-        client.events
-          .get(eventId, { inviteesMax: EVENT_INVITEES })
-          .then((event) => {
-            setExistingEvent(event);
-            setWaitingRoomEnabled(event.room.waitingRoom);
-            setSharedFolderEnabled(!!event.sharedFolder);
-            setMeetingDetailsEnabled(event.showMeetingDetails);
-            const invitees = event.invitees.map((invite) => invite.profile);
-            setSelectedUsers(invitees);
-          })
-          .catch((error) => {
-            console.error("Issue with fetching OpenTalk event: ", error);
+        try {
+          const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
+          setExistingEvent(event);
+          setWaitingRoomEnabled(event.room.waitingRoom);
+          setSharedFolderEnabled(!!event.sharedFolder);
+          setMeetingDetailsEnabled(event.showMeetingDetails);
+          const invitees = event.invitees.map((invite) => invite.profile);
+          setSelectedUsers(invitees);
+          await setAsyncAsPromise(item.body.setAsync, event.description, {
+            coercionType: Office.CoercionType.Text,
           });
+        } catch (error) {
+          console.error("Issue with fetching OpenTalk event: ", error);
+        }
       }
       setIsLoading(false);
     });
@@ -178,6 +179,10 @@ const EventComposePage: FC = () => {
       });
 
       await sendInvites(newInvitees, event.id);
+
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
+        coercionType: Office.CoercionType.Html,
+      });
 
       item.sendAsync();
     } catch (error) {
