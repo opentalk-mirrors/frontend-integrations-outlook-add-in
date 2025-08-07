@@ -12,7 +12,6 @@ const rootElement: HTMLElement | null = document.getElementById("container");
 
 /* Render application after Office initializes */
 Office.onReady(() => {
-  // eslint-disable-next-line react/no-deprecated
   ReactDOM.render(
     <ClientProvider>
       <ThemeProvider theme={createOpenTalkTheme()}>
@@ -27,7 +26,6 @@ Office.onReady(() => {
 if (module.hot) {
   module.hot.accept("./App", async () => {
     const { default: NextApp } = await import("./App");
-    // eslint-disable-next-line react/no-deprecated
     ReactDOM.render(<NextApp />, rootElement);
   });
 }
