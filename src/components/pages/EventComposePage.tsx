@@ -16,6 +16,8 @@ import { ParticipantOption, UserRole } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
 import { OPENTALK_EVENT_ID } from "../../constants";
+import ReactDOMServer from "react-dom/server";
+import { EventBody } from "./EventBody/EventBody";
 
 const EVENT_INVITEES = 10;
 
@@ -113,21 +115,29 @@ const EventComposePage: FC = () => {
     }
   };
 
+  const createEventBody = (event: Event): string => {
+    const roomLink = new URL(
+      `/room/${event.room.id}`,
+      client?.config.opentalkOutlookWebAppUrl
+    ).toString();
+
+    // Use EmailTemplate component and serialize to string
+    return ReactDOMServer.renderToStaticMarkup(
+      <EventBody
+        event={event}
+        roomLink={roomLink}
+        senderName={Office.context.mailbox.userProfile.displayName}
+      />
+    );
+  };
+
   const createMeeting = async () => {
     try {
       const payload = (await getEventPayload()) as CreateEventPayload;
       const event = await client?.events.create(payload);
       await sendInvites(selectedUsers, event.id);
 
-      const roomLink = new URL(`/room/${event.room.id}`, client?.config.opentalkOutlookWebAppUrl);
-      await setAsyncAsPromise(item.location.setAsync, roomLink.toString());
-
-      const meetingRoom = `Meeting room: <a href="${roomLink}">${roomLink}</a>`;
-      const bodyWithLink =
-        payload.description && payload.description !== ""
-          ? `${payload.description}<br/><br/>${meetingRoom}`
-          : meetingRoom;
-      await setAsyncAsPromise(item.body.setAsync, bodyWithLink, {
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
         coercionType: Office.CoercionType.Html,
       });
 
