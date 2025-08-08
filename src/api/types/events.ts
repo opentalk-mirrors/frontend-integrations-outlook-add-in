@@ -64,6 +64,13 @@ type EventRoomInfo = {
   id: string;
   password?: string;
   waitingRoom: boolean;
+  callIn?: CallInInfo;
+};
+
+export type CallInInfo = {
+  id: string;
+  password: string;
+  tel: string;
 };
 
 /**
@@ -100,6 +107,10 @@ export interface TimedEvent extends BaseEvent {
   isAllDay: boolean;
   startsAt: DateTime;
   endsAt: DateTime;
+}
+
+export function isTimedEvent(event: BaseEvent): event is TimedEvent {
+  return "startsAt" in event && "endsAt" in event && "isAllDay" in event;
 }
 
 /**

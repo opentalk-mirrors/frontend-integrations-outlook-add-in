@@ -15,5 +15,4 @@ const LoginPage: FC = () => {
   return <p>Redirecting to the login page. Please wait.</p>;
 };
 
-// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(<LoginPage />, rootElement);

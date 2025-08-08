@@ -16,6 +16,8 @@ import { ParticipantOption, UserRole } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
 import { OPENTALK_EVENT_ID } from "../../constants";
+import ReactDOMServer from "react-dom/server";
+import { EventBody } from "./EventBody/EventBody";
 
 const EVENT_INVITEES = 10;
 
@@ -36,24 +38,25 @@ const EventComposePage: FC = () => {
   const item = Office.context.mailbox.item;
 
   useEffect(() => {
-    Office.context.mailbox.item.loadCustomPropertiesAsync((result) => {
+    Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
       const customProps = result.value;
       setCustomProps(customProps);
       const eventId = customProps.get(OPENTALK_EVENT_ID);
       if (eventId) {
-        client.events
-          .get(eventId, { inviteesMax: EVENT_INVITEES })
-          .then((event) => {
-            setExistingEvent(event);
-            setWaitingRoomEnabled(event.room.waitingRoom);
-            setSharedFolderEnabled(!!event.sharedFolder);
-            setMeetingDetailsEnabled(event.showMeetingDetails);
-            const invitees = event.invitees.map((invite) => invite.profile);
-            setSelectedUsers(invitees);
-          })
-          .catch((error) => {
-            console.error("Issue with fetching OpenTalk event: ", error);
+        try {
+          const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
+          setExistingEvent(event);
+          setWaitingRoomEnabled(event.room.waitingRoom);
+          setSharedFolderEnabled(!!event.sharedFolder);
+          setMeetingDetailsEnabled(event.showMeetingDetails);
+          const invitees = event.invitees.map((invite) => invite.profile);
+          setSelectedUsers(invitees);
+          await setAsyncAsPromise(item.body.setAsync, event.description, {
+            coercionType: Office.CoercionType.Text,
           });
+        } catch (error) {
+          console.error("Issue with fetching OpenTalk event: ", error);
+        }
       }
       setIsLoading(false);
     });
@@ -113,21 +116,29 @@ const EventComposePage: FC = () => {
     }
   };
 
+  const createEventBody = (event: Event): string => {
+    const roomLink = new URL(
+      `/room/${event.room.id}`,
+      client?.config.opentalkOutlookWebAppUrl
+    ).toString();
+
+    // Use EmailTemplate component and serialize to string
+    return ReactDOMServer.renderToStaticMarkup(
+      <EventBody
+        event={event}
+        roomLink={roomLink}
+        senderName={Office.context.mailbox.userProfile.displayName}
+      />
+    );
+  };
+
   const createMeeting = async () => {
     try {
       const payload = (await getEventPayload()) as CreateEventPayload;
       const event = await client?.events.create(payload);
       await sendInvites(selectedUsers, event.id);
 
-      const roomLink = new URL(`/room/${event.room.id}`, client?.config.opentalkOutlookWebAppUrl);
-      await setAsyncAsPromise(item.location.setAsync, roomLink.toString());
-
-      const meetingRoom = `Meeting room: <a href="${roomLink}">${roomLink}</a>`;
-      const bodyWithLink =
-        payload.description && payload.description !== ""
-          ? `${payload.description}<br/><br/>${meetingRoom}`
-          : meetingRoom;
-      await setAsyncAsPromise(item.body.setAsync, bodyWithLink, {
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
         coercionType: Office.CoercionType.Html,
       });
 
@@ -168,6 +179,10 @@ const EventComposePage: FC = () => {
       });
 
       await sendInvites(newInvitees, event.id);
+
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
+        coercionType: Office.CoercionType.Html,
+      });
 
       item.sendAsync();
     } catch (error) {
