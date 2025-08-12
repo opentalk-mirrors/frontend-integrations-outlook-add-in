@@ -10,6 +10,8 @@ import {
   DeleteEventQueryParams,
   UpdateEventPayload,
   CreateEventInviteQueryParams,
+  CreateEventQueryParams,
+  UpdateEventQueryParams,
 } from "../../api/types/events";
 import { UserAutocomplete } from "../UserAutocomplete/UserAutocomplete";
 import { ParticipantOption, UserRole } from "../../api/types/user";
@@ -135,7 +137,8 @@ const EventComposePage: FC = () => {
   const createMeeting = async () => {
     try {
       const payload = (await getEventPayload()) as CreateEventPayload;
-      const event = await client?.events.create(payload);
+      const queryParams = { suppressEmailNotification: true } as CreateEventQueryParams;
+      const event = await client?.events.create(payload, queryParams);
       await sendInvites(selectedUsers, event.id);
 
       await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
@@ -163,7 +166,8 @@ const EventComposePage: FC = () => {
   const updateMeeting = async () => {
     try {
       const payload = (await getEventPayload()) as UpdateEventPayload;
-      const event = await client?.events.update(existingEvent.id, payload);
+      const queryParams = { suppressEmailNotification: true } as UpdateEventQueryParams;
+      const event = await client?.events.update(existingEvent.id, payload, queryParams);
       const existingInvitees = existingEvent.invitees.map((invite) => invite.profile);
       const newInvitees = differenceBy(selectedUsers, existingInvitees, "email");
 
