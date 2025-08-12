@@ -1,0 +1,118 @@
+# This repository adheres to the publiccode.yml standard by including this
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+---
+publiccodeYmlVersion: '0.2'
+name: OpenTalk Outlook Add-in
+applicationSuite: OpenTalk
+logo: logo.svg
+monochromeLogo: logo_mono.svg
+url: https://gitlab.opencode.de/opentalk/opentalk-outlook-add-in
+landingURL: https://gitlab.opencode.de/opentalk/opentalk-outlook-add-in
+roadmap: https://opentalk.eu/de/produkt/features
+releaseDate: 2025-08-08
+softwareVersion: v0.2.0
+platforms:
+  - web
+softwareType: standalone/web
+developmentStatus: stable
+usedBy:
+  - Freistaat Thüringen
+  - Land Schleswig Holstein
+categories:
+  - video-conferencing
+  - collaboration
+maintenance:
+  type: contract
+  contacts:
+    - name: OpenTalk GmbH
+      email: mail@opentalk.eu
+      phone: +49 30 405051 330
+
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: OpenTalk GmbH
+  repoOwner: OpenTalk GmbH
+intendedAudience:
+  countries:
+    - de
+    - at
+  scope:
+    - education
+    - defence
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - de
+    - en
+it:
+  conforme:
+    gdpr: true
+description:
+  en:
+    localisedName: OpenTalk
+    genericName: OpenTalk Outlook Add-in
+    documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
+    shortDescription: >-
+      The Outlook add-in for seamless OpenTalk integration directly in your calendar. Schedule
+      and manage video conferences – compliant with data protection regulations and across
+      platforms.
+    longDescription: |+
+      The OpenTalk Outlook Add-In is the professional solution for anyone who wants to schedule and manage video
+      conferences directly from their calendar.
+
+      With its modern architecture, the add-in works across platforms on Windows, macOS, and the web. Docker-based
+      deployment enables controlled integration into existing enterprise infrastructures and supports various deployment
+      methods via the Exchange Admin Center, PowerShell, or the Microsoft 365 Admin Center.
+
+      The add-in allows you to create, edit, and delete OpenTalk video conferences directly in your Outlook calendar.
+      Automatically generated participation links are inserted in both the description text and the location field,
+      allowing direct access to the video conference from the calendar overview.
+
+      As a future-proof solution, the OpenTalk Outlook Add-In is aimed at public authorities, educational institutions,
+      and companies that value GDPR-compliant video conferencing and digital sovereignty. Currently available for
+      OpenTalk On Premises.
+
+      Find out more at [https://opentalk.eu](https://opentalk.eu).
+    screenshots:
+      - public_code_assets/screenshots/screenshot1.jpg
+      - public_code_assets/screenshots/screenshot2.jpg
+      - public_code_assets/screenshots/screenshot3.jpg
+      - public_code_assets/screenshots/screenshot4.jpg
+    features:
+      - create Meetings in outlook
+      - update Meetings in outlook
+  de:
+    localisedName: OpenTalk
+    genericName: OpenTalk Outlook Add-in
+    documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
+    shortDescription: >-
+      Das Outlook Add-In für nahtlose OpenTalk-Integration direkt im Kalender.
+      Videokonferenzen planen und verwalten – datenschutzkonform und plattformübergreifend.
+    longDescription: |+
+      Das OpenTalk Outlook Add-In ist die professionelle Lösung für alle, die Videokonferenzen direkt aus ihrem Kalender
+      heraus planen und verwalten möchten.
+
+      Mit der modernen Architektur funktioniert das Add-In plattformübergreifend unter Windows, macOS und im Web. Die
+      Docker-basierte Bereitstellung ermöglicht eine kontrollierte Integration in bestehende Unternehmensinfrastrukturen
+      und unterstützt verschiedene Bereitstellungswege über das Exchange Admin Center, PowerShell oder das Microsoft 365
+      Admin Center.
+
+      Das Add-In ermöglicht das direkte Erstellen, Bearbeiten und Löschen von OpenTalk-Videokonferenzen im
+      Outlook-Kalender. Automatisch generierte Teilnahmelinks werden sowohl im Beschreibungstext als auch im
+      Standortfeld eingefügt, sodass der Zugang zur Videokonferenz direkt aus der Kalenderübersicht möglich ist.
+
+      Als zukunftssichere Lösung richtet sich das OpenTalk Outlook Add-In an Behörden, Bildungseinrichtungen und
+      Unternehmen, die Wert auf DSGVO-konforme Videokonferenzen und digitale Souveränität legen. Derzeit verfügbar für
+      OpenTalk On Premises.
+
+      Erfahren Sie mehr unter [https://opentalk.eu](https://opentalk.eu).
+    screenshots:
+      - public_code_assets/screenshots/screenshot1.jpg
+      - public_code_assets/screenshots/screenshot2.jpg
+      - public_code_assets/screenshots/screenshot3.jpg
+      - public_code_assets/screenshots/screenshot4.jpg
+    features:
+      - Erstellen von Meetings in Outlook
+      - Aktualisieren von Meetings in Outlook
