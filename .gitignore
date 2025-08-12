@@ -1,3 +1,6 @@
+### jetbrains
+.idea
+
 ### react
 .DS_*
 *.log
