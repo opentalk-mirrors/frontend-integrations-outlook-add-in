@@ -55,9 +55,7 @@ description:
     genericName: OpenTalk Outlook Add-in
     documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
     shortDescription: >-
-      The Outlook add-in for seamless OpenTalk integration directly in your calendar. Schedule
-      and manage video conferences – compliant with data protection regulations and across
-      platforms.
+      The Outlook add-in for seamless OpenTalk integration directly in your calendar.
     longDescription: |+
       The OpenTalk Outlook Add-In is the professional solution for anyone who wants to schedule and manage video
       conferences directly from their calendar.
@@ -76,10 +74,10 @@ description:
 
       Find out more at [https://opentalk.eu](https://opentalk.eu).
     screenshots:
-      - public_code_assets/screenshots/screenshot1.jpg
-      - public_code_assets/screenshots/screenshot2.jpg
-      - public_code_assets/screenshots/screenshot3.jpg
-      - public_code_assets/screenshots/screenshot4.jpg
+      - public_code_assets/screenshots/screenshot1.png
+      - public_code_assets/screenshots/screenshot2.png
+      - public_code_assets/screenshots/screenshot3.png
+      - public_code_assets/screenshots/screenshot4.png
     features:
       - create Meetings in outlook
       - update Meetings in outlook
@@ -88,8 +86,8 @@ description:
     genericName: OpenTalk Outlook Add-in
     documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
     shortDescription: >-
-      Das Outlook Add-In für nahtlose OpenTalk-Integration direkt im Kalender.
-      Videokonferenzen planen und verwalten – datenschutzkonform und plattformübergreifend.
+      Das Outlook Add-In für nahtlose OpenTalk-Integration direkt im Kalender. Videokonferenzen datenschutzkonform und
+      plattformübergreifend.
     longDescription: |+
       Das OpenTalk Outlook Add-In ist die professionelle Lösung für alle, die Videokonferenzen direkt aus ihrem Kalender
       heraus planen und verwalten möchten.
@@ -109,10 +107,10 @@ description:
 
       Erfahren Sie mehr unter [https://opentalk.eu](https://opentalk.eu).
     screenshots:
-      - public_code_assets/screenshots/screenshot1.jpg
-      - public_code_assets/screenshots/screenshot2.jpg
-      - public_code_assets/screenshots/screenshot3.jpg
-      - public_code_assets/screenshots/screenshot4.jpg
+      - public_code_assets/screenshots/screenshot1.png
+      - public_code_assets/screenshots/screenshot2.png
+      - public_code_assets/screenshots/screenshot3.png
+      - public_code_assets/screenshots/screenshot4.png
     features:
       - Erstellen von Meetings in Outlook
       - Aktualisieren von Meetings in Outlook
