@@ -29,7 +29,6 @@ maintenance:
     - name: OpenTalk GmbH
       email: mail@opentalk.eu
       phone: +49 30 405051 330
-
 legal:
   license: EUPL-1.2
   mainCopyrightOwner: OpenTalk GmbH
@@ -56,7 +55,7 @@ description:
     documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
     shortDescription: >-
       The Outlook add-in for seamless OpenTalk integration directly in your calendar.
-    longDescription: |+
+    longDescription: |
       The OpenTalk Outlook Add-In is the professional solution for anyone who wants to schedule and manage video
       conferences directly from their calendar.
 
@@ -85,10 +84,10 @@ description:
     localisedName: OpenTalk
     genericName: OpenTalk Outlook Add-in
     documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
-    shortDescription: >-
-      Das Outlook Add-In für nahtlose OpenTalk-Integration direkt im Kalender. Videokonferenzen datenschutzkonform und
-      plattformübergreifend.
-    longDescription: |+
+    shortDescription: >
+      Das Outlook Add-In für nahtlose OpenTalk-Integration direkt im Kalender.
+      Videokonferenzen datenschutzkonform und plattformübergreifend.
+    longDescription: |
       Das OpenTalk Outlook Add-In ist die professionelle Lösung für alle, die Videokonferenzen direkt aus ihrem Kalender
       heraus planen und verwalten möchten.
 
