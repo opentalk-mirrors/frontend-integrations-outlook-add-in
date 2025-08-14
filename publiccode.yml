@@ -76,7 +76,7 @@ description:
     screenshots:
       - public_code_assets/screenshots/screenshot1.png
       - public_code_assets/screenshots/screenshot2.png
-      - public_code_assets/screenshots/screenshot3.png
+      - public_code_assets/screenshots/screenshot3.jpg
       - public_code_assets/screenshots/screenshot4.png
     features:
       - create Meetings in outlook
@@ -109,7 +109,7 @@ description:
     screenshots:
       - public_code_assets/screenshots/screenshot1.png
       - public_code_assets/screenshots/screenshot2.png
-      - public_code_assets/screenshots/screenshot3.png
+      - public_code_assets/screenshots/screenshot3.jpg
       - public_code_assets/screenshots/screenshot4.png
     features:
       - Erstellen von Meetings in Outlook
