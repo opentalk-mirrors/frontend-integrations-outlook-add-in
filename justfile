@@ -23,7 +23,7 @@ _check_git_cliff:
     fi
 
 # Prepare a release
-prepare-release VERSION: (set-version VERSION) (update-changelog VERSION)
+prepare-release VERSION: (set-version VERSION) (update-changelog VERSION) (update-public-code VERSION)
 
 # Sets the version in the Cargo.toml and updates the Cargo.lock
 set-version VERSION:
@@ -40,6 +40,16 @@ update-changelog VERSION: _check_git_cliff
         --unreleased \
         --tag "v{{ VERSION }}" \
         --prepend CHANGELOG.md
+
+update-public-code VERSION:
+    #!/usr/bin/env bash
+    set -eu -o pipefail
+    # Update publiccode.yml
+    date=$(date --iso-8601)
+    # go-yq does not support preserving the format (see https://github.com/mikefarah/yq/issues/465)
+    # so we have to use sed.
+    sed -E -i "s/releaseDate: '[0-9]{4}-[0-9]{2}-[0-9]{2}'/releaseDate: '$date'/" publiccode.yml
+    sed -E -i "s/softwareVersion: v[0-9]+\.[0-9]+\.[0-9]+/softwareVersion: v{{ VERSION }}/" publiccode.yml
 
 # Create the release commit
 commit-release: _check_jq
