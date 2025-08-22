@@ -17,7 +17,7 @@ import { UserAutocomplete } from "../UserAutocomplete/UserAutocomplete";
 import { ParticipantOption, UserRole } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import UserListItem from "../UserAutocomplete/fragments/UserListItem";
-import { OPENTALK_EVENT_ID } from "../../constants";
+import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
 
@@ -35,6 +35,7 @@ const EventComposePage: FC = () => {
   const [customProps, setCustomProps] = useState<Office.CustomProperties>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [existingEvent, setExistingEvent] = useState<Event | undefined>();
+  const [inviteCode, setInviteCode] = useState<string | undefined>();
   const [disableButtons, setDisableButtons] = useState(false);
 
   const item = Office.context.mailbox.item;
@@ -44,6 +45,8 @@ const EventComposePage: FC = () => {
       const customProps = result.value;
       setCustomProps(customProps);
       const eventId = customProps.get(OPENTALK_EVENT_ID);
+      const inviteCode = customProps.get(OPENTALK_INVITE_CODE);
+      setInviteCode(inviteCode);
       if (eventId) {
         try {
           const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
@@ -118,17 +121,24 @@ const EventComposePage: FC = () => {
     }
   };
 
-  const createEventBody = (event: Event): string => {
+  const createEventBody = (event: Event, inviteCode?: string): string => {
     const roomLink = new URL(
       `/room/${event.room.id}`,
       client?.config.opentalkOutlookWebAppUrl
     ).toString();
+    const guestLink = inviteCode
+      ? new URL(
+          `/room/${event.room.id}?invite=${inviteCode}`,
+          client?.config.opentalkOutlookWebAppUrl
+        ).toString()
+      : null;
 
     // Use EmailTemplate component and serialize to string
     return ReactDOMServer.renderToStaticMarkup(
       <EventBody
         event={event}
         roomLink={roomLink}
+        guestLink={guestLink}
         senderName={Office.context.mailbox.userProfile.displayName}
       />
     );
@@ -140,8 +150,9 @@ const EventComposePage: FC = () => {
       const queryParams = { suppressEmailNotification: true } as CreateEventQueryParams;
       const event = await client?.events.create(payload, queryParams);
       await sendInvites(selectedUsers, event.id);
+      const guestInvite = await client?.rooms.createInvitation(event.room.id, {});
 
-      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event, guestInvite?.inviteCode), {
         coercionType: Office.CoercionType.Html,
       });
 
@@ -149,6 +160,9 @@ const EventComposePage: FC = () => {
       // the event edit page.
       const customProps = await callbackAsPromise(item.loadCustomPropertiesAsync);
       customProps.set(OPENTALK_EVENT_ID, event.id);
+      if (guestInvite?.inviteCode) {
+        customProps.set(OPENTALK_INVITE_CODE, guestInvite?.inviteCode);
+      }
       // Calling saveAsync with callBackAsPromise does throw an error
       customProps.saveAsync((result) => {
         if (result.status === Office.AsyncResultStatus.Succeeded) {
@@ -184,7 +198,7 @@ const EventComposePage: FC = () => {
 
       await sendInvites(newInvitees, event.id);
 
-      await setAsyncAsPromise(item.body.setAsync, createEventBody(event), {
+      await setAsyncAsPromise(item.body.setAsync, createEventBody(event, inviteCode), {
         coercionType: Office.CoercionType.Html,
       });
 

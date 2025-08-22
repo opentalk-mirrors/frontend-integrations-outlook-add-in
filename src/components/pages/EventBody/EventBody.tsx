@@ -11,9 +11,10 @@ interface EventBodyProps {
   event: Event;
   roomLink: string;
   senderName: string;
+  guestLink?: string;
 }
 
-export const EventBody: FC<EventBodyProps> = ({ event, roomLink, senderName }) => {
+export const EventBody: FC<EventBodyProps> = ({ event, roomLink, guestLink, senderName }) => {
   return (
     <Box
       style={{
@@ -23,7 +24,7 @@ export const EventBody: FC<EventBodyProps> = ({ event, roomLink, senderName }) =
       }}
     >
       <Header title={event.title} senderName={senderName} />
-      <MeetingInformation event={event} roomLink={roomLink} />
+      <MeetingInformation event={event} roomLink={roomLink} guestLink={guestLink} />
       {event.room.callIn && <PhoneParticipation {...event.room.callIn} />}
       <Footer roomLink={roomLink} />
     </Box>
