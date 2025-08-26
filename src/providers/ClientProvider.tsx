@@ -5,10 +5,12 @@ import { Tariff } from "../api/types/tariff";
 import { EventsAPI } from "../api/Events";
 import { UsersAPI } from "../api/Users";
 import { AuthAPI } from "../api/Auth";
+import { RoomsAPI } from "../api/Rooms";
 
 interface APIClient {
   auth: AuthAPI;
   events: EventsAPI;
+  rooms: RoomsAPI;
   users: UsersAPI;
   config: Config;
 }
@@ -41,7 +43,14 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
         const authAPI = new AuthAPI(client);
         const eventsAPI = new EventsAPI(client);
         const usersAPI = new UsersAPI(client);
-        setClient({ auth: authAPI, events: eventsAPI, users: usersAPI, config: client.config });
+        const roomsAPI = new RoomsAPI(client);
+        setClient({
+          auth: authAPI,
+          events: eventsAPI,
+          users: usersAPI,
+          rooms: roomsAPI,
+          config: client.config,
+        });
         usersAPI.getTariff().then((response) => {
           setTariff(response);
         });

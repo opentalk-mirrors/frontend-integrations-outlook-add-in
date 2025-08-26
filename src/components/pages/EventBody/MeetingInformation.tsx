@@ -7,9 +7,10 @@ import { Link } from "./Link";
 interface MeetingInformationProps {
   event: Event;
   roomLink: string;
+  guestLink?: string;
 }
 
-export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLink }) => {
+export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLink, guestLink }) => {
   return (
     <Box style={{ margin: "20px 0" }}>
       <Caption>Meeting Information</Caption>
@@ -46,6 +47,12 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLin
       <strong>Link to Meeting:</strong>{" "}
       <Link href={roomLink}>Open the conference room in new tab/window</Link>
       <br />
+      {guestLink && (
+        <>
+          <strong>Guest Link:</strong> <Link href={guestLink}>{guestLink}</Link>
+          <br />
+        </>
+      )}
     </Box>
   );
 };
