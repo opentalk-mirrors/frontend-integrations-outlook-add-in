@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Stack, Button, List, Typography, Box } from "@mui/material";
+import { Stack, Button, Typography, Box } from "@mui/material";
 import { differenceBy } from "lodash";
 
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
@@ -13,10 +13,8 @@ import {
   CreateEventQueryParams,
   UpdateEventQueryParams,
 } from "../../api/types/events";
-import { UserAutocomplete } from "../UserAutocomplete/UserAutocomplete";
-import { ParticipantOption, UserRole } from "../../api/types/user";
+import { EmailUser } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
-import UserListItem from "../UserAutocomplete/fragments/UserListItem";
 import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
@@ -30,7 +28,6 @@ const EventComposePage: FC = () => {
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
-  const [selectedUsers, setSelectedUsers] = useState<Array<ParticipantOption>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [customProps, setCustomProps] = useState<Office.CustomProperties>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -54,8 +51,6 @@ const EventComposePage: FC = () => {
           setWaitingRoomEnabled(event.room.waitingRoom);
           setSharedFolderEnabled(!!event.sharedFolder);
           setMeetingDetailsEnabled(event.showMeetingDetails);
-          const invitees = event.invitees.map((invite) => invite.profile);
-          setSelectedUsers(invitees);
           await setAsyncAsPromise(item.body.setAsync, event.description, {
             coercionType: Office.CoercionType.Text,
           });
@@ -66,13 +61,6 @@ const EventComposePage: FC = () => {
       setIsLoading(false);
     });
   }, []);
-
-  const handleUserSelect = (user: ParticipantOption) => {
-    setSelectedUsers((value) => [...value, user]);
-  };
-  const handleRemoveUser = (user: ParticipantOption) => {
-    setSelectedUsers((value) => value.filter((selectedUser) => selectedUser.email !== user.email));
-  };
 
   const getEventPayload = async (): Promise<CreateEventPayload | UpdateEventPayload> => {
     const title = await callbackAsPromise<string>(item.subject.getAsync);
@@ -106,19 +94,24 @@ const EventComposePage: FC = () => {
     };
   };
 
-  const sendInvites = async (userList: Array<ParticipantOption>, eventId: string) => {
+  const getInvitees = async (): Promise<Array<EmailUser>> => {
+    const requiredAttendees = await callbackAsPromise<Office.EmailAddressDetails[]>(
+      item.requiredAttendees.getAsync
+    );
+    const invitees: Array<EmailUser> = requiredAttendees.map((requiredAttendee) => ({
+      email: requiredAttendee.emailAddress,
+    }));
+    return invitees;
+  };
+
+  const sendInvites = async (userList: Array<EmailUser>, eventId: string) => {
     const invitePromises = userList.map(async (user) => {
-      const invitee =
-        "id" in user ? { invitee: user.id, role: UserRole.User } : { email: user.email };
+      const invitee = { email: user.email };
       const params: CreateEventInviteQueryParams = { suppressEmailNotification: true };
       return client?.events.createInvitation(eventId, invitee, params);
     });
 
     await Promise.all(invitePromises);
-    const attendeesEmailList = selectedUsers.map((user) => user.email);
-    if (attendeesEmailList.length > 0) {
-      await setAsyncAsPromise(item.requiredAttendees.setAsync, attendeesEmailList);
-    }
   };
 
   const createEventBody = (event: Event, inviteCode?: string): string => {
@@ -149,9 +142,13 @@ const EventComposePage: FC = () => {
       const payload = (await getEventPayload()) as CreateEventPayload;
       const queryParams = { suppressEmailNotification: true } as CreateEventQueryParams;
       const event = await client?.events.create(payload, queryParams);
-      await sendInvites(selectedUsers, event.id);
-      const guestInvite = await client?.rooms.createInvitation(event.room.id, {});
 
+      // Invite guests
+      const invitees = await getInvitees();
+      await sendInvites(invitees, event.id);
+
+      // Create an invite link
+      const guestInvite = await client?.rooms.createInvitation(event.room.id, {});
       await setAsyncAsPromise(item.body.setAsync, createEventBody(event, guestInvite?.inviteCode), {
         coercionType: Office.CoercionType.Html,
       });
@@ -182,11 +179,12 @@ const EventComposePage: FC = () => {
       const payload = (await getEventPayload()) as UpdateEventPayload;
       const queryParams = { suppressEmailNotification: true } as UpdateEventQueryParams;
       const event = await client?.events.update(existingEvent.id, payload, queryParams);
-      const existingInvitees = existingEvent.invitees.map((invite) => invite.profile);
-      const newInvitees = differenceBy(selectedUsers, existingInvitees, "email");
+      const originalInvitees = existingEvent.invitees.map((invite) => invite.profile);
+      const updatedInvitees = await getInvitees();
+      const addedInvitees = differenceBy(updatedInvitees, originalInvitees, "email");
 
-      existingInvitees.forEach(async (invitee) => {
-        const isUserStillSelected = selectedUsers.some((user) => user.email === invitee.email);
+      originalInvitees.forEach(async (invitee) => {
+        const isUserStillSelected = updatedInvitees.some((user) => user.email === invitee.email);
         if (!isUserStillSelected) {
           await client?.events.deleteInvitation(
             existingEvent.id,
@@ -196,7 +194,7 @@ const EventComposePage: FC = () => {
         }
       });
 
-      await sendInvites(newInvitees, event.id);
+      await sendInvites(addedInvitees, event.id);
 
       await setAsyncAsPromise(item.body.setAsync, createEventBody(event, inviteCode), {
         coercionType: Office.CoercionType.Html,
@@ -276,29 +274,6 @@ const EventComposePage: FC = () => {
         flag={meetingDetailsEnabled}
         setFlag={setMeetingDetailsEnabled}
       />
-      <Stack>
-        <UserAutocomplete selectedUsers={selectedUsers} onUserSelect={handleUserSelect} />
-
-        {selectedUsers.length > 0 && (
-          <List sx={{ marginTop: 2, dispay: "flex" }}>
-            {selectedUsers.map((user) => (
-              <UserListItem
-                key={user.email}
-                option={user}
-                action={
-                  <Button
-                    onClick={() => handleRemoveUser(user)}
-                    variant="outlined"
-                    color="secondary"
-                  >
-                    Remove
-                  </Button>
-                }
-              />
-            ))}
-          </List>
-        )}
-      </Stack>
       <Stack display="flex" direction="row-reverse" sx={{ marginTop: 1 }} spacing={1}>
         <Button sx={{ flex: 1, maxWidth: "50%" }} onClick={handleSave} disabled={disableButtons}>
           {existingEvent ? "Update" : "Create"}
