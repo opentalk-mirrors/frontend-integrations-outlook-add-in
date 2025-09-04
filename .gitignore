@@ -31,6 +31,5 @@ sketch
 # Built Visual Studio Code Extensions
 *.vsix
 
-.env
 # Webpack bulid output
 dist
