@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2025-09-08
+
+[0.2.2]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.1...v0.2.2
+
+### 🚀 New features
+
+- Create guest link when creating an event ([!128](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/128))
+- Get invitees from the outlook native invite atendees field ([!129](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/129))
+
+### 🐛 Bug fixes
+
+- Missing quotes for releaseDate ([!123](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/123))
+- Screenshot for opencode ([!124](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/124))
+
+### ⚙ Miscellaneous
+
+- Add instructions for installing dev cert ([!127](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/127))
+- Format publiccode.yml ([!125](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/125))
+- (justfile) Update publiccode.yml when preparing a release ([!125](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/125))
+
 ## [0.2.1] - 2025-08-14
 
 [0.2.1]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.0...v0.2.1
