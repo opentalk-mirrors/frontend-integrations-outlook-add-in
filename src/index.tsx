@@ -7,18 +7,24 @@ import "./index.css";
 import App from "./App";
 import ClientProvider from "./providers/ClientProvider";
 import { createOpenTalkTheme } from "./themes/opentalk";
+import "./i18n";
+import { Suspense } from "react";
+
+import { t } from "i18next";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
 
 /* Render application after Office initializes */
 Office.onReady(() => {
   ReactDOM.render(
-    <ClientProvider>
-      <ThemeProvider theme={createOpenTalkTheme()}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </ClientProvider>,
+    <Suspense fallback={<h2>{t("loading")}</h2>}>
+      <ClientProvider>
+        <ThemeProvider theme={createOpenTalkTheme()}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </ClientProvider>
+    </Suspense>,
     rootElement
   );
 });

@@ -1,0 +1,8 @@
+{
+  "waiting-room-switch": "Warteraum",
+  "meeting-details-switch": "Meetingdetails anzeigen",
+  "shared-folder-switch": "Geteilter Ordner",
+
+  "outlook-meeting-cancel-success": "Meeting erfolgreich abgesagt",
+  "outlook-meeting-cancel-note": "Sie müssen es manuell in Outlook absagen."
+}

@@ -3,6 +3,7 @@ import { FC } from "react";
 import { Event, isTimedEvent } from "../../../api/types/events";
 import { Caption } from "./Caption";
 import { Link } from "./Link";
+import { useTranslation } from "react-i18next";
 
 interface MeetingInformationProps {
   event: Event;
@@ -11,20 +12,21 @@ interface MeetingInformationProps {
 }
 
 export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLink, guestLink }) => {
+  const { t } = useTranslation();
   return (
     <Box style={{ margin: "20px 0" }}>
-      <Caption>Meeting Information</Caption>
-      <strong>Title:</strong> {event.title}
+      <Caption>{t("meeting-information")}</Caption>
+      <strong>{t("title")}:</strong> {event.title}
       <br />
       {event.description !== "" && (
         <>
-          <strong>Description:</strong> {event.description}
+          <strong>{t("description")}:</strong> {event.description}
           <br />
         </>
       )}
       {isTimedEvent(event) && (
         <>
-          <strong>Time:</strong>{" "}
+          <strong>{t("time")}:</strong>{" "}
           {`${new Date(event.startsAt.datetime).toLocaleString(undefined, {
             day: "2-digit",
             month: "2-digit",
@@ -40,16 +42,16 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLin
       )}
       {event.room.password && (
         <>
-          <strong>Password:</strong> {event.room.password}
+          <strong>{t("password")}:</strong> {event.room.password}
           <br />
         </>
       )}
-      <strong>Link to Meeting:</strong>{" "}
-      <Link href={roomLink}>Open the conference room in new tab/window</Link>
+      <strong>{t("meeting-link")}:</strong>{" "}
+      <Link href={roomLink}>{t("meeting-link-msg", { ns: "invitation" })}</Link>
       <br />
       {guestLink && (
         <>
-          <strong>Guest Link:</strong> <Link href={guestLink}>{guestLink}</Link>
+          <strong>{t("guest-link")}:</strong> <Link href={guestLink}>{guestLink}</Link>
           <br />
         </>
       )}

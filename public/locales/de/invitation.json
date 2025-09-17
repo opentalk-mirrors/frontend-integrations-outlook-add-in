@@ -1,0 +1,6 @@
+{
+  "title": "Einladung zum OpenTalk-Meeting - {{title}}",
+  "invitor": "{{name}} lädt Sie zu einem OpenTalk-Meeting ein.",
+  "join-meeting-hint": "Sollten die Buttons oder Links nicht funktionieren, können Sie die folgenden URLs in ihrem Browser eingeben:",
+  "quick-guide-hint": "Neu bei OpenTalk? Eine Kurzanleitung finden Sie hier:"
+}

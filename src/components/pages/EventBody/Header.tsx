@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { FC } from "react";
 import { COLORS } from "./constants";
+import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
   title: string;
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ title, senderName }) => {
+  const { t } = useTranslation();
   return (
     <Box
       style={{
@@ -16,9 +18,9 @@ export const Header: FC<HeaderProps> = ({ title, senderName }) => {
       }}
     >
       <Typography component="h1" style={{ fontSize: "24px", margin: "10px 0" }}>
-        OpenTalk Meeting Invitation - {title}
+        {t("title", { ns: "invitation", title })}
       </Typography>
-      <p>{senderName} invites you to an OpenTalk Meeting.</p>
+      <p>{t("invitor", { ns: "invitation", name: senderName })}</p>
     </Box>
   );
 };
