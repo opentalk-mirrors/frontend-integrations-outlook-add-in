@@ -33,3 +33,10 @@ sketch
 
 # Webpack bulid output
 dist
+
+# SSL certificates
+*.crt
+*.key
+
+# Caddy
+.Caddyfile

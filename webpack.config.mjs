@@ -83,6 +83,10 @@ export default async (env, options) => {
             from: "manifest*.xml",
             to: "[name]" + "[ext]",
           },
+          {
+            from: "public/locales",
+            to: "locales",
+          },
         ],
       }),
       new webpack.DefinePlugin({

@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import HttpApi from "i18next-http-backend";
 
-const FALLBACK_LNG = "en";
+export const FALLBACK_LNG = "en";
 
 i18n
   .use(HttpApi)
@@ -14,7 +14,8 @@ i18n
     defaultNS: "common",
     // Currently there are no specific requirements for language detection or switching
     // Therefore we set the language based on the user's Office display language
-    lng: Office.context.displayLanguage || FALLBACK_LNG,
+    // Refer to setLanguageOnOfficeReady function below
+    lng: FALLBACK_LNG,
     supportedLngs: ["en", "de"],
     fallbackLng: FALLBACK_LNG,
     load: "languageOnly",
@@ -25,5 +26,9 @@ i18n
       loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
   });
+
+// IMPORTANT: Call this function after Office is ready
+export const setLanguageOnOfficeReady = () =>
+  i18n.changeLanguage(Office.context.displayLanguage || FALLBACK_LNG);
 
 export default i18n;
