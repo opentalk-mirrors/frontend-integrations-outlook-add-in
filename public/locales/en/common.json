@@ -1,0 +1,15 @@
+{
+  "create": "Create",
+  "update": "Update",
+  "loading": "Loading...",
+  "important": "Important",
+
+  "title": "Title",
+  "description": "Description",
+  "time": "Time",
+  "password": "Password",
+
+  "meeting-link": "Link to meeting",
+  "guest-link": "Guest link",
+  "meeting-information": "Meeting information"
+}

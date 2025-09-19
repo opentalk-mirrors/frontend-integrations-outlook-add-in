@@ -1,0 +1,8 @@
+{
+  "waiting-room-switch": "Waiting room",
+  "meeting-details-switch": "Show meeting details",
+  "shared-folder-switch": "Shared folder",
+
+  "outlook-meeting-cancel-success": "Meeting successfully cancelled.",
+  "outlook-meeting-cancel-note": "You will have to manually cancel it in Outlook."
+}

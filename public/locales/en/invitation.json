@@ -1,0 +1,7 @@
+{
+  "title": "OpenTalk Meeting Invitation - {{title}}",
+  "invitor": "{{name}} invites you to an OpenTalk Meeting.",
+  "meeting-link-msg": "Open the conference room in new tab/window",
+  "join-meeting-hint": "If the buttons or links don't work open your browser and type in the following links:",
+  "quick-guide-hint": "New to OpenTalk? Read our quick guide here:"
+}

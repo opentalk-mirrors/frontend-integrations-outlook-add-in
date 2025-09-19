@@ -18,6 +18,7 @@ import { FormSwitch } from "../FormSwitch/FormSwitch";
 import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
+import { useTranslation } from "react-i18next";
 
 const EVENT_INVITEES = 10;
 
@@ -36,6 +37,8 @@ const EventComposePage: FC = () => {
   const [disableButtons, setDisableButtons] = useState(false);
 
   const item = Office.context.mailbox.item;
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
@@ -242,17 +245,17 @@ const EventComposePage: FC = () => {
   };
 
   if (isLoading) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t("loading")}</Typography>;
   }
 
   if (showDisclaimer) {
     return (
       <Stack>
-        <Typography>Meeting successfully cancelled.</Typography>
+        <Typography>{t("outlook-meeting-cancel-success", { ns: "dashboard" })}</Typography>
         <Typography component="div">
-          <Box sx={{ fontWeight: "bold", display: "inline" }}>Important</Box>
+          <Box sx={{ fontWeight: "bold", display: "inline" }}>{t("important")}</Box>
           <Box sx={{ fontWeight: "regular", display: "inline" }}>
-            : You will have to manually cancel it in Outlook.
+            : {t("outlook-meeting-cancel-note", { ns: "dashboard" })}
           </Box>
         </Typography>
       </Stack>
@@ -261,22 +264,26 @@ const EventComposePage: FC = () => {
 
   return (
     <>
-      <FormSwitch label="Waiting Room" flag={waitingRoomEnabled} setFlag={setWaitingRoomEnabled} />
+      <FormSwitch
+        label={t("waiting-room-switch", { ns: "dashboard" })}
+        flag={waitingRoomEnabled}
+        setFlag={setWaitingRoomEnabled}
+      />
       {isSharedFolderAvailable && (
         <FormSwitch
-          label="Shared folder"
+          label={t("shared-folder-switch", { ns: "dashboard" })}
           flag={sharedFolderEnabled}
           setFlag={setSharedFolderEnabled}
         />
       )}
       <FormSwitch
-        label="Show meeting details"
+        label={t("meeting-details-switch", { ns: "dashboard" })}
         flag={meetingDetailsEnabled}
         setFlag={setMeetingDetailsEnabled}
       />
       <Stack display="flex" direction="row-reverse" sx={{ marginTop: 1 }} spacing={1}>
         <Button sx={{ flex: 1, maxWidth: "50%" }} onClick={handleSave} disabled={disableButtons}>
-          {existingEvent ? "Update" : "Create"}
+          {existingEvent ? t("update") : t("create")}
         </Button>
         {existingEvent && (
           <Button sx={{ flex: 1 }} color="error" onClick={handleCancel} disabled={disableButtons}>

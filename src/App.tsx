@@ -3,6 +3,7 @@ import EventComposePage from "./components/pages/EventComposePage";
 import { useClientContext } from "./providers/ClientProvider";
 import { ErrorSeverity } from "./api/types/client";
 import { Stack, styled, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const Container = styled(Stack)(({ theme }) => ({
   minHeight: "100vh",
@@ -13,11 +14,12 @@ const Container = styled(Stack)(({ theme }) => ({
 }));
 
 const App: FC = () => {
+  const { t } = useTranslation();
   const { client, isLoading, error } = useClientContext();
 
   const PageContent = () => {
     if (isLoading) {
-      return <Typography>Loading...</Typography>;
+      return <Typography>{t("loading")}</Typography>;
     }
 
     if (error && error.severity === ErrorSeverity.Fatal) {
@@ -25,7 +27,7 @@ const App: FC = () => {
     }
 
     if (!client?.auth.isAuthenticated()) {
-      return <Typography color="error">Authentication failed</Typography>;
+      return <Typography color="error">{(t("auth"), { ns: "errors" })}</Typography>;
     }
 
     return <EventComposePage />;

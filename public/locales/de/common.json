@@ -1,0 +1,15 @@
+{
+  "create": "Erstellen",
+  "update": "Bearbeiten",
+  "loading": "Wird geladen...",
+  "important": "Wichtig",
+
+  "title": "Titel",
+  "description": "Beschreibung",
+  "time": "Uhrzeit",
+  "password": "Passwort",
+  "meeting-link": "Link zum Meeting",
+  "guest-link": "Gastlink",
+
+  "meeting-information": "Informationen zum Meeting"
+}
