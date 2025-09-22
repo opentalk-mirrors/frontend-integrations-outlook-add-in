@@ -7,17 +7,17 @@ import "./index.css";
 import App from "./App";
 import ClientProvider from "./providers/ClientProvider";
 import { createOpenTalkTheme } from "./themes/opentalk";
-import "./i18n";
 import { Suspense } from "react";
 
-import { t } from "i18next";
+import { setLanguageOnOfficeReady } from "./i18n";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
 
 /* Render application after Office initializes */
 Office.onReady(() => {
+  setLanguageOnOfficeReady();
   ReactDOM.render(
-    <Suspense fallback={<h2>{t("loading")}</h2>}>
+    <Suspense fallback={<h2>Loading...</h2>}>
       <ClientProvider>
         <ThemeProvider theme={createOpenTalkTheme()}>
           <CssBaseline />

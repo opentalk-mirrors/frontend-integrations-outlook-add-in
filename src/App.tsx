@@ -27,7 +27,7 @@ const App: FC = () => {
     }
 
     if (!client?.auth.isAuthenticated()) {
-      return <Typography color="error">{(t("auth"), { ns: "errors" })}</Typography>;
+      return <Typography color="error">{t("auth", { ns: "errors" })}</Typography>;
     }
 
     return <EventComposePage />;

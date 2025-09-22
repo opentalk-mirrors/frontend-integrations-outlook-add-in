@@ -38,3 +38,38 @@ In case your browser refuses to accept the certificate after installing it as de
 GUI: Settings → Privacy & Security → Certificates → View Certificates → Authorities → Import → select ~/.office-addin-dev-certs/ca.crt → trust for websites → OK → restart Firefox
 
 2. Restart Firefox
+
+## Test production version
+
+First build the docker container from the root
+`docker build -t opentalk-outlook-addin -f ci/Dockerfile .`
+
+In dev mode, the SSL certificates are being served by the dev server.
+Now, as you are going to run the production version, you need to serve those certificates somehow different.
+
+One possibility is to do it, is using [`caddy`](https://caddyserver.com/) as reverse proxy
+
+As a prerequisite install `caddy` on your system
+
+1. Start add-in container on some port, other than `localhost:3001`
+
+`docker run --rm -e OPENTALK_OUTLOOK_WEBAPP_URL=http://localhost:3000 -p {addin_port}:80 opentalk-outlook-addin`
+
+1. Copy SSL cerificates, that were created during development and were imported to your browser, to some known directory
+
+1. Create a `Caddyfile` in the root and adapt the path to the certificates and proxy port
+
+```caddy
+{
+  admin 0.0.0.0:2020
+  auto_https off
+}
+
+:3001
+tls {path_to_certificate}/localhost.crt {path_to_certificate}/localhost.key
+reverse_proxy localhost:{addin_port}
+```
+
+1. Start `caddy`
+
+`caddy run --config ./Caddyfile`
