@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2025-09-23
+
+[0.2.5]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.4...v0.2.5
+
+### 🐛 Bug fixes
+
+- Use relative path ([!135](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/135))
+
 ## [0.2.4] - 2025-09-22
 
 [0.2.4]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.3...v0.2.4
