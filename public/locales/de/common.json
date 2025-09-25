@@ -8,8 +8,13 @@
   "description": "Beschreibung",
   "time": "Uhrzeit",
   "password": "Passwort",
+
   "meeting-link": "Link zum Meeting",
   "guest-link": "Gastlink",
+  "meeting-information": "Informationen zum Meeting",
 
-  "meeting-information": "Informationen zum Meeting"
+  "call-in-number": "Telefonnummer",
+  "call-in-conference-id": "Konferenz-ID",
+  "call-in-conference-pin": "Konferenz-PIN",
+  "call-in-quick-dial": "Schnelleinwahl"
 }

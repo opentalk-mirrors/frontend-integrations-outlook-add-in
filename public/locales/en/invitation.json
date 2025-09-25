@@ -3,5 +3,8 @@
   "invitor": "{{name}} invites you to an OpenTalk Meeting.",
   "meeting-link-msg": "Open the conference room in new tab/window",
   "join-meeting-hint": "If the buttons or links don't work open your browser and type in the following links:",
-  "quick-guide-hint": "New to OpenTalk? Read our quick guide here:"
+  "quick-guide-hint": "New to OpenTalk? Read our quick guide here:",
+  "call-in-section-title": "Participate via Phone",
+  "call-in-paragraph-title": "You can use your phone to participate in this meeting.",
+  "call-in-paragraph-content": "Just dial in the following number and enter the given conference ID and conference PIN, or click the Quick-Dial number on your phone."
 }

@@ -2,5 +2,8 @@
   "title": "Einladung zum OpenTalk-Meeting - {{title}}",
   "invitor": "{{name}} lädt Sie zu einem OpenTalk-Meeting ein.",
   "join-meeting-hint": "Sollten die Buttons oder Links nicht funktionieren, können Sie die folgenden URLs in ihrem Browser eingeben:",
-  "quick-guide-hint": "Neu bei OpenTalk? Eine Kurzanleitung finden Sie hier:"
+  "quick-guide-hint": "Neu bei OpenTalk? Eine Kurzanleitung finden Sie hier:",
+  "call-in-section-title": "Beitritt via Telefon",
+  "call-in-paragraph-title": "Sie können Ihr Telefon verwenden um diesem Meeting beizutreten.",
+  "call-in-paragraph-content": "Einfach die unten angegebene Nummer wählen und Konferenzkennung sowie Konferenz-PIN angeben. Alternativ direkt mit dem Mobiltelefon auf die Schnelleinwahl klicken und direkt loslegen."
 }
