@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2025-09-25
+
+[0.2.6]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.5...v0.2.6
+
+### 🐛 Bug fixes
+
+- Missing call-in translation ([!140](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/140))
+
+### 📦 Dependencies
+
+- (deps) Update dependency webpack-dev-server to v5.2.2 ([!105](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/105))
+- (deps) Update node.js to v22.20.0 ([!109](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/109))
+- (deps) Update pnpm to v10.17.1 ([!89](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/89))
+
 ## [0.2.5] - 2025-09-23
 
 [0.2.5]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.4...v0.2.5
