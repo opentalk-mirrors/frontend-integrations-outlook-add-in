@@ -11,5 +11,10 @@
 
   "meeting-link": "Link to meeting",
   "guest-link": "Guest link",
-  "meeting-information": "Meeting information"
+  "meeting-information": "Meeting information",
+
+  "call-in-number": "Number",
+  "call-in-conference-id": "Conference-ID",
+  "call-in-conference-pin": "Conference-PIN",
+  "call-in-quick-dial": "Quick-Dial"
 }
