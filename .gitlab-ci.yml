@@ -8,7 +8,7 @@ stages:
   - package
 
 variables:
-  KANIKO_IMAGE: gcr.io/kaniko-project/executor:debug
+  KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.2
   SKOPEO_IMAGE: quay.io/skopeo/stable:v1
 
 .setup-pnpm: &setup-pnpm
@@ -124,6 +124,7 @@ package:container-addin-mr:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   image:
     name: $KANIKO_IMAGE
+    pull_policy: if-not-present
     entrypoint: ['']
   script:
     - mkdir -p /kaniko/.docker
@@ -163,6 +164,7 @@ package:addin-container-build:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   image:
     name: $KANIKO_IMAGE
+    pull_policy: if-not-present
     entrypoint: ['']
   script:
     - mkdir -p /kaniko/.docker
