@@ -19,6 +19,7 @@ RUN pnpm --allow-build=core-js build
 FROM nginxinc/nginx-unprivileged:alpine-slim
 
 USER root
+RUN apk --no-cache update && apk --no-cache upgrade
 
 COPY --from=builder /addin/dist /usr/share/nginx/html
 
