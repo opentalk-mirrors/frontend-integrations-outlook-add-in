@@ -57,6 +57,18 @@ export class Client {
     return client;
   }
 
+  private async reauthenticate(): Promise<void> {
+    Client.clearSession();
+
+    const authenticatedClient = await Client.authenticate(this.config);
+    if (isErrorWithContext(authenticatedClient)) {
+      throw authenticatedClient;
+    }
+
+    Object.assign(this, authenticatedClient);
+    localStorage.setItem(OT_CLIENT, JSON.stringify(this));
+  }
+
   private static getBaseUri(): string {
     return location.origin + location.pathname.split("/").slice(0, -1).join("/");
   }
@@ -311,8 +323,9 @@ export class Client {
       })
     );
     if (isRequestError(response)) {
-      console.error("Failed to fetch access token", response);
-      throw Error("Failed to fetch access token");
+      console.log("Fetching refresh token failed, reauthenticating");
+      await this.reauthenticate();
+      return this.accessToken;
     }
 
     this.accessToken = response.accessToken;
