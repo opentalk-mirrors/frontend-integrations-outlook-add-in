@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2025-12-03
+
+[0.2.7]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.6-1...v0.2.7
+
+### 🚀 New features
+
+- (ci) Push to new registry ([!177](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/177), [#37](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/37))
+
+### 🐛 Bug fixes
+
+- Reauthenticate after server-side logout ([!178](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/178), [#36](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/36))
+- (ci) Typo in env ([!180](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/180))
+
+### 📦 Dependencies
+
+- (deps) Update dependency eslint to ^9.37.0 ([!102](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/102))
+- (deps) Update dev dependency form-data ([!149](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/149))
+- (deps) Update dev dependency brace-expansion ([!149](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/149))
+
+### ⚙ Miscellaneous
+
+- Switch to internal kaniko image ([!144](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/144))
+
+### Ci
+
+- Update packages when building container ([!148](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/148))
+
 ## [0.2.6] - 2025-09-25
 
 [0.2.6]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.5...v0.2.6
