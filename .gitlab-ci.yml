@@ -231,7 +231,7 @@ push:addin-container-create-and-push-tags:
         --dest-creds="${CI_REGISTRY_USER}":"${CI_REGISTRY_PASSWORD}" \
         "docker://${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA:0:8}" "docker://${CI_REGISTRY_IMAGE}:$tag"
       done
-    - echo "TAGS=$TAGS" > package.env
+    - echo "TAGS=$TAGS_TO_PUSH" > package.env
 
 push-and-sign-images-to-harbor:
   needs:
