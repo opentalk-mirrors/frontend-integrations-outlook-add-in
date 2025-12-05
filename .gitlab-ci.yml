@@ -97,7 +97,7 @@ trigger_changelog_preview:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   variables:
     # We need to hard code the target repository since the pipeline is running in the forked repository
-    PIPELINE_PROJECT_PATH: opentalk/frontend/web/web-app
+    PIPELINE_PROJECT_PATH: opentalk/frontend/integrations/outlook-add-in
     PIPELINE_MERGE_REQUEST_PROJECT_PATH: $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH
     PIPELINE_MERGE_REQUEST_SOURCE_BRANCH_NAME: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
     PIPELINE_MERGE_REQUEST_IID: $CI_MERGE_REQUEST_IID
