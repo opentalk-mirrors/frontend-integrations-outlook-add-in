@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Stack, Button, Typography, Box } from "@mui/material";
+import { Stack, Button, Typography, Box, TextField } from "@mui/material";
 import { differenceBy } from "lodash";
 
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
@@ -29,6 +29,7 @@ const EventComposePage: FC = () => {
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [customProps, setCustomProps] = useState<Office.CustomProperties>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -54,6 +55,7 @@ const EventComposePage: FC = () => {
           setWaitingRoomEnabled(event.room.waitingRoom);
           setSharedFolderEnabled(!!event.sharedFolder);
           setMeetingDetailsEnabled(event.showMeetingDetails);
+          setPassword(event.room.password ?? "");
           await setAsyncAsPromise(item.body.setAsync, event.description, {
             coercionType: Office.CoercionType.Text,
           });
@@ -94,6 +96,7 @@ const EventComposePage: FC = () => {
       waitingRoom: waitingRoomEnabled,
       hasSharedFolder: sharedFolderEnabled,
       showMeetingDetails: meetingDetailsEnabled,
+      password: password.trim() || null,
     };
   };
 
@@ -280,6 +283,16 @@ const EventComposePage: FC = () => {
         label={t("meeting-details-switch", { ns: "dashboard" })}
         flag={meetingDetailsEnabled}
         setFlag={setMeetingDetailsEnabled}
+      />
+      <TextField
+        fullWidth
+        label={t("password")}
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        type="text"
+        autoComplete="off"
+        size="small"
+        sx={{ mt: 1 }}
       />
       <Stack display="flex" direction="row-reverse" sx={{ marginTop: 1 }} spacing={1}>
         <Button sx={{ flex: 1, maxWidth: "50%" }} onClick={handleSave} disabled={disableButtons}>
