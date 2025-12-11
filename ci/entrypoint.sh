@@ -11,7 +11,8 @@ cat >$HTML_ROOT/config.json << EOF
 {
   "opentalkOutlookOidcClientId": "${OPENTALK_OUTLOOK_OIDC_CLIENT_ID}",
   "opentalkOutlookOidcScopes": "${OPENTALK_OUTLOOK_OIDC_SCOPES}",
-  "opentalkOutlookWebAppUrl": "${OPENTALK_OUTLOOK_WEBAPP_URL}"
+  "opentalkOutlookWebAppUrl": "${OPENTALK_OUTLOOK_WEBAPP_URL}",
+  "opentalkExperimentalEnableE2EE": "${OPENTALK_EXPERIMENTAL_ENABLE_E2EE}"
 }
 EOF
 

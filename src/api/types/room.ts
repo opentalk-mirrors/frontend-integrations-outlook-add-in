@@ -15,3 +15,10 @@ export interface Invite {
   updated: DateTime;
   updatedBy: RegisteredUser;
 }
+
+// Payload for PATCH /rooms/{room_id}
+export interface UpdateRoomPayload {
+  e2eEncryption?: boolean;
+  password?: string | null;
+  waitingRoom?: boolean;
+}

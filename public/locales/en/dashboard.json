@@ -13,6 +13,8 @@
   "livestream-invalid-url": "Enter a valid URL",
   "livestream-unavailable": "Livestreaming is not available for your plan.",
 
+  "e2e-encryption-switch": "Enable very high level of protection",
+  
   "outlook-meeting-cancel-success": "Meeting successfully cancelled.",
   "outlook-meeting-cancel-note": "You will have to manually cancel it in Outlook.",
 

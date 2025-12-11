@@ -30,6 +30,7 @@ ENV LOCATION=/
 ENV OPENTALK_OUTLOOK_OIDC_CLIENT_ID=device
 ENV OPENTALK_OUTLOOK_WEBAPP_URL=localhost:8000
 ENV OPENTALK_OUTLOOK_OIDC_SCOPES="profile email openid"
+ENV OPENTALK_EXPERIMENTAL_ENABLE_E2EE="false"
 
 COPY ./ci/entrypoint.sh /docker-entrypoint.d/40-configure-app.sh
 RUN chmod +x /docker-entrypoint.d/40-configure-app.sh

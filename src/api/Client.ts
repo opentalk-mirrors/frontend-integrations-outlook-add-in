@@ -20,6 +20,7 @@ import {
 import { callbackAsPromise } from "../utils/OfficeHelpers";
 import { toCamelCaseKeys, toSnakeCaseKeys } from "../utils/caseHelpers";
 import { DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS } from "../constants";
+import { getEnvBool } from "../helpers";
 
 // This is a global variable defined in webpack.config.mjs.
 // It is declared here to satisfy the TypeScript compiler.
@@ -80,6 +81,7 @@ export class Client {
         opentalkOutlookWebAppUrl: process.env.OPENTALK_OUTLOOK_WEBAPP_URL,
         opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
         opentalkOutlookOidcScopes: process.env.OPENTALK_OUTLOOK_OIDC_SCOPES,
+        opentalkExperimentalEnableE2EE: getEnvBool(process.env.OPENTALK_EXPERIMENTAL_ENABLE_E2EE),
       };
     }
     const uri = this.getBaseUri();
