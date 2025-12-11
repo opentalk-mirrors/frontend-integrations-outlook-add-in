@@ -19,6 +19,7 @@ import {
 } from "./types/client";
 import { callbackAsPromise } from "../utils/OfficeHelpers";
 import { toCamelCaseKeys, toSnakeCaseKeys } from "../utils/caseHelpers";
+import { DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS } from "../constants";
 
 // This is a global variable defined in webpack.config.mjs.
 // It is declared here to satisfy the TypeScript compiler.
@@ -78,6 +79,7 @@ export class Client {
       return {
         opentalkOutlookWebAppUrl: process.env.OPENTALK_OUTLOOK_WEBAPP_URL,
         opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
+        opentalkOutlookOidcScopes: process.env.OPENTALK_OUTLOOK_OIDC_SCOPES,
       };
     }
     const uri = this.getBaseUri();
@@ -180,7 +182,7 @@ export class Client {
       // Not sending audience as we do not use external providers, but can be possible in the future
       new URLSearchParams({
         client_id: config.opentalkOutlookOidcClientId,
-        scope: "profile email openid",
+        scope: config.opentalkOutlookOidcScopes,
       })
     );
     if (isRequestError(authResponse)) {
@@ -332,7 +334,15 @@ export class Client {
     const now = Date.now() / 1000;
     this.accessTokenExpires = Math.floor(now + response.expiresIn);
     this.refreshToken = response.refreshToken;
-    this.refreshTokenExpires = Math.floor(now + response.refreshExpiresIn);
+
+    const refreshTokenLifetime =
+      response.refreshExpiresIn ?? DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS;
+
+    // Keycloak issues an offline_token with a expiration time of 0 which does not ever expire
+    // So if the refresh token livetime is set to 0 it shall never. This is represented by the
+    // max. Date (8.64e15 ms / 1000 = 8.64e12)
+    this.refreshTokenExpires =
+      refreshTokenLifetime > 0 ? Math.floor(now + refreshTokenLifetime) : 8.64e12;
 
     if (this.accessToken) {
       localStorage.setItem(OT_CLIENT, JSON.stringify(this));
