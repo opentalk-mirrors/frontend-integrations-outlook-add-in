@@ -95,6 +95,21 @@ export class Client {
     return response;
   }
 
+  private static calculateRefreshTokenExpires(
+    refreshTokenLifetime: number | undefined,
+    now: number
+  ): number {
+    // Keycloak issues an offline_token with a expiration time of 0 which does not ever expire
+    // So if the refresh token livetime is set to 0 it shall never. This is represented by the
+    // max. Date (8.64e15 ms / 1000 = 8.64e12)
+
+    const calculatedRefreshTokenLifetime =
+      refreshTokenLifetime ?? DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS;
+    return calculatedRefreshTokenLifetime > 0
+      ? Math.floor(now + calculatedRefreshTokenLifetime)
+      : 8.64e12;
+  }
+
   // Load from localStorage or authenticate fresh
   public static async load(): Promise<Client> {
     const config = await this.loadConfig();
@@ -234,7 +249,10 @@ export class Client {
         client.refreshToken = tokenResponse.refreshToken;
         const now = Date.now() / 1000;
         client.accessTokenExpires = Math.floor(now + Number(tokenResponse.expiresIn));
-        client.refreshTokenExpires = Math.floor(now + Number(tokenResponse.refreshExpiresIn));
+        client.refreshTokenExpires = Client.calculateRefreshTokenExpires(
+          tokenResponse.refreshExpiresIn,
+          now
+        );
         localStorage.setItem(OT_CLIENT, JSON.stringify(client));
         dialog?.close();
 
@@ -334,15 +352,7 @@ export class Client {
     const now = Date.now() / 1000;
     this.accessTokenExpires = Math.floor(now + response.expiresIn);
     this.refreshToken = response.refreshToken;
-
-    const refreshTokenLifetime =
-      response.refreshExpiresIn ?? DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS;
-
-    // Keycloak issues an offline_token with a expiration time of 0 which does not ever expire
-    // So if the refresh token livetime is set to 0 it shall never. This is represented by the
-    // max. Date (8.64e15 ms / 1000 = 8.64e12)
-    this.refreshTokenExpires =
-      refreshTokenLifetime > 0 ? Math.floor(now + refreshTokenLifetime) : 8.64e12;
+    this.refreshTokenExpires = Client.calculateRefreshTokenExpires(response.refreshExpiresIn, now);
 
     if (this.accessToken) {
       localStorage.setItem(OT_CLIENT, JSON.stringify(this));
