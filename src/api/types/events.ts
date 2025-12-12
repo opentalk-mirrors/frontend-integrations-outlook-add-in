@@ -1,3 +1,4 @@
+import { StreamingTarget, StreamingTargetPayload } from "./streamingTarget";
 import { User, UserRole } from "./user";
 
 export interface DateTime {
@@ -41,6 +42,7 @@ export interface CreateEventPayload {
   showMeetingDetails?: boolean;
   waitingRoom?: boolean;
   hasSharedFolder?: boolean;
+  streamingTargets?: StreamingTargetPayload[];
 }
 
 export type UpdateEventPayload = Partial<CreateEventInvitePayload>;
@@ -94,6 +96,7 @@ interface BaseEvent {
   showMeetingDetails: boolean;
   isTimeIndependent?: boolean;
   sharedFolder?: SharedFolderData;
+  streamingTargets?: StreamingTarget[];
   type: EventType;
   isFavorite: boolean;
   recurrenceId?: string;

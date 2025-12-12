@@ -15,6 +15,8 @@ import {
 } from "../../api/types/events";
 import { EmailUser } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
+import { StreamingTargetFields } from "../StreamingTargetFields";
+import { useStreamingTarget } from "../../hooks/useStreamingTarget";
 import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
@@ -25,21 +27,33 @@ const EVENT_INVITEES = 10;
 const EventComposePage: FC = () => {
   const { client, tariff } = useClientContext();
   const isSharedFolderAvailable = !!tariff?.modules?.sharedFolder;
+  const isStreamingEnabled =
+    tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
 
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
   const [password, setPassword] = useState("");
+  const { t } = useTranslation();
+  const {
+    livestreamEnabled,
+    streamingTarget,
+    streamingErrors,
+    setStreamingTarget,
+    toggleLivestream,
+    validateStreaming,
+    buildStreamingPayload,
+    syncStreamingTarget,
+  } = useStreamingTarget();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [customProps, setCustomProps] = useState<Office.CustomProperties>(null);
+  const [customProps, setCustomProps] = useState<Office.CustomProperties | null>(null);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [existingEvent, setExistingEvent] = useState<Event | undefined>();
   const [inviteCode, setInviteCode] = useState<string | undefined>();
   const [disableButtons, setDisableButtons] = useState(false);
+  const [disableSaveButton, setDisableSaveButton] = useState(false);
 
   const item = Office.context.mailbox.item;
-
-  const { t } = useTranslation();
 
   useEffect(() => {
     Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
@@ -56,6 +70,18 @@ const EventComposePage: FC = () => {
           setSharedFolderEnabled(!!event.sharedFolder);
           setMeetingDetailsEnabled(event.showMeetingDetails);
           setPassword(event.room.password ?? "");
+          const [firstTarget] = event.streamingTargets ?? [];
+          if (firstTarget) {
+            toggleLivestream(true);
+            setStreamingTarget({
+              id: firstTarget.id,
+              kind: firstTarget.kind ?? "custom",
+              name: firstTarget.name ?? "",
+              publicUrl: firstTarget.publicUrl ?? "",
+              streamingEndpoint: firstTarget.streamingEndpoint ?? "",
+              streamingKey: firstTarget.streamingKey ?? "",
+            });
+          }
           await setAsyncAsPromise(item.body.setAsync, event.description, {
             coercionType: Office.CoercionType.Text,
           });
@@ -80,6 +106,8 @@ const EventComposePage: FC = () => {
     //More complex pattern that requires conversion to be sent to the controller
     // const recurrence = await getAsync<Office.Recurrence>(item.recurrence.getAsync);
 
+    const streamingPayload = buildStreamingPayload();
+
     return {
       title,
       startsAt: {
@@ -97,6 +125,7 @@ const EventComposePage: FC = () => {
       hasSharedFolder: sharedFolderEnabled,
       showMeetingDetails: meetingDetailsEnabled,
       password: password.trim() || null,
+      streamingTargets: streamingPayload ? [streamingPayload] : undefined,
     };
   };
 
@@ -170,6 +199,10 @@ const EventComposePage: FC = () => {
       customProps.saveAsync((result) => {
         if (result.status === Office.AsyncResultStatus.Succeeded) {
           setExistingEvent(event);
+          const [firstTarget] = event.streamingTargets ?? [];
+          if (firstTarget?.id) {
+            setStreamingTarget((prev) => ({ ...prev, id: firstTarget.id }));
+          }
           item.sendAsync();
           return;
         }
@@ -185,6 +218,7 @@ const EventComposePage: FC = () => {
       const payload = (await getEventPayload()) as UpdateEventPayload;
       const queryParams = { suppressEmailNotification: true } as UpdateEventQueryParams;
       const event = await client?.events.update(existingEvent.id, payload, queryParams);
+      await syncStreamingTarget(event.room.id, client);
       const originalInvitees = existingEvent.invitees.map((invite) => invite.profile);
       const updatedInvitees = await getInvitees();
       const addedInvitees = differenceBy(updatedInvitees, originalInvitees, "email");
@@ -213,8 +247,12 @@ const EventComposePage: FC = () => {
   };
 
   const handleSave = async () => {
-    setDisableButtons(true);
     if (item.itemType !== Office.MailboxEnums.ItemType.Appointment) {
+      return;
+    }
+    const { isValid } = validateStreaming();
+    if (!isValid) {
+      setDisableSaveButton(true);
       return;
     }
 
@@ -223,10 +261,28 @@ const EventComposePage: FC = () => {
     } else {
       await createMeeting();
     }
-    setDisableButtons(false);
+    setDisableSaveButton(false);
   };
 
+  useEffect(() => {
+    if (!disableSaveButton) {
+      return;
+    }
+    if (!livestreamEnabled || !streamingTarget) {
+      validateStreaming();
+      setDisableSaveButton(false);
+      return;
+    }
+    const { isValid } = validateStreaming();
+    if (isValid) {
+      setDisableSaveButton(false);
+    }
+  }, [disableSaveButton, livestreamEnabled, streamingTarget, validateStreaming]);
+
   const handleCancel = () => {
+    if (!existingEvent || !customProps) {
+      return;
+    }
     setDisableButtons(true);
     const params: DeleteEventQueryParams = {
       forceDeleteReferenceIfExternalServicesFail: false,
@@ -294,8 +350,22 @@ const EventComposePage: FC = () => {
         size="small"
         sx={{ mt: 1 }}
       />
+      {isStreamingEnabled && (
+        // We need to expose livestreamEnabled to be able to control the form buttons
+        <StreamingTargetFields
+          livestreamEnabled={livestreamEnabled}
+          onToggleLivestream={toggleLivestream}
+          streamingTarget={streamingTarget}
+          streamingErrors={streamingErrors}
+          setStreamingTarget={setStreamingTarget}
+        />
+      )}
       <Stack display="flex" direction="row-reverse" sx={{ marginTop: 1 }} spacing={1}>
-        <Button sx={{ flex: 1, maxWidth: "50%" }} onClick={handleSave} disabled={disableButtons}>
+        <Button
+          sx={{ flex: 1, maxWidth: "50%" }}
+          onClick={handleSave}
+          disabled={disableButtons || disableSaveButton}
+        >
           {existingEvent ? t("update") : t("create")}
         </Button>
         {existingEvent && (

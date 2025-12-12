@@ -13,6 +13,8 @@ interface MeetingInformationProps {
 
 export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLink, guestLink }) => {
   const { t } = useTranslation();
+  const livestreamTarget = event.streamingTargets?.[0];
+
   return (
     <Box style={{ margin: "20px 0" }}>
       <Caption>{t("meeting-information")}</Caption>
@@ -52,6 +54,15 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLin
       {guestLink && (
         <>
           <strong>{t("guest-link")}:</strong> <Link href={guestLink}>{guestLink}</Link>
+          <br />
+        </>
+      )}
+      {livestreamTarget?.publicUrl && (
+        <>
+          {t("livestream-public-info", {
+            name: livestreamTarget.name || t("livestream"),
+          })}{" "}
+          <Link href={livestreamTarget.publicUrl}>{livestreamTarget.publicUrl}</Link>
           <br />
         </>
       )}

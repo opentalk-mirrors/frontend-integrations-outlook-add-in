@@ -39,7 +39,8 @@
     "react": "^17.0.2",
     "react-app-polyfill": "^3.0.0",
     "react-dom": "^17.0.2",
-    "regenerator-runtime": "^0.14.1"
+    "regenerator-runtime": "^0.14.1",
+    "valibot": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
