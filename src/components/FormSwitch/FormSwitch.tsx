@@ -9,7 +9,7 @@ import { FunctionComponent } from "react";
 interface FormSwitchProps {
   label: string;
   flag: boolean;
-  setFlag: (value: boolean | ((prevState: boolean) => boolean)) => void;
+  setFlag: (value: boolean) => void;
   switchProps?: SwitchProps;
 }
 
@@ -36,7 +36,7 @@ export const FormSwitch: FunctionComponent<FormSwitchProps> = ({
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
-              setFlag((value) => !value);
+              setFlag(!flag);
             }
           }}
           checked={flag}

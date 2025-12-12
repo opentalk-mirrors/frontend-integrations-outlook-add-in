@@ -2,6 +2,16 @@
   "waiting-room-switch": "Warteraum",
   "meeting-details-switch": "Meetingdetails anzeigen",
   "shared-folder-switch": "Geteilter Ordner",
+  "livestream-switch": "Livestream",
+  "livestream-platform": "Plattform",
+  "livestream-platform-custom": "Benutzerdefiniert",
+  "livestream-name": "Name",
+  "livestream-public-url": "Öffentliche Livestream-URL",
+  "livestream-endpoint": "Streaming-Empfänger",
+  "livestream-key": "Streaming-Schlüssel",
+  "livestream-required": "Pflichtfeld",
+  "livestream-invalid-url": "Bitte eine gültige URL eingeben",
+  "livestream-unavailable": "Livestreaming ist für Ihren Tarif nicht verfügbar.",
 
   "outlook-meeting-cancel-success": "Meeting erfolgreich abgesagt",
   "outlook-meeting-cancel-note": "Sie müssen es manuell in Outlook absagen."

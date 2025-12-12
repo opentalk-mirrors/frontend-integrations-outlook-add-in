@@ -2,6 +2,16 @@
   "waiting-room-switch": "Waiting room",
   "meeting-details-switch": "Show meeting details",
   "shared-folder-switch": "Shared folder",
+  "livestream-switch": "Livestream",
+  "livestream-platform": "Platform",
+  "livestream-platform-custom": "Custom",
+  "livestream-name": "Name",
+  "livestream-public-url": "Public livestream URL",
+  "livestream-endpoint": "Streaming receiver",
+  "livestream-key": "Streaming key",
+  "livestream-required": "This field is required",
+  "livestream-invalid-url": "Enter a valid URL",
+  "livestream-unavailable": "Livestreaming is not available for your plan.",
 
   "outlook-meeting-cancel-success": "Meeting successfully cancelled.",
   "outlook-meeting-cancel-note": "You will have to manually cancel it in Outlook."

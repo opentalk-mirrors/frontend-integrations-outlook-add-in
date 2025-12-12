@@ -12,6 +12,8 @@
   "meeting-link": "Link zum Meeting",
   "guest-link": "Gastlink",
   "meeting-information": "Informationen zum Meeting",
+  "livestream": "Livestream",
+  "livestream-public-info": "Dies ist ein öffentliches Meeting, der Link zum Livestream: {{name}}:",
 
   "call-in-number": "Telefonnummer",
   "call-in-conference-id": "Konferenz-ID",

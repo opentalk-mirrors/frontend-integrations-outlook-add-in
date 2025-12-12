@@ -6,12 +6,14 @@ import { EventsAPI } from "../api/Events";
 import { UsersAPI } from "../api/Users";
 import { AuthAPI } from "../api/Auth";
 import { RoomsAPI } from "../api/Rooms";
+import { StreamingTargetAPI } from "../api/StreamingTarget";
 
 interface APIClient {
   auth: AuthAPI;
   events: EventsAPI;
   rooms: RoomsAPI;
   users: UsersAPI;
+  streamingTargets: StreamingTargetAPI;
   config: Config;
 }
 
@@ -44,11 +46,13 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
         const eventsAPI = new EventsAPI(client);
         const usersAPI = new UsersAPI(client);
         const roomsAPI = new RoomsAPI(client);
+        const streamingTargetAPI = new StreamingTargetAPI(client);
         setClient({
           auth: authAPI,
           events: eventsAPI,
           users: usersAPI,
           rooms: roomsAPI,
+          streamingTargets: streamingTargetAPI,
           config: client.config,
         });
         usersAPI.getTariff().then((response) => {
