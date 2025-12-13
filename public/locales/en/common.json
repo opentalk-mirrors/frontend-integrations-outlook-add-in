@@ -2,7 +2,11 @@
   "create": "Create",
   "update": "Update",
   "loading": "Loading...",
+  "logout": "Log out",
+  "login": "Log in",
+  "cancel": "Cancel Meeting",
   "important": "Important",
+  "please-sign-in": "Please sign in.",
 
   "title": "Title",
   "description": "Description",

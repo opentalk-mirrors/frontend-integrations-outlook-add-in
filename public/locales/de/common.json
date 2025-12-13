@@ -1,8 +1,12 @@
 {
   "create": "Erstellen",
-  "update": "Bearbeiten",
+  "update": "Aktualisieren",
   "loading": "Wird geladen...",
+  "logout": "Abmelden",
+  "login": "Anmelden",
+  "cancel": "Absagen",
   "important": "Wichtig",
+  "please-sign-in": "Bitte melden Sie sich an.",
 
   "title": "Titel",
   "description": "Beschreibung",

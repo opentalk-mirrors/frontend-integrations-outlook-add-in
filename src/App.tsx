@@ -3,23 +3,23 @@ import EventComposePage from "./components/pages/EventComposePage";
 import { useClientContext } from "./providers/ClientProvider";
 import { ErrorSeverity } from "./api/types/client";
 import { Stack, styled, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
-
-const Container = styled(Stack)(({ theme }) => ({
-  minHeight: "100vh",
-  padding: theme.spacing(1, 1, 0),
-  display: "flex",
-  flexDirection: "column",
-  rowGap: "5px",
-}));
+import { LoadingPage } from "./components/pages/LoadingPage";
+import { AuthenticationPage } from "./components/pages/AuthenticationPage";
 
 const App: FC = () => {
-  const { t } = useTranslation();
   const { client, isLoading, error } = useClientContext();
+
+  const Container = styled(Stack)(({ theme }) => ({
+    minHeight: "100vh",
+    padding: theme.spacing(0, 1, 0),
+    display: "flex",
+    flexDirection: "column",
+    rowGap: "5px",
+  }));
 
   const PageContent = () => {
     if (isLoading) {
-      return <Typography>{t("loading")}</Typography>;
+      return <LoadingPage />;
     }
 
     if (error && error.severity === ErrorSeverity.Fatal) {
@@ -27,7 +27,7 @@ const App: FC = () => {
     }
 
     if (!client?.auth.isAuthenticated()) {
-      return <Typography color="error">{t("auth", { ns: "errors" })}</Typography>;
+      return <AuthenticationPage />;
     }
 
     return <EventComposePage />;
