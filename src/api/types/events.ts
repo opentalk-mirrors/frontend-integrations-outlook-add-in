@@ -1,5 +1,5 @@
 import { StreamingTarget, StreamingTargetPayload } from "./streamingTarget";
-import { User, UserRole } from "./user";
+import { BaseUser, User, UserRole } from "./user";
 
 export interface DateTime {
   datetime: string;
@@ -105,6 +105,8 @@ interface BaseEvent {
   isFavorite: boolean;
   recurrenceId?: string;
   isAdhoc?: boolean;
+  createdBy?: BaseUser;
+  canEdit?: boolean;
 }
 
 /**

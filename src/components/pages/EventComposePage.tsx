@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { Stack, Button, Typography, Box, TextField, Paper } from "@mui/material";
+import { Stack, Button, Typography, Box, Alert, TextField, Paper } from "@mui/material";
 import { differenceBy } from "lodash";
-
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
 import { useClientContext } from "../../providers/ClientProvider";
 import {
@@ -16,20 +15,22 @@ import {
 } from "../../api/types/events";
 import { EmailUser } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
-import { StreamingTargetFields } from "../StreamingTargetFields";
-import { useStreamingTarget } from "../../hooks/useStreamingTarget";
-import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
+import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE, OPENTALK_OWNER_ID } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
 import { useTranslation } from "react-i18next";
+import { RequestError } from "../../api/types/client";
+import { useStreamingTarget } from "../../hooks/useStreamingTarget";
+import { StreamingTargetFields } from "../StreamingTargetFields";
 import { ProfileHeader } from "../ProfileHeader";
 import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
 import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
+import { LockReason, lockMessageKey } from "../../api/types/lockReason";
 
 const EVENT_INVITEES = 10;
 
 const EventComposePage: FC = () => {
-  const { client, tariff } = useClientContext();
+  const { client, tariff, me } = useClientContext();
   const isSharedFolderAvailable = !!tariff?.modules?.sharedFolder;
   const isStreamingEnabled =
     tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
@@ -55,6 +56,7 @@ const EventComposePage: FC = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [existingEvent, setExistingEvent] = useState<Event | undefined>();
   const [inviteCode, setInviteCode] = useState<string | undefined>();
+  const [lockReason, setLockReason] = useState<LockReason | undefined>();
   const [disableButtons, setDisableButtons] = useState(false);
   const [disableSaveButton, setDisableSaveButton] = useState(false);
   const {
@@ -66,47 +68,66 @@ const EventComposePage: FC = () => {
   } = useTrainingParticipation();
 
   const item = Office.context.mailbox.item;
+
+  const isLocked = !!lockReason;
+
+  const isOwner = (ownerId?: string) => ownerId === me.id;
+
   useEffect(() => {
-    Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
-      const customProps = result.value;
-      setCustomProps(customProps);
-      const eventId = customProps.get(OPENTALK_EVENT_ID);
-      const inviteCode = customProps.get(OPENTALK_INVITE_CODE);
-      setInviteCode(inviteCode);
-      if (eventId) {
-        try {
-          const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
-          setExistingEvent(event);
-          setWaitingRoomEnabled(event.room.waitingRoom);
-          setE2eEncryptionEnabled(!!event.room.e2eEncryption);
-          setSharedFolderEnabled(!!event.sharedFolder);
-          setMeetingDetailsEnabled(event.showMeetingDetails);
-          setPassword(event.room.password ?? "");
-          const [firstTarget] = event.streamingTargets ?? [];
-          if (firstTarget) {
-            toggleLivestream(true);
-            setStreamingTarget({
-              id: firstTarget.id,
-              kind: firstTarget.kind ?? "custom",
-              name: firstTarget.name ?? "",
-              publicUrl: firstTarget.publicUrl ?? "",
-              streamingEndpoint: firstTarget.streamingEndpoint ?? "",
-              streamingKey: firstTarget.streamingKey ?? "",
+    const init = async () => {
+      Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
+        const customProps = result.value;
+        setCustomProps(customProps);
+        const eventId = customProps.get(OPENTALK_EVENT_ID);
+        const ownerId = customProps.get(OPENTALK_OWNER_ID);
+        const inviteCode = customProps.get(OPENTALK_INVITE_CODE);
+        setInviteCode(inviteCode);
+        if (eventId) {
+          try {
+            const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
+            const userIsOwner = isOwner(ownerId);
+            setExistingEvent(event);
+            setWaitingRoomEnabled(event.room.waitingRoom);
+            setE2eEncryptionEnabled(!!event.room.e2eEncryption);
+            setSharedFolderEnabled(!!event.sharedFolder);
+            setMeetingDetailsEnabled(event.showMeetingDetails);
+            setPassword(event.room.password ?? "");
+            const [firstTarget] = event.streamingTargets ?? [];
+            if (firstTarget) {
+              toggleLivestream(true);
+              setStreamingTarget({
+                id: firstTarget.id,
+                kind: firstTarget.kind ?? "custom",
+                name: firstTarget.name ?? "",
+                publicUrl: firstTarget.publicUrl ?? "",
+                streamingEndpoint: firstTarget.streamingEndpoint ?? "",
+                streamingKey: firstTarget.streamingKey ?? "",
+              });
+            }
+            if (event.trainingParticipationReport) {
+              toggleTrainingParticipation(true);
+              setTrainingParticipationParams(event.trainingParticipationReport);
+            }
+            await setAsyncAsPromise(item.body.setAsync, event.description, {
+              coercionType: Office.CoercionType.Text,
             });
+            if (!userIsOwner && !event.canEdit) {
+              setLockReason(LockReason.Invitee);
+            }
+          } catch (error) {
+            if (error instanceof RequestError && error.statusCode === 403) {
+              const userIsOwner = isOwner(ownerId);
+              setLockReason(userIsOwner ? LockReason.Deleted : LockReason.NotOwnerForbidden);
+            } else {
+              console.error("Issue with fetching OpenTalk event: ", error);
+            }
           }
-          if (event.trainingParticipationReport) {
-            toggleTrainingParticipation(true);
-            setTrainingParticipationParams(event.trainingParticipationReport);
-          }
-          await setAsyncAsPromise(item.body.setAsync, event.description, {
-            coercionType: Office.CoercionType.Text,
-          });
-        } catch (error) {
-          console.error("Issue with fetching OpenTalk event: ", error);
         }
-      }
-      setIsLoading(false);
-    });
+        setIsLoading(false);
+      });
+    };
+
+    init();
   }, []);
 
   const getEventPayload = async (): Promise<CreateEventPayload | UpdateEventPayload> => {
@@ -211,6 +232,7 @@ const EventComposePage: FC = () => {
       // the event edit page.
       const customProps = await callbackAsPromise(item.loadCustomPropertiesAsync);
       customProps.set(OPENTALK_EVENT_ID, event.id);
+      customProps.set(OPENTALK_OWNER_ID, event.createdBy.id);
       if (guestInvite?.inviteCode) {
         customProps.set(OPENTALK_INVITE_CODE, guestInvite?.inviteCode);
       }
@@ -266,7 +288,32 @@ const EventComposePage: FC = () => {
     }
   };
 
+  const handleClearMeetingInformation = async () => {
+    setDisableButtons(true);
+    try {
+      const item = Office.context.mailbox.item;
+      if (customProps) {
+        customProps.remove(OPENTALK_EVENT_ID);
+        customProps.remove(OPENTALK_OWNER_ID);
+        customProps.remove(OPENTALK_INVITE_CODE);
+        await callbackAsPromise<void>(customProps.saveAsync.bind(customProps));
+      }
+      await setAsyncAsPromise(item.location.setAsync, "");
+      await setAsyncAsPromise(item.body.setAsync, "");
+      setExistingEvent(undefined);
+      setLockReason(undefined);
+    } catch (error) {
+      console.error("Unable to clear meeting information: ", error);
+    } finally {
+      setDisableButtons(false);
+    }
+  };
+
   const handleSave = async () => {
+    if (isLocked) {
+      setDisableButtons(false);
+      return;
+    }
     if (item.itemType !== Office.MailboxEnums.ItemType.Appointment) {
       return;
     }
@@ -324,6 +371,7 @@ const EventComposePage: FC = () => {
       .delete(existingEvent?.id, params)
       .then(async () => {
         customProps.remove(OPENTALK_EVENT_ID);
+        customProps.remove(OPENTALK_OWNER_ID);
         customProps.saveAsync(() => setShowDisclaimer(true));
         const item = Office.context.mailbox.item;
         await setAsyncAsPromise(item.location.setAsync, "");
@@ -334,6 +382,8 @@ const EventComposePage: FC = () => {
       })
       .finally(() => setDisableButtons(false));
   };
+
+  const switchProps = { disabled: isLocked };
 
   if (isLoading) {
     return <Typography>{t("loading")}</Typography>;
@@ -354,97 +404,119 @@ const EventComposePage: FC = () => {
   }
 
   return (
-    <Box sx={{ pb: 15 }}>
-      <ProfileHeader />
-
-      <Stack spacing={2} mt={2}>
-        <FormSwitch
-          label={t("waiting-room-switch", { ns: "dashboard" })}
-          flag={waitingRoomEnabled}
-          setFlag={setWaitingRoomEnabled}
-        />
-        {client.config.opentalkExperimentalEnableE2EE && (
-          <FormSwitch
-            label={t("e2e-encryption-switch", { ns: "dashboard" })}
-            flag={e2eEncryptionEnabled}
-            setFlag={setE2eEncryptionEnabled}
-          />
-        )}
-        {isSharedFolderAvailable && (
-          <FormSwitch
-            label={t("shared-folder-switch", { ns: "dashboard" })}
-            flag={sharedFolderEnabled}
-            setFlag={setSharedFolderEnabled}
-          />
-        )}
-        <FormSwitch
-          label={t("meeting-details-switch", { ns: "dashboard" })}
-          flag={meetingDetailsEnabled}
-          setFlag={setMeetingDetailsEnabled}
-        />
-        <TextField
-          fullWidth
-          label={t("password")}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          type="text"
-          autoComplete="off"
-          size="small"
-        />
-        {isStreamingEnabled && (
-          <StreamingTargetFields
-            livestreamEnabled={livestreamEnabled}
-            onToggleLivestream={toggleLivestream}
-            streamingTarget={streamingTarget}
-            streamingErrors={streamingErrors}
-            setStreamingTarget={setStreamingTarget}
-          />
-        )}
-        {isTrainingParticipationReportAvailable && (
-          <TrainingParticipationReportSelect
-            enabled={trainingParticipationEnabled}
-            parameter={trainingParticipationParams}
-            onChange={handleTrainingReportChange}
-          />
-        )}
-      </Stack>
-
-      <Paper
-        elevation={3}
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          p: 2,
-          bgcolor: "background.paper",
-          borderTop: "1px solid rgba(0,0,0,0.12)",
-          zIndex: 1300,
-        }}
-      >
-        <Stack display="flex" direction="row-reverse" spacing={1}>
-          <Button
-            sx={{ flex: 1, maxWidth: existingEvent ? "50%" : "100%" }}
-            variant="contained"
-            onClick={handleSave}
-            disabled={disableButtons || disableSaveButton}
-          >
-            {existingEvent ? t("update") : t("create")}
-          </Button>
-          {existingEvent && (
-            <Button
-              sx={{ flex: 1 }}
-              variant="outlined"
-              color="error"
-              onClick={handleCancel}
-              disabled={disableButtons}
-            >
-              {t("cancel")}
+    <>
+      {lockReason && (
+        <Stack spacing={1} sx={{ marginBottom: 2 }}>
+          <Alert severity="warning">{t(lockMessageKey[lockReason], { ns: "dashboard" })}</Alert>
+          {lockReason === LockReason.Deleted && (
+            <Button onClick={handleClearMeetingInformation} disabled={disableButtons}>
+              {t("outlook-meeting-no-longer-available-delete", { ns: "dashboard" })}
             </Button>
           )}
         </Stack>
-      </Paper>
-    </Box>
+      )}
+      {lockReason !== LockReason.Deleted && (
+        <Box sx={{ pb: 15 }}>
+          <ProfileHeader />
+
+          <Stack spacing={2} mt={2}>
+            <FormSwitch
+              label={t("waiting-room-switch", { ns: "dashboard" })}
+              flag={waitingRoomEnabled}
+              setFlag={setWaitingRoomEnabled}
+              switchProps={switchProps}
+            />
+            {client.config.opentalkExperimentalEnableE2EE && (
+              <FormSwitch
+                label={t("e2e-encryption-switch", { ns: "dashboard" })}
+                flag={e2eEncryptionEnabled}
+                setFlag={setE2eEncryptionEnabled}
+                switchProps={switchProps}
+              />
+            )}
+            {isSharedFolderAvailable && (
+              <FormSwitch
+                label={t("shared-folder-switch", { ns: "dashboard" })}
+                flag={sharedFolderEnabled}
+                setFlag={setSharedFolderEnabled}
+                switchProps={switchProps}
+              />
+            )}
+            <FormSwitch
+              label={t("meeting-details-switch", { ns: "dashboard" })}
+              flag={meetingDetailsEnabled}
+              setFlag={setMeetingDetailsEnabled}
+              switchProps={switchProps}
+            />
+            <TextField
+              fullWidth
+              label={t("password")}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              type="text"
+              autoComplete="off"
+              size="small"
+              sx={{ mt: 1 }}
+              disabled={isLocked}
+            />
+            {isStreamingEnabled && (
+              // We need to expose livestreamEnabled to be able to control the form buttons
+              <StreamingTargetFields
+                livestreamEnabled={livestreamEnabled}
+                onToggleLivestream={toggleLivestream}
+                streamingTarget={streamingTarget}
+                streamingErrors={streamingErrors}
+                setStreamingTarget={setStreamingTarget}
+                disabled={isLocked}
+              />
+            )}
+            {isTrainingParticipationReportAvailable && (
+              <TrainingParticipationReportSelect
+                enabled={trainingParticipationEnabled}
+                parameter={trainingParticipationParams}
+                onChange={handleTrainingReportChange}
+              />
+            )}
+          </Stack>
+
+          <Paper
+            elevation={3}
+            sx={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              p: 2,
+              bgcolor: "background.paper",
+              borderTop: "1px solid rgba(0,0,0,0.12)",
+              zIndex: 1300,
+            }}
+          >
+            <Stack display="flex" direction="row-reverse" mt={1} spacing={1}>
+              <Button
+                sx={{ flex: 1, maxWidth: existingEvent ? "50%" : "100%" }}
+                variant="contained"
+                onClick={handleSave}
+                disabled={disableButtons || disableSaveButton || isLocked}
+              >
+                {existingEvent ? t("update") : t("create")}
+              </Button>
+              {existingEvent && (
+                <Button
+                  sx={{ flex: 1 }}
+                  variant="outlined"
+                  color="error"
+                  onClick={handleCancel}
+                  disabled={disableButtons || isLocked}
+                >
+                  {t("cancel")}
+                </Button>
+              )}
+            </Stack>
+          </Paper>
+        </Box>
+      )}
+    </>
   );
 };
 

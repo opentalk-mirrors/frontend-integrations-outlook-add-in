@@ -29,5 +29,9 @@
   "dashboard-custom-training-participation-report-dialog-initial-timeout": "Erste Bestätigungsabfrage variabel nach",
   "dashboard-custom-training-participation-report-dialog-interval-duration": "Nachfolgende Abfragen variabel nach",
   "dashboard-custom-training-participation-report-dialog-to": "bis",
-  "dashboard-custom-training-participation-report-dialog-minutes": "Minuten"
+  "dashboard-custom-training-participation-report-dialog-minutes": "Minuten",
+  "outlook-meeting-not-owner": "Sie haben keine Berechtigung dieses Meeting zu bearbeiten.",
+  "outlook-meeting-invitee-options": "Eingeladene Benutzer dürfen das Meeting nicht bearbeiten.",
+  "outlook-meeting-no-longer-available": "Dieses Meeting ist nicht länger verfügbar, bitte löschen Sie die Meeting-Informationen aus dem Termin.",
+  "outlook-meeting-no-longer-available-delete": "Metingdetails aus Einladung löschen"
 }

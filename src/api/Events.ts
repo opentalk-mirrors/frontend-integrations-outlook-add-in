@@ -1,4 +1,5 @@
 import { Client } from "./Client";
+import { isRequestError, RequestError } from "./types/client";
 import {
   Event,
   CreateEventInvitePayload,
@@ -16,12 +17,26 @@ import {
 export class EventsAPI {
   constructor(private client: Client) {}
 
+  /**
+   * Private Helper:
+   * Wraps the client response. If it sees a RequestError, it throws it.
+   * Otherwise, it returns the clean data.
+   */
+  private async request<T>(promise: Promise<T | RequestError>): Promise<T> {
+    const response = await promise;
+    if (isRequestError(response)) {
+      throw response;
+    }
+
+    return response;
+  }
+
   public create(payload: CreateEventPayload, queryParams?: CreateEventQueryParams) {
     return this.client.post<Event>({ endpoint: "events", payload, queryParams });
   }
 
   public get(eventId: string, queryParams?: GetEventQueryParams) {
-    return this.client.get<Event>({ endpoint: `events/${eventId}`, queryParams });
+    return this.request<Event>(this.client.get({ endpoint: `events/${eventId}`, queryParams }));
   }
 
   public update(

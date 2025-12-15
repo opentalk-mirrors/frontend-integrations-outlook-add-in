@@ -12,6 +12,7 @@ type StreamingTargetFieldsProps = {
   streamingTarget: StreamingTargetFormState | null;
   streamingErrors: LivestreamErrors;
   setStreamingTarget: Dispatch<SetStateAction<StreamingTargetFormState | null>>;
+  disabled?: boolean;
 };
 
 export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
@@ -20,6 +21,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
   streamingTarget,
   streamingErrors,
   setStreamingTarget,
+  disabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -31,6 +33,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
         setFlag={(flag) => {
           onToggleLivestream(flag);
         }}
+        switchProps={{ disabled }}
       />
       {livestreamEnabled && streamingTarget && (
         <Stack spacing={1.5} sx={{ mt: 1 }}>
@@ -46,6 +49,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
             }}
             size="small"
             fullWidth
+            disabled={disabled}
           >
             <MenuItem value="custom">
               {t("livestream-platform-custom", { ns: "dashboard" })}
@@ -64,6 +68,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
             helperText={streamingErrors.name}
             size="small"
             fullWidth
+            disabled={disabled}
           />
           <TextField
             label={t("livestream-public-url", { ns: "dashboard" })}
@@ -78,6 +83,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
             helperText={streamingErrors.publicUrl}
             size="small"
             fullWidth
+            disabled={disabled}
           />
           <TextField
             label={t("livestream-endpoint", { ns: "dashboard" })}
@@ -92,6 +98,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
             helperText={streamingErrors.streamingEndpoint}
             size="small"
             fullWidth
+            disabled={disabled}
           />
           <TextField
             label={t("livestream-key", { ns: "dashboard" })}
@@ -106,6 +113,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
             helperText={streamingErrors.streamingKey}
             size="small"
             fullWidth
+            disabled={disabled}
           />
         </Stack>
       )}
