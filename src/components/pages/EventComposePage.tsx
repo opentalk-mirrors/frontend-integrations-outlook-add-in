@@ -1,23 +1,29 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { Stack, Button, Typography, Box, Alert, TextField, Paper } from "@mui/material";
-import { differenceBy } from "lodash";
+import {
+  Stack,
+  Button,
+  Typography,
+  Box,
+  TextField,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+} from "@mui/material";
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
 import { useClientContext } from "../../providers/ClientProvider";
 import {
   Event,
-  CreateEventPayload,
   DeleteEventQueryParams,
-  UpdateEventPayload,
-  CreateEventInviteQueryParams,
-  CreateEventQueryParams,
-  UpdateEventQueryParams,
   TrainingParticipationReportParameterSet,
 } from "../../api/types/events";
-import { EmailUser } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE, OPENTALK_OWNER_ID } from "../../constants";
-import ReactDOMServer from "react-dom/server";
-import { EventBody } from "./EventBody/EventBody";
 import { useTranslation } from "react-i18next";
 import { RequestError } from "../../api/types/client";
 import { useStreamingTarget } from "../../hooks/useStreamingTarget";
@@ -26,8 +32,17 @@ import { ProfileHeader } from "../ProfileHeader";
 import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
 import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
 import { LockReason, lockMessageKey } from "../../api/types/lockReason";
+import { EventService, MeetingOptions } from "../../services/EventService";
+import { removeOldMeetingBody } from "../../utils/meetingBody";
+import {
+  buildMeetingLink,
+  normalizeLocationString,
+  removeMeetingLinkByBase,
+  removeMeetingLinkFromLocation,
+} from "../../utils/meetingLocation";
 
 const EVENT_INVITEES = 10;
+const SUPPRESS_DELETE_WARNING_KEY = "suppress-delete-warning";
 
 const EventComposePage: FC = () => {
   const { client, tariff, me } = useClientContext();
@@ -59,6 +74,9 @@ const EventComposePage: FC = () => {
   const [lockReason, setLockReason] = useState<LockReason | undefined>();
   const [disableButtons, setDisableButtons] = useState(false);
   const [disableSaveButton, setDisableSaveButton] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteDialogHideFuture, setDeleteDialogHideFuture] = useState(false);
+
   const {
     enabled: trainingParticipationEnabled,
     params: trainingParticipationParams,
@@ -74,6 +92,10 @@ const EventComposePage: FC = () => {
   const isOwner = (ownerId?: string) => ownerId === me.id;
 
   useEffect(() => {
+    if (!client) {
+      return;
+    }
+
     const init = async () => {
       Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
         const customProps = result.value;
@@ -108,9 +130,6 @@ const EventComposePage: FC = () => {
               toggleTrainingParticipation(true);
               setTrainingParticipationParams(event.trainingParticipationReport);
             }
-            await setAsyncAsPromise(item.body.setAsync, event.description, {
-              coercionType: Office.CoercionType.Text,
-            });
             if (!userIsOwner && !event.canEdit) {
               setLockReason(LockReason.Invitee);
             }
@@ -128,38 +147,21 @@ const EventComposePage: FC = () => {
     };
 
     init();
-  }, []);
+  }, [
+    client,
+    item.body,
+    setStreamingTarget,
+    setTrainingParticipationParams,
+    toggleLivestream,
+    toggleTrainingParticipation,
+  ]);
 
-  const getEventPayload = async (): Promise<CreateEventPayload | UpdateEventPayload> => {
-    const title = await callbackAsPromise<string>(item.subject.getAsync);
-    const start = await callbackAsPromise<Date>(item.start.getAsync);
-    const end = await callbackAsPromise<Date>(item.end.getAsync);
-    const body = await callbackAsPromise<string>((callback) =>
-      item.body.getAsync(Office.CoercionType.Text, callback)
-    );
-
-    //Beta function that is not yet available in the interface
-    // const isAllDay = await getAsync<boolean>(item.isAllDayEvent.getAsync);
-    //More complex pattern that requires conversion to be sent to the controller
-    // const recurrence = await getAsync<Office.Recurrence>(item.recurrence.getAsync);
-
+  const buildMeetingOptions = (): MeetingOptions => {
     const streamingPayload = buildStreamingPayload();
 
     return {
-      title,
-      startsAt: {
-        datetime: new Date(start).toISOString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      endsAt: {
-        datetime: new Date(end).toISOString(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      description: body,
-      isTimeIndependent: false,
-      isAllDay: false,
       waitingRoom: waitingRoomEnabled,
-      hasSharedFolder: sharedFolderEnabled,
+      sharedFolder: sharedFolderEnabled,
       showMeetingDetails: meetingDetailsEnabled,
       e2eEncryption: e2eEncryptionEnabled,
       password: password.trim() || null,
@@ -168,124 +170,6 @@ const EventComposePage: FC = () => {
         ? (trainingParticipationParams ?? null)
         : null,
     };
-  };
-
-  const getInvitees = async (): Promise<Array<EmailUser>> => {
-    const requiredAttendees = await callbackAsPromise<Office.EmailAddressDetails[]>(
-      item.requiredAttendees.getAsync
-    );
-    const invitees: Array<EmailUser> = requiredAttendees.map((requiredAttendee) => ({
-      email: requiredAttendee.emailAddress,
-    }));
-    return invitees;
-  };
-
-  const sendInvites = async (userList: Array<EmailUser>, eventId: string) => {
-    const invitePromises = userList.map(async (user) => {
-      const invitee = { email: user.email };
-      const params: CreateEventInviteQueryParams = { suppressEmailNotification: true };
-      return client?.events.createInvitation(eventId, invitee, params);
-    });
-
-    await Promise.all(invitePromises);
-  };
-
-  const createEventBody = (event: Event, inviteCode?: string): string => {
-    const roomLink = new URL(
-      `/room/${event.room.id}`,
-      client?.config.opentalkOutlookWebAppUrl
-    ).toString();
-    const guestLink = inviteCode
-      ? new URL(
-          `/room/${event.room.id}?invite=${inviteCode}`,
-          client?.config.opentalkOutlookWebAppUrl
-        ).toString()
-      : null;
-
-    return ReactDOMServer.renderToStaticMarkup(
-      <EventBody
-        event={event}
-        roomLink={roomLink}
-        guestLink={guestLink}
-        senderName={Office.context.mailbox.userProfile.displayName}
-      />
-    );
-  };
-
-  const createMeeting = async () => {
-    try {
-      const payload = (await getEventPayload()) as CreateEventPayload;
-      const queryParams = { suppressEmailNotification: true } as CreateEventQueryParams;
-      const event = await client?.events.create(payload, queryParams);
-
-      // Invite guests
-      const invitees = await getInvitees();
-      await sendInvites(invitees, event.id);
-
-      // Create an invite link
-      const guestInvite = await client?.rooms.createInvitation(event.room.id, {});
-      await setAsyncAsPromise(item.body.setAsync, createEventBody(event, guestInvite?.inviteCode), {
-        coercionType: Office.CoercionType.Html,
-      });
-
-      // Store the event id as a custom property, so it can be retrieved from
-      // the event edit page.
-      const customProps = await callbackAsPromise(item.loadCustomPropertiesAsync);
-      customProps.set(OPENTALK_EVENT_ID, event.id);
-      customProps.set(OPENTALK_OWNER_ID, event.createdBy.id);
-      if (guestInvite?.inviteCode) {
-        customProps.set(OPENTALK_INVITE_CODE, guestInvite?.inviteCode);
-      }
-      // Calling saveAsync with callBackAsPromise does throw an error
-      customProps.saveAsync((result) => {
-        if (result.status === Office.AsyncResultStatus.Succeeded) {
-          setExistingEvent(event);
-          const [firstTarget] = event.streamingTargets ?? [];
-          if (firstTarget?.id) {
-            setStreamingTarget((prev) => ({ ...prev, id: firstTarget.id }));
-          }
-          item.sendAsync();
-          return;
-        }
-        console.error("Saving custom properties failed: ", result.error);
-      });
-    } catch (error) {
-      console.error("Unable to create event due to the following error: ", error);
-    }
-  };
-
-  const updateMeeting = async () => {
-    try {
-      const payload = (await getEventPayload()) as UpdateEventPayload;
-      const queryParams = { suppressEmailNotification: true } as UpdateEventQueryParams;
-      const event = await client?.events.update(existingEvent.id, payload, queryParams);
-      await syncStreamingTarget(event.room.id, client);
-      await client?.rooms.update(event.room.id, { e2eEncryption: e2eEncryptionEnabled });
-      const originalInvitees = existingEvent.invitees.map((invite) => invite.profile);
-      const updatedInvitees = await getInvitees();
-      const addedInvitees = differenceBy(updatedInvitees, originalInvitees, "email");
-
-      originalInvitees.forEach(async (invitee) => {
-        const isUserStillSelected = updatedInvitees.some((user) => user.email === invitee.email);
-        if (!isUserStillSelected) {
-          await client?.events.deleteInvitation(
-            existingEvent.id,
-            { email: invitee.email },
-            { suppressEmailNotification: true }
-          );
-        }
-      });
-
-      await sendInvites(addedInvitees, event.id);
-
-      await setAsyncAsPromise(item.body.setAsync, createEventBody(event, inviteCode), {
-        coercionType: Office.CoercionType.Html,
-      });
-
-      item.sendAsync();
-    } catch (error) {
-      console.error("Unable to save event due to the following error: ", error);
-    }
   };
 
   const handleClearMeetingInformation = async () => {
@@ -298,7 +182,17 @@ const EventComposePage: FC = () => {
         customProps.remove(OPENTALK_INVITE_CODE);
         await callbackAsPromise<void>(customProps.saveAsync.bind(customProps));
       }
-      await setAsyncAsPromise(item.location.setAsync, "");
+      const rawLocation = await callbackAsPromise<unknown>((cb) => item.location.getAsync(cb));
+      const currentLocation = normalizeLocationString(rawLocation);
+      const cleanedLocation = client?.config?.opentalkOutlookWebAppUrl
+        ? existingEvent?.room?.id
+          ? removeMeetingLinkFromLocation(
+              currentLocation ?? "",
+              buildMeetingLink(client.config.opentalkOutlookWebAppUrl, existingEvent.room.id)
+            )
+          : removeMeetingLinkByBase(currentLocation ?? "", client.config.opentalkOutlookWebAppUrl)
+        : (currentLocation ?? "");
+      await setAsyncAsPromise(item.location.setAsync, cleanedLocation);
       await setAsyncAsPromise(item.body.setAsync, "");
       setExistingEvent(undefined);
       setLockReason(undefined);
@@ -324,12 +218,40 @@ const EventComposePage: FC = () => {
       return;
     }
 
-    if (!!existingEvent) {
-      await updateMeeting();
-    } else {
-      await createMeeting();
+    if (!client) {
+      return;
     }
-    setDisableSaveButton(false);
+
+    const service = new EventService(client);
+    const options = buildMeetingOptions();
+    setDisableButtons(true);
+
+    try {
+      if (!!existingEvent) {
+        const updatedEvent = await service.updateMeeting(
+          existingEvent.id,
+          options,
+          existingEvent,
+          inviteCode
+        );
+        await syncStreamingTarget(updatedEvent.room.id, client);
+        setExistingEvent(updatedEvent);
+      } else {
+        const { event: newEvent, inviteCode: newInviteCode } = await service.createMeeting(options);
+        const [firstTarget] = newEvent.streamingTargets ?? [];
+        if (firstTarget?.id) {
+          setStreamingTarget((prev) => ({ ...prev, id: firstTarget.id }));
+        }
+        if (newInviteCode) {
+          setInviteCode(newInviteCode);
+        }
+        setExistingEvent(newEvent);
+      }
+    } catch (error) {
+      console.error("Unable to save event due to the following error: ", error);
+    } finally {
+      setDisableButtons(false);
+    }
   };
 
   useEffect(() => {
@@ -348,6 +270,7 @@ const EventComposePage: FC = () => {
     validateStreaming,
     validateTrainingParticipation,
   ]);
+
   const handleTrainingReportChange = useCallback(
     (enabled: boolean, parameter?: TrainingParticipationReportParameterSet) => {
       toggleTrainingParticipation(enabled);
@@ -358,29 +281,65 @@ const EventComposePage: FC = () => {
     [setTrainingParticipationParams, toggleTrainingParticipation]
   );
 
-  const handleCancel = () => {
-    if (!existingEvent || !customProps) {
+  const performMeetingCancellation = useCallback(async () => {
+    if (!existingEvent || !customProps || !client) {
       return;
     }
     setDisableButtons(true);
-    const params: DeleteEventQueryParams = {
-      forceDeleteReferenceIfExternalServicesFail: false,
-      suppressEmailNotification: true,
-    };
-    client.events
-      .delete(existingEvent?.id, params)
-      .then(async () => {
-        customProps.remove(OPENTALK_EVENT_ID);
-        customProps.remove(OPENTALK_OWNER_ID);
-        customProps.saveAsync(() => setShowDisclaimer(true));
-        const item = Office.context.mailbox.item;
-        await setAsyncAsPromise(item.location.setAsync, "");
-        await setAsyncAsPromise(item.body.setAsync, "");
-      })
-      .catch((error) => {
-        console.error("Issue with canceling event: ", error);
-      })
-      .finally(() => setDisableButtons(false));
+    try {
+      const params: DeleteEventQueryParams = {
+        forceDeleteReferenceIfExternalServicesFail: false,
+        suppressEmailNotification: true,
+      };
+      await client.events.delete(existingEvent.id, params);
+      customProps.remove(OPENTALK_EVENT_ID);
+      customProps.remove(OPENTALK_OWNER_ID);
+      await callbackAsPromise<void>(customProps.saveAsync.bind(customProps));
+      const item = Office.context.mailbox.item;
+      const rawLocation = await callbackAsPromise<unknown>((cb) => item.location.getAsync(cb));
+      const currentLocation = normalizeLocationString(rawLocation);
+      const meetingLink = buildMeetingLink(
+        client.config.opentalkOutlookWebAppUrl,
+        existingEvent.room.id
+      );
+      const cleanedLocation = removeMeetingLinkFromLocation(currentLocation ?? "", meetingLink);
+      await setAsyncAsPromise(item.location.setAsync, cleanedLocation);
+      const currentBody = await callbackAsPromise<string>((cb) =>
+        item.body.getAsync(Office.CoercionType.Html, cb)
+      );
+      const cleanBody = removeOldMeetingBody(currentBody, existingEvent?.room?.id);
+      await setAsyncAsPromise(item.body.setAsync, cleanBody, {
+        coercionType: Office.CoercionType.Html,
+      });
+      setShowDisclaimer(true);
+    } catch (error) {
+      console.error("Issue with canceling event: ", error);
+    } finally {
+      setDisableButtons(false);
+    }
+  }, [client, customProps, existingEvent]);
+
+  const handleCancelClick = () => {
+    const isSuppressed = localStorage.getItem(SUPPRESS_DELETE_WARNING_KEY) === "true";
+
+    if (isSuppressed) {
+      performMeetingCancellation();
+    } else {
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteDialogHideFuture) {
+      localStorage.setItem(SUPPRESS_DELETE_WARNING_KEY, "true");
+    }
+    setDeleteDialogOpen(false);
+    performMeetingCancellation();
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setDeleteDialogHideFuture(false);
   };
 
   const switchProps = { disabled: isLocked };
@@ -420,6 +379,17 @@ const EventComposePage: FC = () => {
           <ProfileHeader />
 
           <Stack spacing={2} mt={2}>
+            <TextField
+              fullWidth
+              label={t("password")}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              type="text"
+              autoComplete="off"
+              size="small"
+              sx={{ mt: 1 }}
+              disabled={isLocked}
+            />
             <FormSwitch
               label={t("waiting-room-switch", { ns: "dashboard" })}
               flag={waitingRoomEnabled}
@@ -448,17 +418,6 @@ const EventComposePage: FC = () => {
               setFlag={setMeetingDetailsEnabled}
               switchProps={switchProps}
             />
-            <TextField
-              fullWidth
-              label={t("password")}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="text"
-              autoComplete="off"
-              size="small"
-              sx={{ mt: 1 }}
-              disabled={isLocked}
-            />
             {isStreamingEnabled && (
               // We need to expose livestreamEnabled to be able to control the form buttons
               <StreamingTargetFields
@@ -478,6 +437,42 @@ const EventComposePage: FC = () => {
               />
             )}
           </Stack>
+          {/* Confirmation Dialog */}
+          <Dialog
+            open={deleteDialogOpen}
+            onClose={handleCloseDeleteDialog}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {t("delete-meeting-title", { ns: "dashboard" })}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description" color="accent">
+                {t("delete-meeting-description", { ns: "dashboard" })}
+              </DialogContentText>
+              <Box mt={2}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={deleteDialogHideFuture}
+                      onChange={(e) => setDeleteDialogHideFuture(e.target.checked)}
+                      color="secondary"
+                    />
+                  }
+                  label={t("do-not-show-again", { ns: "dashboard" })}
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDeleteDialog} color="secondary" variant="outlined">
+                {t("cancel")}
+              </Button>
+              <Button onClick={handleConfirmDelete} color="error" autoFocus>
+                {t("cancel-meeting")}
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           <Paper
             elevation={3}
@@ -492,7 +487,7 @@ const EventComposePage: FC = () => {
               zIndex: 1300,
             }}
           >
-            <Stack display="flex" direction="row-reverse" mt={1} spacing={1}>
+            <Stack display="flex" direction="row-reverse" m={1} spacing={1}>
               <Button
                 sx={{ flex: 1, maxWidth: existingEvent ? "50%" : "100%" }}
                 variant="contained"
@@ -506,10 +501,10 @@ const EventComposePage: FC = () => {
                   sx={{ flex: 1 }}
                   variant="outlined"
                   color="error"
-                  onClick={handleCancel}
+                  onClick={handleCancelClick}
                   disabled={disableButtons || isLocked}
                 >
-                  {t("cancel")}
+                  {t("cancel-meeting")}
                 </Button>
               )}
             </Stack>

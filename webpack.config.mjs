@@ -23,6 +23,10 @@ export default async (env, options) => {
         import: ["./src/index.tsx", "./src/taskpane/taskpane.html"],
         dependOn: "react",
       },
+      commands: {
+        import: ["./src/commands/commands.ts", "./src/commands/commands.html"],
+        dependOn: "react",
+      },
       login: {
         import: ["./src/login/login.tsx", "./src/login/login.html"],
         dependOn: "react",
@@ -67,6 +71,11 @@ export default async (env, options) => {
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
         chunks: ["polyfill", "taskpane", "react"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "commands.html",
+        template: "./src/commands/commands.html",
+        chunks: ["polyfill", "commands", "react"],
       }),
       new HtmlWebpackPlugin({
         filename: "login.html",

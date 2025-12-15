@@ -30,8 +30,15 @@
   "dashboard-custom-training-participation-report-dialog-interval-duration": "Subsequent queries variable after",
   "dashboard-custom-training-participation-report-dialog-to": "to",
   "dashboard-custom-training-participation-report-dialog-minutes": "minutes",
+  "outlook-meeting-created": "You successfully created an OpenTalk meeting.",
+  "outlook-meeting-creation-error": "The meeting could not be created. Open the OpenTalk-Preferences for furhter information.",
+  "outlook-existing-meeting": "An OpenTalk meeting already exists.",
   "outlook-meeting-not-owner": "You are not allowed to edit this meeting.",
   "outlook-meeting-invitee-options": "Invitees cannot edit this meeting.",
   "outlook-meeting-no-longer-available": "This meeting is no longer available, please remove the meeting information from the appointment.",
-  "outlook-meeting-no-longer-available-delete": "Remove meeting details from invitation"
+  "outlook-meeting-no-longer-available-delete": "Remove meeting details from invitation",
+  
+  "delete-meeting-title": "Cancel meeting?",
+  "delete-meeting-description": "The meeting will be deleted and the meeting link invalidated. Afterwards, you'll need to cancel the meeting in Outlook.",
+  "do-not-show-again": "Do not show me this again."
 }
