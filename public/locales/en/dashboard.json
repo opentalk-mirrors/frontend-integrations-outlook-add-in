@@ -14,5 +14,18 @@
   "livestream-unavailable": "Livestreaming is not available for your plan.",
 
   "outlook-meeting-cancel-success": "Meeting successfully cancelled.",
-  "outlook-meeting-cancel-note": "You will have to manually cancel it in Outlook."
+  "outlook-meeting-cancel-note": "You will have to manually cancel it in Outlook.",
+
+  "dashboard-meeting-training-participation-report-switch": "Training participation report",
+  "dashboard-meeting-training-participation-report-option-every-thirty-min": "Ask every 30 min",
+  "dashboard-meeting-training-participation-report-option-every-sixty-min": "Ask every 60 min",
+  "dashboard-meeting-training-participation-report-option-thirty-to-sixty-min": "Variable ask every 30 - 60 min",
+  "dashboard-meeting-training-participation-report-option-ninety-to-hundred-twenty-min": "Variable ask every 90 - 120 min",
+  "dashboard-meeting-training-participation-report-option-custom": "Custom",
+
+  "dashboard-custom-training-participation-report-dialog-title": "Custom query times",
+  "dashboard-custom-training-participation-report-dialog-initial-timeout": "First confirmation query variable after",
+  "dashboard-custom-training-participation-report-dialog-interval-duration": "Subsequent queries variable after",
+  "dashboard-custom-training-participation-report-dialog-to": "to",
+  "dashboard-custom-training-participation-report-dialog-minutes": "minutes"
 }

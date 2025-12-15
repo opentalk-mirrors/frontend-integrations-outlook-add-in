@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Stack, Button, Typography, Box, TextField, Paper } from "@mui/material";
 import { differenceBy } from "lodash";
 
@@ -12,6 +12,7 @@ import {
   CreateEventInviteQueryParams,
   CreateEventQueryParams,
   UpdateEventQueryParams,
+  TrainingParticipationReportParameterSet,
 } from "../../api/types/events";
 import { EmailUser } from "../../api/types/user";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
@@ -22,6 +23,8 @@ import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
 import { useTranslation } from "react-i18next";
 import { ProfileHeader } from "../ProfileHeader";
+import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
+import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
 
 const EVENT_INVITEES = 10;
 
@@ -30,7 +33,7 @@ const EventComposePage: FC = () => {
   const isSharedFolderAvailable = !!tariff?.modules?.sharedFolder;
   const isStreamingEnabled =
     tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
-
+  const isTrainingParticipationReportAvailable = !!tariff?.modules?.trainingParticipationReport;
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
@@ -53,9 +56,15 @@ const EventComposePage: FC = () => {
   const [inviteCode, setInviteCode] = useState<string | undefined>();
   const [disableButtons, setDisableButtons] = useState(false);
   const [disableSaveButton, setDisableSaveButton] = useState(false);
+  const {
+    enabled: trainingParticipationEnabled,
+    params: trainingParticipationParams,
+    toggle: toggleTrainingParticipation,
+    setParams: setTrainingParticipationParams,
+    validate: validateTrainingParticipation,
+  } = useTrainingParticipation();
 
   const item = Office.context.mailbox.item;
-
   useEffect(() => {
     Office.context.mailbox.item.loadCustomPropertiesAsync(async (result) => {
       const customProps = result.value;
@@ -82,6 +91,10 @@ const EventComposePage: FC = () => {
               streamingEndpoint: firstTarget.streamingEndpoint ?? "",
               streamingKey: firstTarget.streamingKey ?? "",
             });
+          }
+          if (event.trainingParticipationReport) {
+            toggleTrainingParticipation(true);
+            setTrainingParticipationParams(event.trainingParticipationReport);
           }
           await setAsyncAsPromise(item.body.setAsync, event.description, {
             coercionType: Office.CoercionType.Text,
@@ -127,6 +140,9 @@ const EventComposePage: FC = () => {
       showMeetingDetails: meetingDetailsEnabled,
       password: password.trim() || null,
       streamingTargets: streamingPayload ? [streamingPayload] : undefined,
+      trainingParticipationReport: trainingParticipationEnabled
+        ? (trainingParticipationParams ?? null)
+        : null,
     };
   };
 
@@ -250,8 +266,9 @@ const EventComposePage: FC = () => {
     if (item.itemType !== Office.MailboxEnums.ItemType.Appointment) {
       return;
     }
-    const { isValid } = validateStreaming();
-    if (!isValid) {
+    const { isValid: isStreamingValid } = validateStreaming();
+    const { isValid: isTrainingParticipationValid } = validateTrainingParticipation();
+    if (!isStreamingValid || !isTrainingParticipationValid) {
       setDisableSaveButton(true);
       return;
     }
@@ -268,16 +285,27 @@ const EventComposePage: FC = () => {
     if (!disableSaveButton) {
       return;
     }
-    if (!livestreamEnabled || !streamingTarget) {
-      validateStreaming();
-      setDisableSaveButton(false);
-      return;
-    }
-    const { isValid } = validateStreaming();
-    if (isValid) {
+    const { isValid: isStreamingValid } = validateStreaming();
+    const { isValid: isTrainingParticipationValid } = validateTrainingParticipation();
+    if (isStreamingValid && isTrainingParticipationValid) {
       setDisableSaveButton(false);
     }
-  }, [disableSaveButton, livestreamEnabled, streamingTarget, validateStreaming]);
+  }, [
+    disableSaveButton,
+    livestreamEnabled,
+    streamingTarget,
+    validateStreaming,
+    validateTrainingParticipation,
+  ]);
+  const handleTrainingReportChange = useCallback(
+    (enabled: boolean, parameter?: TrainingParticipationReportParameterSet) => {
+      toggleTrainingParticipation(enabled);
+      if (enabled && parameter) {
+        setTrainingParticipationParams(parameter);
+      }
+    },
+    [setTrainingParticipationParams, toggleTrainingParticipation]
+  );
 
   const handleCancel = () => {
     if (!existingEvent || !customProps) {
@@ -359,6 +387,13 @@ const EventComposePage: FC = () => {
             streamingTarget={streamingTarget}
             streamingErrors={streamingErrors}
             setStreamingTarget={setStreamingTarget}
+          />
+        )}
+        {isTrainingParticipationReportAvailable && (
+          <TrainingParticipationReportSelect
+            enabled={trainingParticipationEnabled}
+            parameter={trainingParticipationParams}
+            onChange={handleTrainingReportChange}
           />
         )}
       </Stack>
