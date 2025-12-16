@@ -33,7 +33,7 @@ export const StreamingTargetFields: FC<StreamingTargetFieldsProps> = ({
         }}
       />
       {livestreamEnabled && streamingTarget && (
-        <Stack spacing={1} sx={{ mt: 1 }}>
+        <Stack spacing={1.5} sx={{ mt: 1 }}>
           <TextField
             select
             label={t("livestream-platform", { ns: "dashboard" })}

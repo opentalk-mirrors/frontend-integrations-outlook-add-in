@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Stack, Button, Typography, Box, TextField } from "@mui/material";
+import { Stack, Button, Typography, Box, TextField, Paper } from "@mui/material";
 import { differenceBy } from "lodash";
 
 import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
@@ -21,6 +21,7 @@ import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE } from "../../constants";
 import ReactDOMServer from "react-dom/server";
 import { EventBody } from "./EventBody/EventBody";
 import { useTranslation } from "react-i18next";
+import { ProfileHeader } from "../ProfileHeader";
 
 const EVENT_INVITEES = 10;
 
@@ -161,7 +162,6 @@ const EventComposePage: FC = () => {
         ).toString()
       : null;
 
-    // Use EmailTemplate component and serialize to string
     return ReactDOMServer.renderToStaticMarkup(
       <EventBody
         event={event}
@@ -322,59 +322,83 @@ const EventComposePage: FC = () => {
   }
 
   return (
-    <>
-      <FormSwitch
-        label={t("waiting-room-switch", { ns: "dashboard" })}
-        flag={waitingRoomEnabled}
-        setFlag={setWaitingRoomEnabled}
-      />
-      {isSharedFolderAvailable && (
+    <Box sx={{ pb: 15 }}>
+      <ProfileHeader />
+
+      <Stack spacing={2} mt={2}>
         <FormSwitch
-          label={t("shared-folder-switch", { ns: "dashboard" })}
-          flag={sharedFolderEnabled}
-          setFlag={setSharedFolderEnabled}
+          label={t("waiting-room-switch", { ns: "dashboard" })}
+          flag={waitingRoomEnabled}
+          setFlag={setWaitingRoomEnabled}
         />
-      )}
-      <FormSwitch
-        label={t("meeting-details-switch", { ns: "dashboard" })}
-        flag={meetingDetailsEnabled}
-        setFlag={setMeetingDetailsEnabled}
-      />
-      <TextField
-        fullWidth
-        label={t("password")}
-        value={password}
-        onChange={(event) => setPassword(event.target.value)}
-        type="text"
-        autoComplete="off"
-        size="small"
-        sx={{ mt: 1 }}
-      />
-      {isStreamingEnabled && (
-        // We need to expose livestreamEnabled to be able to control the form buttons
-        <StreamingTargetFields
-          livestreamEnabled={livestreamEnabled}
-          onToggleLivestream={toggleLivestream}
-          streamingTarget={streamingTarget}
-          streamingErrors={streamingErrors}
-          setStreamingTarget={setStreamingTarget}
+        {isSharedFolderAvailable && (
+          <FormSwitch
+            label={t("shared-folder-switch", { ns: "dashboard" })}
+            flag={sharedFolderEnabled}
+            setFlag={setSharedFolderEnabled}
+          />
+        )}
+        <FormSwitch
+          label={t("meeting-details-switch", { ns: "dashboard" })}
+          flag={meetingDetailsEnabled}
+          setFlag={setMeetingDetailsEnabled}
         />
-      )}
-      <Stack display="flex" direction="row-reverse" sx={{ marginTop: 1 }} spacing={1}>
-        <Button
-          sx={{ flex: 1, maxWidth: "50%" }}
-          onClick={handleSave}
-          disabled={disableButtons || disableSaveButton}
-        >
-          {existingEvent ? t("update") : t("create")}
-        </Button>
-        {existingEvent && (
-          <Button sx={{ flex: 1 }} color="error" onClick={handleCancel} disabled={disableButtons}>
-            Cancel
-          </Button>
+        <TextField
+          fullWidth
+          label={t("password")}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          type="text"
+          autoComplete="off"
+          size="small"
+        />
+        {isStreamingEnabled && (
+          <StreamingTargetFields
+            livestreamEnabled={livestreamEnabled}
+            onToggleLivestream={toggleLivestream}
+            streamingTarget={streamingTarget}
+            streamingErrors={streamingErrors}
+            setStreamingTarget={setStreamingTarget}
+          />
         )}
       </Stack>
-    </>
+
+      <Paper
+        elevation={3}
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          p: 2,
+          bgcolor: "background.paper",
+          borderTop: "1px solid rgba(0,0,0,0.12)",
+          zIndex: 1300,
+        }}
+      >
+        <Stack display="flex" direction="row-reverse" spacing={1}>
+          <Button
+            sx={{ flex: 1, maxWidth: existingEvent ? "50%" : "100%" }}
+            variant="contained"
+            onClick={handleSave}
+            disabled={disableButtons || disableSaveButton}
+          >
+            {existingEvent ? t("update") : t("create")}
+          </Button>
+          {existingEvent && (
+            <Button
+              sx={{ flex: 1 }}
+              variant="outlined"
+              color="error"
+              onClick={handleCancel}
+              disabled={disableButtons}
+            >
+              {t("cancel")}
+            </Button>
+          )}
+        </Stack>
+      </Paper>
+    </Box>
   );
 };
 

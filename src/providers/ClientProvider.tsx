@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Client } from "../api/Client";
 import { ErrorContext, ContextualizedRequestError, Config } from "../api/types/client";
 import { Tariff } from "../api/types/tariff";
@@ -7,6 +15,7 @@ import { UsersAPI } from "../api/Users";
 import { AuthAPI } from "../api/Auth";
 import { RoomsAPI } from "../api/Rooms";
 import { StreamingTargetAPI } from "../api/StreamingTarget";
+import { PrivateUserProfile } from "../api/types/privateUserProfile";
 
 interface APIClient {
   auth: AuthAPI;
@@ -22,14 +31,14 @@ interface ClientState {
   isLoading: boolean;
   error?: ErrorContext;
   tariff?: Tariff;
+  me?: PrivateUserProfile;
+  logout: () => void;
 }
 
-export const ClientContext = createContext<ClientState>(null);
+export const ClientContext = createContext<ClientState>({} as ClientState);
 
 export const useClientContext = () => {
-  const contextValue = useContext(ClientContext);
-
-  return contextValue;
+  return useContext(ClientContext);
 };
 
 const ClientProvider = ({ children }: { children: ReactNode }) => {
@@ -37,29 +46,50 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ErrorContext>();
   const [tariff, setTariff] = useState<Tariff>();
+  const [me, setMe] = useState<PrivateUserProfile>();
+
+  const logout = useCallback(() => {
+    // 1. Clear local state to trigger re-render
+    setMe(undefined);
+    setTariff(undefined);
+
+    // 2. Clear the actual session (cookies/storage)
+    Client.clearSession();
+    setClient(null);
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
     Client.load()
-      .then((client) => {
-        const authAPI = new AuthAPI(client);
-        const eventsAPI = new EventsAPI(client);
-        const usersAPI = new UsersAPI(client);
-        const roomsAPI = new RoomsAPI(client);
-        const streamingTargetAPI = new StreamingTargetAPI(client);
+      .then((clientInstance) => {
+        // Initialize APIs
+        const authAPI = new AuthAPI(clientInstance);
+        const eventsAPI = new EventsAPI(clientInstance);
+        const usersAPI = new UsersAPI(clientInstance);
+        const roomsAPI = new RoomsAPI(clientInstance);
+        const streamingTargetAPI = new StreamingTargetAPI(clientInstance);
+
         setClient({
           auth: authAPI,
           events: eventsAPI,
           users: usersAPI,
           rooms: roomsAPI,
           streamingTargets: streamingTargetAPI,
-          config: client.config,
-        });
-        usersAPI.getTariff().then((response) => {
-          setTariff(response);
+          config: clientInstance.config,
         });
 
-        setIsLoading(false);
+        // Fetch User Data
+        // Ideally, run these in parallel for faster loading
+        Promise.all([usersAPI.getTariff(), usersAPI.me()])
+          .then(([tariffRes, meRes]) => {
+            setTariff(tariffRes);
+            setMe(meRes);
+            setIsLoading(false);
+          })
+          .catch((err) => {
+            console.error("Failed to load user data", err);
+            setIsLoading(false);
+          });
       })
       .catch((error: ContextualizedRequestError) => {
         setIsLoading(false);
@@ -67,11 +97,19 @@ const ClientProvider = ({ children }: { children: ReactNode }) => {
       });
   }, []);
 
-  return (
-    <ClientContext.Provider value={{ client, isLoading, error, tariff }}>
-      {children}
-    </ClientContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      client,
+      isLoading,
+      error,
+      tariff,
+      me,
+      logout,
+    }),
+    [client, isLoading, error, tariff, me, logout]
   );
+
+  return <ClientContext.Provider value={contextValue}>{children}</ClientContext.Provider>;
 };
 
 export default ClientProvider;
