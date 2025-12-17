@@ -72,7 +72,7 @@
     "office-addin-dev-certs": "^2.0.3",
     "office-addin-manifest": "^2.0.3",
     "office-addin-prettier-config": "^2.0.1",
-    "prettier": "^3.5.3",
+    "prettier": "^3.7.4",
     "react-i18next": "^15.7.3",
     "style-loader": "^4.0.0",
     "typescript": "^5.9.3",
