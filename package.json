@@ -76,7 +76,7 @@
     "react-i18next": "^15.7.3",
     "style-loader": "^4.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.32.1",
+    "typescript-eslint": "^8.50.0",
     "webpack": "^5.99.9",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "5.2.2",
