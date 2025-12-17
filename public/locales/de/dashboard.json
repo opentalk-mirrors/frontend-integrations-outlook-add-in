@@ -14,5 +14,18 @@
   "livestream-unavailable": "Livestreaming ist für Ihren Tarif nicht verfügbar.",
 
   "outlook-meeting-cancel-success": "Meeting erfolgreich abgesagt",
-  "outlook-meeting-cancel-note": "Sie müssen es manuell in Outlook absagen."
+  "outlook-meeting-cancel-note": "Sie müssen es manuell in Outlook absagen.",
+
+  "dashboard-meeting-training-participation-report-switch": "Teilnahmebericht für Schulungen",
+  "dashboard-meeting-training-participation-report-option-every-thirty-min": "Alle 30 Min. nachfragen",
+  "dashboard-meeting-training-participation-report-option-every-sixty-min": "Alle 60 Min. nachfragen",
+  "dashboard-meeting-training-participation-report-option-thirty-to-sixty-min": "Variabel alle 30 - 60 Min. nachfragen",
+  "dashboard-meeting-training-participation-report-option-ninety-to-hundred-twenty-min": "Variabel alle 90 - 120 Min. nachfragen",
+  "dashboard-meeting-training-participation-report-option-custom": "Benutzerdefiniert",
+
+  "dashboard-custom-training-participation-report-dialog-title": "Benutzerdefinierte Abfragezeiten",
+  "dashboard-custom-training-participation-report-dialog-initial-timeout": "Erste Bestätigungsabfrage variabel nach",
+  "dashboard-custom-training-participation-report-dialog-interval-duration": "Nachfolgende Abfragen variabel nach",
+  "dashboard-custom-training-participation-report-dialog-to": "bis",
+  "dashboard-custom-training-participation-report-dialog-minutes": "Minuten"
 }

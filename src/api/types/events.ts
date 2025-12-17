@@ -43,6 +43,7 @@ export interface CreateEventPayload {
   waitingRoom?: boolean;
   hasSharedFolder?: boolean;
   streamingTargets?: StreamingTargetPayload[];
+  trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
 }
 
 export type UpdateEventPayload = Partial<CreateEventInvitePayload>;
@@ -94,6 +95,7 @@ interface BaseEvent {
   inviteesTruncated?: boolean;
   invitees?: Array<EventInvite>;
   showMeetingDetails: boolean;
+  trainingParticipationReport?: TrainingParticipationReportParameterSet;
   isTimeIndependent?: boolean;
   sharedFolder?: SharedFolderData;
   streamingTargets?: StreamingTarget[];
@@ -123,6 +125,28 @@ export function isTimedEvent(event: BaseEvent): event is TimedEvent {
 export interface TimelessEvent extends BaseEvent {
   type: EventType.Single;
   isTimeIndependent: true;
+}
+
+export interface TimeRange {
+  /**
+   * The earliest number of seconds after which the checkpoint can be created. Must be 0 or greater.
+   */
+  after: number;
+  /**
+   * The number of seconds within which the checkpoint can be created after the after value. Must be 0 or greater.
+   */
+  within: number;
+}
+
+export interface TrainingParticipationReportParameterSet {
+  /**
+   * default: { "after": 600, "within": 1200 }
+   */
+  initialCheckpointDelay: TimeRange;
+  /**
+   * default: { "after": 6300, "within": 1800 }
+   */
+  checkpointInterval: TimeRange;
 }
 
 /**

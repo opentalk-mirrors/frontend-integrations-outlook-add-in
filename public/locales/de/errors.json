@@ -1,3 +1,4 @@
 {
-  "auth": "Authentifizierungsfehler"
+  "auth": "Authentifizierungsfehler",
+  "dashboard-custom-training-participation-report-dialog-error": "Der Wert muss größer als {{after}} sein"
 }
