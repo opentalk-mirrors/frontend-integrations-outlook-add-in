@@ -35,6 +35,7 @@ const EventComposePage: FC = () => {
     tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
   const isTrainingParticipationReportAvailable = !!tariff?.modules?.trainingParticipationReport;
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
+  const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(false);
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
   const [password, setPassword] = useState("");
@@ -77,6 +78,7 @@ const EventComposePage: FC = () => {
           const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
           setExistingEvent(event);
           setWaitingRoomEnabled(event.room.waitingRoom);
+          setE2eEncryptionEnabled(!!event.room.e2eEncryption);
           setSharedFolderEnabled(!!event.sharedFolder);
           setMeetingDetailsEnabled(event.showMeetingDetails);
           setPassword(event.room.password ?? "");
@@ -138,6 +140,7 @@ const EventComposePage: FC = () => {
       waitingRoom: waitingRoomEnabled,
       hasSharedFolder: sharedFolderEnabled,
       showMeetingDetails: meetingDetailsEnabled,
+      e2eEncryption: e2eEncryptionEnabled,
       password: password.trim() || null,
       streamingTargets: streamingPayload ? [streamingPayload] : undefined,
       trainingParticipationReport: trainingParticipationEnabled
@@ -235,6 +238,7 @@ const EventComposePage: FC = () => {
       const queryParams = { suppressEmailNotification: true } as UpdateEventQueryParams;
       const event = await client?.events.update(existingEvent.id, payload, queryParams);
       await syncStreamingTarget(event.room.id, client);
+      await client?.rooms.update(event.room.id, { e2eEncryption: e2eEncryptionEnabled });
       const originalInvitees = existingEvent.invitees.map((invite) => invite.profile);
       const updatedInvitees = await getInvitees();
       const addedInvitees = differenceBy(updatedInvitees, originalInvitees, "email");
@@ -359,6 +363,13 @@ const EventComposePage: FC = () => {
           flag={waitingRoomEnabled}
           setFlag={setWaitingRoomEnabled}
         />
+        {client.config.opentalkExperimentalEnableE2EE && (
+          <FormSwitch
+            label={t("e2e-encryption-switch", { ns: "dashboard" })}
+            flag={e2eEncryptionEnabled}
+            setFlag={setE2eEncryptionEnabled}
+          />
+        )}
         {isSharedFolderAvailable && (
           <FormSwitch
             label={t("shared-folder-switch", { ns: "dashboard" })}

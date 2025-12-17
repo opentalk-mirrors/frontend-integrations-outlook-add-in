@@ -32,6 +32,7 @@ export interface EventInvite {
 export interface CreateEventPayload {
   title: string;
   description: string;
+  e2eEncryption: boolean;
   startsAt: DateTime;
   endsAt: DateTime;
   isAdhoc?: boolean;
@@ -67,6 +68,7 @@ type EventRoomInfo = {
   id: string;
   password?: string;
   waitingRoom: boolean;
+  e2eEncryption: boolean;
   callIn?: CallInInfo;
 };
 
