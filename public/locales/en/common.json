@@ -4,7 +4,8 @@
   "loading": "Loading...",
   "logout": "Log out",
   "login": "Log in",
-  "cancel": "Cancel Meeting",
+  "cancel": "Cancel",
+  "cancel-meeting": "Cancel meeting",
   "important": "Important",
   "please-sign-in": "Please sign in.",
 

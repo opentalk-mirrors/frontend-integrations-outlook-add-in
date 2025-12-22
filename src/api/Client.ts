@@ -22,11 +22,50 @@ import { toCamelCaseKeys, toSnakeCaseKeys } from "../utils/caseHelpers";
 import { DEFAULT_REFRESH_TOKEN_LIFETIME_SECONDS } from "../constants";
 import { getEnvBool } from "../helpers";
 
+interface OfficeRuntimeStorage {
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
+  removeItem(key: string): Promise<void>;
+}
+
+interface OfficeRuntimeGlobal {
+  storage?: OfficeRuntimeStorage;
+}
+
+// This is a global variable defined in webpack.config.mjs.
+// Declare OfficeRuntime for Typescript visibility
+declare const OfficeRuntime: OfficeRuntimeGlobal | undefined;
+
 // This is a global variable defined in webpack.config.mjs.
 // It is declared here to satisfy the TypeScript compiler.
 declare const PRODUCTION: boolean;
 
 const OT_CLIENT = "ot-client";
+
+// These ensure data is shared between Command and Taskpane
+const storage = {
+  getItem: async (key: string): Promise<string | null> => {
+    if (OfficeRuntime?.storage) {
+      return OfficeRuntime.storage.getItem(key);
+    }
+
+    return localStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string): Promise<void> => {
+    if (OfficeRuntime?.storage) {
+      return OfficeRuntime.storage.setItem(key, value);
+    }
+
+    localStorage.setItem(key, value);
+  },
+  removeItem: async (key: string): Promise<void> => {
+    if (OfficeRuntime?.storage) {
+      return OfficeRuntime.storage.removeItem(key);
+    }
+
+    localStorage.removeItem(key);
+  },
+};
 
 export class Client {
   private otWebApp: string;
@@ -60,7 +99,7 @@ export class Client {
   }
 
   private async reauthenticate(): Promise<void> {
-    Client.clearSession();
+    await Client.clearSession();
 
     const authenticatedClient = await Client.authenticate(this.config);
     if (isErrorWithContext(authenticatedClient)) {
@@ -68,7 +107,7 @@ export class Client {
     }
 
     Object.assign(this, authenticatedClient);
-    localStorage.setItem(OT_CLIENT, JSON.stringify(this));
+    await storage.setItem(OT_CLIENT, JSON.stringify(this));
   }
 
   private static getBaseUri(): string {
@@ -115,7 +154,7 @@ export class Client {
   // Load from localStorage or authenticate fresh
   public static async load(): Promise<Client> {
     const config = await this.loadConfig();
-    const clientValueStr = localStorage.getItem(OT_CLIENT);
+    const clientValueStr = await storage.getItem(OT_CLIENT);
 
     if (clientValueStr) {
       const client = Client.fromJSON(clientValueStr, config);
@@ -150,8 +189,8 @@ export class Client {
     return this.fetchWithAuth<T>({ method: "DELETE", ...props });
   }
 
-  public static clearSession(): void {
-    localStorage.removeItem(OT_CLIENT);
+  public static async clearSession(): Promise<void> {
+    await storage.removeItem(OT_CLIENT);
   }
 
   // Internal OIDC flow
@@ -255,7 +294,7 @@ export class Client {
           tokenResponse.refreshExpiresIn,
           now
         );
-        localStorage.setItem(OT_CLIENT, JSON.stringify(client));
+        await storage.setItem(OT_CLIENT, JSON.stringify(client));
         dialog?.close();
 
         return client;
@@ -314,7 +353,7 @@ export class Client {
     });
 
     if (resp.status === 401) {
-      this.clearSession();
+      await this.clearSession();
     }
 
     if (!resp.ok) return await RequestError.fromResponse(resp);
@@ -357,9 +396,9 @@ export class Client {
     this.refreshTokenExpires = Client.calculateRefreshTokenExpires(response.refreshExpiresIn, now);
 
     if (this.accessToken) {
-      localStorage.setItem(OT_CLIENT, JSON.stringify(this));
+      await storage.setItem(OT_CLIENT, JSON.stringify(this));
     } else {
-      Client.clearSession();
+      await Client.clearSession();
     }
 
     return this.accessToken;

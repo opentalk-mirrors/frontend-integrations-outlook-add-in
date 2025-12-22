@@ -48,10 +48,26 @@
       <Hosts>
         <Host xsi:type="MailHost">
           <DesktopFormFactor>
+            <FunctionFile resid="residfunctionfile" />
             <ExtensionPoint xsi:type="AppointmentOrganizerCommandSurface">
               <OfficeTab id="AppointmentCreateTab">
                 <Group id="AppointmentCreateGroup">
                   <Label resid="AppointmentCreateGroupLabel" />
+                  <Control xsi:type="Button" id="callMethodButton">
+                    <Label resid="CommandButton.Label" />
+                    <Supertip>
+                      <Title resid="CommandButton.Label" />
+                      <Description resid="CommandButton.Tooltip" />
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.16x16" />
+                      <bt:Image size="32" resid="Icon.32x32" />
+                      <bt:Image size="80" resid="Icon.80x80" />
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>createMeeting</FunctionName>
+                    </Action>
+                  </Control>
                   <Control xsi:type="Button" id="eventCreateOpenPaneButton">
                     <Label resid="TaskpaneButton.Label" />
                     <Supertip>
@@ -80,17 +96,28 @@
           <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3001/assets/icon-80.png" />
         </bt:Images>
         <bt:Urls>
+          <bt:Url id="residfunctionfile" DefaultValue="https://localhost:3001/commands.html" />
           <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3001/taskpane.html" />
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="AppointmentCreateGroupLabel" DefaultValue="Create OpenTalk Meeting" />
-          <bt:String id="TaskpaneButton.Label" DefaultValue="OpenTalk Meeting" />
+          <bt:String id="TaskpaneButton.Label" DefaultValue="OpenTalk Preferences">
+            <bt:Override Locale="de-DE" Value="OpenTalk Präferenzen" />
+          </bt:String>
+          <bt:String id="CommandButton.Label" DefaultValue="Add OpenTalk Meeting">
+            <bt:Override Locale="de-DE" Value="OpenTalk-Meeting hinzufügen" />
+          </bt:String>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="TaskpaneButton.Tooltip"
-            DefaultValue="Schedule an OpenTalk meeting." />
+          <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Schedule an OpenTalk meeting.">
+            <bt:Override Locale="de-DE" Value="Planen Sie eine OpenTalk-Besprechung." />
+          </bt:String>
+          <bt:String id="CommandButton.Tooltip" DefaultValue="Schedule an OpenTalk meeting.">
+            <bt:Override Locale="de-DE" Value="Erstellen Sie direkt eine OpenTalk-Besprechung." />
+          </bt:String>
         </bt:LongStrings>
       </Resources>
     </VersionOverrides>
   </VersionOverrides>
 </OfficeApp>
+

@@ -4,7 +4,8 @@
   "loading": "Wird geladen...",
   "logout": "Abmelden",
   "login": "Anmelden",
-  "cancel": "Absagen",
+  "cancel": "Abbrechen",
+  "cancel-meeting": "Absagen",
   "important": "Wichtig",
   "please-sign-in": "Bitte melden Sie sich an.",
 
