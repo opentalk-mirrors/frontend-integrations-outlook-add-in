@@ -39,5 +39,15 @@
   "outlook-meeting-no-longer-available-delete": "Meetingdetails aus Einladung löschen",
   "delete-meeting-title": "Meeting absagen?",
   "delete-meeting-description": "Das Meeting wird gelöscht und der Meeting-Link ungültig. Sie müssen das Meeting anschließend in Outlook absagen.",
-  "do-not-show-again": "Diesen Hinweis nicht mehr anzeigen."
+  "do-not-show-again": "Diesen Hinweis nicht mehr anzeigen.",
+
+  "step-meeting": "Meeting",
+  "step-participants": "Teilnehmer",
+  "invited": "Eingeladen",
+  "participants-search-placeholder": "Suche",
+  "participants-unregistered-tooltip": "Dieser Benutzer ist nicht registriert.",
+  "participants-pending-tooltip": "Aktualisiere das Meeting, um diesen Benutzer zum Moderator zu machen.",
+  "participants-disclaimer": "Nur registrierte Nutzer können Moderatorenrechte erhalten.",
+  "participants-promote-to-moderator": "Moderatorenrechte gewähren",
+  "participants-empty": "Keine Teilnehmer gefunden."
 }

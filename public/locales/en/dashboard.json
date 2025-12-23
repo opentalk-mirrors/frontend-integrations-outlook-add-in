@@ -40,5 +40,15 @@
   
   "delete-meeting-title": "Cancel meeting?",
   "delete-meeting-description": "The meeting will be deleted and the meeting link invalidated. Afterwards, you'll need to cancel the meeting in Outlook.",
-  "do-not-show-again": "Do not show me this again."
+  "do-not-show-again": "Do not show me this again.",
+
+  "step-meeting": "Meeting",
+  "step-participants": "Participants",
+  "invited": "Invited",
+  "participants-search-placeholder": "Search",
+  "participants-unregistered-tooltip": "This user is not registered.",
+  "participants-pending-tooltip": "Update the meeting to make this user a moderator.",
+  "participants-disclaimer": "Only registered users can receive moderator rights.",
+  "participants-promote-to-moderator": "Grant moderator rights",
+  "participants-empty": "No invitees found."
 }
