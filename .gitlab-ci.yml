@@ -103,6 +103,11 @@ trigger_changelog_preview:
     PIPELINE_MERGE_REQUEST_IID: $CI_MERGE_REQUEST_IID
   trigger: opentalk/tools/check-changelog
 
+include:
+  - project: opentalk/ci/templates/collect-commit-evidence
+    ref: v1
+    file: .gitlab-ci-template.yml
+
 package:container-addin-mr:
   stage: package
   rules:
