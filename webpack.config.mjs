@@ -3,6 +3,7 @@ import CopyWebpackPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import webpack from "webpack";
 import DotenvWebpackPlugin from "dotenv-webpack";
+import path from "path";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -56,6 +57,7 @@ export default async (env, options) => {
         {
           test: /\.(png|jpg|jpeg|ttf|woff|woff2|gif|ico)$/,
           type: "asset/resource",
+          exclude: /assets/,
           generator: {
             filename: "assets/[name][ext][query]",
           },
@@ -85,8 +87,8 @@ export default async (env, options) => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: "assets/*",
-            to: "assets/[name][ext][query]",
+            from: "assets",
+            to: "assets",
           },
           {
             from: "manifest*.xml",
@@ -104,8 +106,16 @@ export default async (env, options) => {
     ],
     devServer: {
       hot: true,
+      allowedHosts: "all",
+      static: {
+        directory: path.join(process.cwd(), "assets"),
+        publicPath: "/assets",
+      },
       headers: {
         "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
+        "Cache-Control": "no-store",
       },
       server: {
         type: "https",
