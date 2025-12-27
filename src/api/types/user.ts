@@ -1,4 +1,4 @@
-enum UserKind {
+export enum UserKind {
   Registered = "registered",
   Unregistered = "unregistered",
 }

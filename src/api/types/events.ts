@@ -29,6 +29,12 @@ export interface EventInvite {
   status: InviteStatus;
 }
 
+export interface EventInvitesResponse {
+  id: string;
+  invitees?: Array<EventInvite>;
+  inviteesTruncated?: boolean;
+}
+
 export interface CreateEventPayload {
   title: string;
   description: string;
@@ -47,7 +53,7 @@ export interface CreateEventPayload {
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
 }
 
-export type UpdateEventPayload = Partial<CreateEventInvitePayload>;
+export type UpdateEventPayload = Partial<CreateEventPayload>;
 
 type EventInviteEmailPayload = {
   email: string;
@@ -61,6 +67,10 @@ type CreateEventInviteUserPayload = {
 export type CreateEventInvitePayload = CreateEventInviteUserPayload | EventInviteEmailPayload;
 
 export type DeleteEventInvitePayload = EventInviteEmailPayload;
+
+export type UpdateEventInvitePayload = {
+  role: UserRole;
+};
 /**
  * EventRoomInfo in an Event object
  */

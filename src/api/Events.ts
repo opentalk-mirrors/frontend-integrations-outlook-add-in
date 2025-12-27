@@ -6,12 +6,14 @@ import {
   CreateEventPayload,
   CreateEventQueryParams,
   DeleteEventQueryParams,
+  EventInvitesResponse,
   UpdateEventPayload,
   UpdateEventQueryParams,
   GetEventQueryParams,
   DeleteEventInvitePayload,
   CreateEventInviteQueryParams,
   DeleteEventInviteQueryParams,
+  UpdateEventInvitePayload,
 } from "./types/events";
 
 export class EventsAPI {
@@ -73,5 +75,20 @@ export class EventsAPI {
       payload,
       queryParams,
     });
+  }
+
+  public getInvites(eventId: string) {
+    return this.request<EventInvitesResponse>(
+      this.client.get({ endpoint: `events/${eventId}/invites` })
+    );
+  }
+
+  public updateInviteRole(eventId: string, userId: string, payload: UpdateEventInvitePayload) {
+    return this.request<EventInvitesResponse>(
+      this.client.patch({
+        endpoint: `events/${eventId}/invites/${userId}`,
+        payload,
+      })
+    );
   }
 }

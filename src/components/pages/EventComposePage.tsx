@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
   Stack,
   Button,
@@ -6,6 +6,10 @@ import {
   Box,
   TextField,
   Paper,
+  Step,
+  StepButton,
+  StepLabel,
+  Stepper,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -21,6 +25,7 @@ import {
   Event,
   DeleteEventQueryParams,
   TrainingParticipationReportParameterSet,
+  EventInvite,
 } from "../../api/types/events";
 import { FormSwitch } from "../FormSwitch/FormSwitch";
 import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE, OPENTALK_OWNER_ID } from "../../constants";
@@ -34,15 +39,34 @@ import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
 import { LockReason, lockMessageKey } from "../../api/types/lockReason";
 import { EventService, MeetingOptions } from "../../services/EventService";
 import { removeOldMeetingBody } from "../../utils/meetingBody";
+import { EventParticipantsPage, EventParticipantsPageHandle } from "./EventParticipantsPage";
 import {
   buildMeetingLink,
   normalizeLocationString,
   removeMeetingLinkByBase,
   removeMeetingLinkFromLocation,
 } from "../../utils/meetingLocation";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
+import { StepIconProps } from "@mui/material/StepIcon";
+import StepIcon from "@mui/material/StepIcon";
+import { LoadingPage } from "./LoadingPage";
 
 const EVENT_INVITEES = 10;
 const SUPPRESS_DELETE_WARNING_KEY = "suppress-delete-warning";
+
+const createStepIcon = (inactiveIcon: React.ReactNode) => {
+  const StepIconComponent = (props: StepIconProps) => (
+    <StepIcon {...props} icon={props.active ? props.icon : inactiveIcon} />
+  );
+
+  return StepIconComponent;
+};
+
+enum SidepanelPages {
+  MeetingDetails = 0,
+  Invited = 1,
+}
 
 const EventComposePage: FC = () => {
   const { client, tariff, me } = useClientContext();
@@ -76,6 +100,15 @@ const EventComposePage: FC = () => {
   const [disableSaveButton, setDisableSaveButton] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteDialogHideFuture, setDeleteDialogHideFuture] = useState(false);
+  const [activeStep, setActiveStep] = useState(SidepanelPages.MeetingDetails);
+
+  // Ref to the participants page to trigger save
+  const participantsRef = useRef<EventParticipantsPageHandle>(null);
+
+  const stepIconComponents = [
+    createStepIcon(<EditOutlinedIcon fontSize="small" />),
+    createStepIcon(<GroupOutlinedIcon fontSize="small" />),
+  ];
 
   const {
     enabled: trainingParticipationEnabled,
@@ -92,6 +125,12 @@ const EventComposePage: FC = () => {
   const isOwner = (ownerId?: string) => ownerId === me.id;
 
   useEffect(() => {
+    if (activeStep === SidepanelPages.Invited && !existingEvent) {
+      setActiveStep(SidepanelPages.MeetingDetails);
+    }
+  }, [activeStep, existingEvent]);
+
+  useEffect(() => {
     if (!client) {
       return;
     }
@@ -106,7 +145,9 @@ const EventComposePage: FC = () => {
         setInviteCode(inviteCode);
         if (eventId) {
           try {
-            const event = await client.events.get(eventId, { inviteesMax: EVENT_INVITEES });
+            const event = await client.events.get(eventId, {
+              inviteesMax: EVENT_INVITEES,
+            });
             const userIsOwner = isOwner(ownerId);
             setExistingEvent(event);
             setWaitingRoomEnabled(event.room.waitingRoom);
@@ -155,6 +196,18 @@ const EventComposePage: FC = () => {
     toggleLivestream,
     toggleTrainingParticipation,
   ]);
+
+  const handleInviteesChanged = useCallback((invitees: EventInvite[]) => {
+    setExistingEvent((prevEvent) => {
+      // If there is no event loaded yet, do nothing
+      if (!prevEvent) return prevEvent;
+
+      return {
+        ...prevEvent,
+        invitees: invitees,
+      };
+    });
+  }, []);
 
   const buildMeetingOptions = (): MeetingOptions => {
     const streamingPayload = buildStreamingPayload();
@@ -215,6 +268,7 @@ const EventComposePage: FC = () => {
     const { isValid: isTrainingParticipationValid } = validateTrainingParticipation();
     if (!isStreamingValid || !isTrainingParticipationValid) {
       setDisableSaveButton(true);
+      setActiveStep(SidepanelPages.MeetingDetails);
       return;
     }
 
@@ -228,12 +282,20 @@ const EventComposePage: FC = () => {
 
     try {
       if (!!existingEvent) {
+        // 1. Update the meeting details
         const updatedEvent = await service.updateMeeting(
           existingEvent.id,
           options,
           existingEvent,
           inviteCode
         );
+
+        // 2. Trigger the save on the participants page (updates roles)
+        if (participantsRef.current) {
+          await participantsRef.current.save();
+          participantsRef.current.refresh();
+        }
+
         await syncStreamingTarget(updatedEvent.room.id, client);
         setExistingEvent(updatedEvent);
       } else {
@@ -246,6 +308,8 @@ const EventComposePage: FC = () => {
           setInviteCode(newInviteCode);
         }
         setExistingEvent(newEvent);
+        participantsRef.current?.refresh();
+        setActiveStep(SidepanelPages.Invited);
       }
     } catch (error) {
       console.error("Unable to save event due to the following error: ", error);
@@ -345,7 +409,7 @@ const EventComposePage: FC = () => {
   const switchProps = { disabled: isLocked };
 
   if (isLoading) {
-    return <Typography>{t("loading")}</Typography>;
+    return <LoadingPage></LoadingPage>;
   }
 
   if (showDisclaimer) {
@@ -369,7 +433,9 @@ const EventComposePage: FC = () => {
           <Alert severity="warning">{t(lockMessageKey[lockReason], { ns: "dashboard" })}</Alert>
           {lockReason === LockReason.Deleted && (
             <Button onClick={handleClearMeetingInformation} disabled={disableButtons}>
-              {t("outlook-meeting-no-longer-available-delete", { ns: "dashboard" })}
+              {t("outlook-meeting-no-longer-available-delete", {
+                ns: "dashboard",
+              })}
             </Button>
           )}
         </Stack>
@@ -377,66 +443,118 @@ const EventComposePage: FC = () => {
       {lockReason !== LockReason.Deleted && (
         <Box sx={{ pb: 15 }}>
           <ProfileHeader />
+          <Stepper
+            sx={{
+              mt: 1,
+              overflow: "hidden",
+            }}
+            activeStep={activeStep}
+          >
+            {[
+              t("step-meeting", { ns: "dashboard" }),
+              t("step-participants", { ns: "dashboard" }),
+            ].map((label, index) => {
+              const isParticipantsStep = index === SidepanelPages.Invited;
+              const isDisabled = isParticipantsStep && !existingEvent;
+              const StepIconComponent = stepIconComponents[index];
 
-          <Stack spacing={2} mt={2}>
-            <TextField
-              fullWidth
-              label={t("password")}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="text"
-              autoComplete="off"
-              size="small"
-              sx={{ mt: 1 }}
-              disabled={isLocked}
-            />
-            <FormSwitch
-              label={t("waiting-room-switch", { ns: "dashboard" })}
-              flag={waitingRoomEnabled}
-              setFlag={setWaitingRoomEnabled}
-              switchProps={switchProps}
-            />
-            {client.config.opentalkExperimentalEnableE2EE && (
-              <FormSwitch
-                label={t("e2e-encryption-switch", { ns: "dashboard" })}
-                flag={e2eEncryptionEnabled}
-                setFlag={setE2eEncryptionEnabled}
-                switchProps={switchProps}
-              />
-            )}
-            {isSharedFolderAvailable && (
-              <FormSwitch
-                label={t("shared-folder-switch", { ns: "dashboard" })}
-                flag={sharedFolderEnabled}
-                setFlag={setSharedFolderEnabled}
-                switchProps={switchProps}
-              />
-            )}
-            <FormSwitch
-              label={t("meeting-details-switch", { ns: "dashboard" })}
-              flag={meetingDetailsEnabled}
-              setFlag={setMeetingDetailsEnabled}
-              switchProps={switchProps}
-            />
-            {isStreamingEnabled && (
-              // We need to expose livestreamEnabled to be able to control the form buttons
-              <StreamingTargetFields
-                livestreamEnabled={livestreamEnabled}
-                onToggleLivestream={toggleLivestream}
-                streamingTarget={streamingTarget}
-                streamingErrors={streamingErrors}
-                setStreamingTarget={setStreamingTarget}
+              return (
+                <Step key={label} disabled={isDisabled}>
+                  <StepButton
+                    disabled={isDisabled}
+                    onClick={() => setActiveStep(index)}
+                    disableRipple
+                    disableTouchRipple
+                  >
+                    <StepLabel StepIconComponent={StepIconComponent}>{label}</StepLabel>
+                  </StepButton>
+                </Step>
+              );
+            })}
+          </Stepper>
+
+          {/* We use display:none instead of conditional rendering to keep the 
+            EventParticipantsPage mounted. This ensures pending role changes
+            stored in the child's local state are not lost when switching tabs.
+          */}
+          <Box
+            sx={{
+              display: activeStep === SidepanelPages.MeetingDetails ? "block" : "none",
+            }}
+          >
+            <Stack spacing={2} mt={2}>
+              <TextField
+                fullWidth
+                label={t("password")}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                type="text"
+                autoComplete="off"
+                size="small"
+                sx={{ mt: 1 }}
                 disabled={isLocked}
               />
-            )}
-            {isTrainingParticipationReportAvailable && (
-              <TrainingParticipationReportSelect
-                enabled={trainingParticipationEnabled}
-                parameter={trainingParticipationParams}
-                onChange={handleTrainingReportChange}
+              <FormSwitch
+                label={t("waiting-room-switch", { ns: "dashboard" })}
+                flag={waitingRoomEnabled}
+                setFlag={setWaitingRoomEnabled}
+                switchProps={switchProps}
               />
-            )}
-          </Stack>
+              {client.config.opentalkExperimentalEnableE2EE && (
+                <FormSwitch
+                  label={t("e2e-encryption-switch", { ns: "dashboard" })}
+                  flag={e2eEncryptionEnabled}
+                  setFlag={setE2eEncryptionEnabled}
+                  switchProps={switchProps}
+                />
+              )}
+              {isSharedFolderAvailable && (
+                <FormSwitch
+                  label={t("shared-folder-switch", { ns: "dashboard" })}
+                  flag={sharedFolderEnabled}
+                  setFlag={setSharedFolderEnabled}
+                  switchProps={switchProps}
+                />
+              )}
+              <FormSwitch
+                label={t("meeting-details-switch", { ns: "dashboard" })}
+                flag={meetingDetailsEnabled}
+                setFlag={setMeetingDetailsEnabled}
+                switchProps={switchProps}
+              />
+              {isStreamingEnabled && (
+                <StreamingTargetFields
+                  livestreamEnabled={livestreamEnabled}
+                  onToggleLivestream={toggleLivestream}
+                  streamingTarget={streamingTarget}
+                  streamingErrors={streamingErrors}
+                  setStreamingTarget={setStreamingTarget}
+                  disabled={isLocked}
+                />
+              )}
+              {isTrainingParticipationReportAvailable && (
+                <TrainingParticipationReportSelect
+                  enabled={trainingParticipationEnabled}
+                  parameter={trainingParticipationParams}
+                  onChange={handleTrainingReportChange}
+                />
+              )}
+            </Stack>
+          </Box>
+
+          <Box
+            sx={{
+              display: activeStep === SidepanelPages.Invited ? "block" : "none",
+            }}
+          >
+            <EventParticipantsPage
+              ref={participantsRef}
+              eventId={existingEvent?.id}
+              isLocked={isLocked}
+              onInviteesChanged={handleInviteesChanged}
+            />
+          </Box>
+
           {/* Confirmation Dialog */}
           <Dialog
             open={deleteDialogOpen}
