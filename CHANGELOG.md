@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-12-30
+
+[0.3.0]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.7...v0.3.0
+
+### 🚀 New features
+
+- (ci) Remove commit signature lint ([!182](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/182))
+- Set password for meeting ([!189](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/189))
+- Make scope configurable and align openid authentication ([!187](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/187))
+- Set livestream settings for meeting ([!190](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/190), [#40](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/40))
+- Profile header ([!211](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/211), [##57](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/#57))
+- Enable training participation report ([!212](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/212), [##41](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/#41))
+- Enable highsecure mode for events ([!188](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/188), [#42](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/42))
+- Update meeting details of an invalid meeting ([!213](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/213), [##53](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/#53))
+- Update flow ([!222](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/222), [##54 #52 #40 #49 #48](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/#54 #52 #40 #49 #48))
+- (ci) Include commit evidence job ([!223](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/223), [#59](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/59))
+- Promote registered users to moderators ([!224](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/224))
+- Show gear-icon for opentalk preferences button ([!224](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/224), [#62](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/62))
+
+### 🐛 Bug fixes
+
+- Openid-authentication ([!209](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/209), [#55](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/55))
+- Host icons also in dev setup via pnpm run dev-server ([!224](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/224), [#61](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/61))
+
+### 📦 Dependencies
+
+- (deps) Update dependency typescript to ^5.9.3 ([!203](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/203))
+- (deps) Update dependency prettier to ^3.7.4 ([!202](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/202))
+- (deps) Update dependency i18next to ^25.7.3 ([!200](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/200))
+- (deps) Update dependency typescript-eslint to ^8.50.0 ([!204](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/204))
+- (deps) Update dependency @emotion/styled to ^11.14.1 ([!196](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/196))
+- (deps) Update dependency knip to ^5.75.1 ([!201](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/201))
+- (deps) Update dependency react-i18next to ^15.7.4 ([!194](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/194))
+- (deps) Update dependency @types/lodash to ^4.17.21 ([!197](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/197))
+- (deps) Update dependency dotenv-webpack to ^8.1.1 ([!192](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/192))
+
+### Ci
+
+- Fix pipeline project path for changelog preview trigger ([!183](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/183))
+- Fix read-tags job run conditions ([!225](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/225))
+
 ## [0.2.7] - 2025-12-03
 
 [0.2.7]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.6-1...v0.2.7
