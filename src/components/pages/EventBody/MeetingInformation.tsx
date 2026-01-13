@@ -9,9 +9,15 @@ interface MeetingInformationProps {
   event: Event;
   roomLink: string;
   guestLink?: string;
+  e2eEncryptionEnabled: boolean;
 }
 
-export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLink, guestLink }) => {
+export const MeetingInformation: FC<MeetingInformationProps> = ({
+  event,
+  roomLink,
+  guestLink,
+  e2eEncryptionEnabled,
+}) => {
   const { t } = useTranslation();
   const livestreamTarget = event.streamingTargets?.[0];
 
@@ -51,7 +57,7 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({ event, roomLin
       <strong>{t("meeting-link")}:</strong>{" "}
       <Link href={roomLink}>{t("meeting-link-msg", { ns: "invitation" })}</Link>
       <br />
-      {guestLink && (
+      {guestLink && !e2eEncryptionEnabled && (
         <>
           <strong>{t("guest-link")}:</strong> <Link href={guestLink}>{guestLink}</Link>
           <br />

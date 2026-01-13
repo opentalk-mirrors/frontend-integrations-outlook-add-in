@@ -110,7 +110,11 @@ export class EventService {
     return invitees;
   }
 
-  private createEventBody(event: Event, inviteCode?: string): string {
+  private createEventBody(
+    event: Event,
+    e2eEncryptionEnabled: boolean,
+    inviteCode?: string
+  ): string {
     const roomLink = new URL(
       `/room/${event.room.id}`,
       this.client.config.opentalkOutlookWebAppUrl
@@ -128,6 +132,7 @@ export class EventService {
         event={event}
         roomLink={roomLink}
         guestLink={guestLink}
+        e2eEncryptionEnabled={e2eEncryptionEnabled}
         senderName={Office.context.mailbox.userProfile.displayName}
       />
     );
@@ -175,7 +180,8 @@ export class EventService {
       item.body.getAsync(Office.CoercionType.Html, cb)
     );
     const cleanBody = removeOldMeetingBody(currentBody);
-    const newBodyContent = cleanBody + this.createEventBody(event, guestInvite?.inviteCode);
+    const newBodyContent =
+      cleanBody + this.createEventBody(event, payload.e2eEncryption, guestInvite?.inviteCode);
 
     await setAsyncAsPromise(item.body.setAsync, newBodyContent, {
       coercionType: Office.CoercionType.Html,
@@ -249,7 +255,7 @@ export class EventService {
     const currentBody = await callbackAsPromise<string>((cb) =>
       item.body.getAsync(Office.CoercionType.Html, cb)
     );
-    const newMeetingMarkup = this.createEventBody(event, inviteCode);
+    const newMeetingMarkup = this.createEventBody(event, payload.e2eEncryption, inviteCode);
     const finalHtmlBody = getUpdatedMeetingBody(
       currentBody,
       newMeetingMarkup,
