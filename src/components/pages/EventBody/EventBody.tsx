@@ -11,10 +11,17 @@ interface EventBodyProps {
   event: Event;
   roomLink: string;
   senderName: string;
+  e2eEncryptionEnabled: boolean;
   guestLink?: string;
 }
 
-export const EventBody: FC<EventBodyProps> = ({ event, roomLink, guestLink, senderName }) => {
+export const EventBody: FC<EventBodyProps> = ({
+  event,
+  roomLink,
+  guestLink,
+  senderName,
+  e2eEncryptionEnabled,
+}) => {
   return (
     <Box
       style={{
@@ -24,8 +31,13 @@ export const EventBody: FC<EventBodyProps> = ({ event, roomLink, guestLink, send
       }}
     >
       <Header title={event.title} senderName={senderName} />
-      <MeetingInformation event={event} roomLink={roomLink} guestLink={guestLink} />
-      {event.room.callIn && <PhoneParticipation {...event.room.callIn} />}
+      <MeetingInformation
+        event={event}
+        roomLink={roomLink}
+        guestLink={guestLink}
+        e2eEncryptionEnabled={e2eEncryptionEnabled}
+      />
+      {!e2eEncryptionEnabled && event.room.callIn && <PhoneParticipation {...event.room.callIn} />}
       <Footer roomLink={roomLink} />
     </Box>
   );
