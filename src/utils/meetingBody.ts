@@ -260,6 +260,8 @@ export const htmlToText = (html: string): string => {
   if (!html) return "";
 
   try {
+    const parser = new DOMParser();
+
     // 1. Pre-process HTML strings to ensure separation between blocks
     // Replace <br> tags with a distinct space
     let processedHtml = html.replace(/<br\s*\/?>/gi, " ");
@@ -269,14 +271,18 @@ export const htmlToText = (html: string): string => {
     // instead of "TextMore" when retrieving textContent.
     processedHtml = processedHtml.replace(/<\/(div|p|li|tr|h[1-6])>/gi, " </$1>");
 
-    // 2. Parse the modified HTML
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = processedHtml;
+    // 2. Parse into a document
+    const doc = parser.parseFromString(processedHtml, "text/html");
 
-    // 3. Extract text (textContent is faster and stable, innerText relies on layout)
-    const rawText = tempDiv.textContent || tempDiv.innerText || "";
+    // 3. REMOVE all style and script tags from the entire document
+    // This handles styles in both <head> and <body>
+    const junkTags = doc.querySelectorAll("style, script");
+    junkTags.forEach((tag) => tag.remove());
 
-    // 4. Clean up whitespace
+    // 4. Extract text from body
+    const rawText = doc.body.textContent || "";
+
+    // 5. Clean up whitespace
     // Replace non-breaking spaces (\u00a0) with normal spaces
     // Collapse multiple spaces into one (\s+)
     return rawText
@@ -285,7 +291,7 @@ export const htmlToText = (html: string): string => {
       .trim();
   } catch (e) {
     console.warn("Failed to convert HTML to text", e);
-    // Fallback: Strip all tags via regex if DOM parsing fails
+    // Fallback: Strip all tags via regex if DOM parsing fails but doesn't handle the internal text of style tags well
     return html.replace(/<[^>]+>/g, " ").trim();
   }
 };
