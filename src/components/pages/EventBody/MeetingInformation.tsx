@@ -20,6 +20,7 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({
 }) => {
   const { t } = useTranslation();
   const livestreamTarget = event.streamingTargets?.[0];
+  const sharedFolder = event.sharedFolder?.read;
 
   return (
     <Box style={{ margin: "20px 0" }}>
@@ -60,6 +61,19 @@ export const MeetingInformation: FC<MeetingInformationProps> = ({
       {guestLink && !e2eEncryptionEnabled && (
         <>
           <strong>{t("guest-link")}:</strong> <Link href={guestLink}>{guestLink}</Link>
+          <br />
+        </>
+      )}
+      {sharedFolder?.url && (
+        <>
+          <strong>{t("shared-folder-link")}:</strong>{" "}
+          <Link href={sharedFolder.url}>{sharedFolder.url}</Link>
+          <br />
+        </>
+      )}
+      {sharedFolder?.password && (
+        <>
+          <strong>{t("shared-folder-password")}:</strong> {sharedFolder.password}
           <br />
         </>
       )}
