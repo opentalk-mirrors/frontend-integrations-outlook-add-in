@@ -5,6 +5,7 @@ import { initializeApiClient } from "../api/apiService";
 import { EventService } from "../services/EventService";
 import { OPENTALK_EVENT_ID } from "../constants";
 import { callbackAsPromise } from "../utils/OfficeHelpers";
+import { setTaskpaneCloseSignal } from "../utils/taskpaneSignal";
 
 // Helper to access CustomProperties easily
 async function getCustomProperty(key: string): Promise<string | null> {
@@ -55,6 +56,7 @@ async function createMeeting(event: Office.AddinCommands.Event) {
       showNotification("opentalk-exists", t("outlook-existing-meeting", { ns: "dashboard" }));
     } else {
       await eventService.createMeeting(defaultOptions);
+      await setTaskpaneCloseSignal();
       showNotification(
         "opentalk-created",
         t("outlook-meeting-created", {
