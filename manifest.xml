@@ -48,6 +48,7 @@
       <Hosts>
         <Host xsi:type="MailHost">
           <DesktopFormFactor>
+            <SupportsSharedFolders>true</SupportsSharedFolders>
             <FunctionFile resid="residfunctionfile" />
             <ExtensionPoint xsi:type="AppointmentOrganizerCommandSurface">
               <OfficeTab id="AppointmentCreateTab">
@@ -103,7 +104,7 @@
           <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3001/taskpane.html" />
         </bt:Urls>
         <bt:ShortStrings>
-          <bt:String id="AppointmentCreateGroupLabel" DefaultValue="Create OpenTalk Meeting" />
+          <bt:String id="AppointmentCreateGroupLabel" DefaultValue="OpenTalk" />
           <bt:String id="TaskpaneButton.Label" DefaultValue="OpenTalk Preferences">
             <bt:Override Locale="de-DE" Value="OpenTalk Präferenzen" />
           </bt:String>
