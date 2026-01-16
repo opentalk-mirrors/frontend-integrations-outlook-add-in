@@ -23,5 +23,8 @@
   "call-in-number": "Telefonnummer",
   "call-in-conference-id": "Konferenz-ID",
   "call-in-conference-pin": "Konferenz-PIN",
-  "call-in-quick-dial": "Schnelleinwahl"
+  "call-in-quick-dial": "Schnelleinwahl",
+
+  "shared-folder-link": "Geteilter Ordner",
+  "shared-folder-password": "Ordnerpasswort"
 }
