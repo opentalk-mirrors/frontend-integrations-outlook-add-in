@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-01-23
+
+[0.3.1]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.0...v0.3.1
+
+### 🐛 Bug fixes
+
+- E2ee enabled meetings show guest link ([!227](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/227), [#65](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/65))
+- Description wrong encoding with fat client ([!229](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/229))
+- Shared folder information not in invitation ([!231](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/231))
+- Add-in not working on shared mailboxes ([!228](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/228))
+- Sidepanel does not close when user creates the meeting via the create-meeting button ([!230](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/230))
+
+### 📦 Dependencies
+
+- (deps) Update lodash ([!232](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/232))
+
 ## [0.3.0] - 2025-12-30
 
 [0.3.0]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.2.7...v0.3.0
