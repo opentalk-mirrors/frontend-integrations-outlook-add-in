@@ -1,7 +1,7 @@
 ---
 default:
   image:
-    name: node:22.20.0-alpine
+    name: node:24.13.0-alpine
     pull_policy: if-not-present
 
 stages:
