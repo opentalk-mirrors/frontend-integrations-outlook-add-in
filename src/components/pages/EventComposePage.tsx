@@ -75,7 +75,10 @@ const EventComposePage: FC = () => {
     tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
   const isTrainingParticipationReportAvailable = !!tariff?.modules?.trainingParticipationReport;
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
-  const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(false);
+  const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(
+    client.config.opentalkExperimentalEnableE2EE &&
+      client.config.opentalkExperimentalEnableE2EEDefault
+  );
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
   const [password, setPassword] = useState("");

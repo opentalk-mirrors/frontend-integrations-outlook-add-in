@@ -3,6 +3,7 @@ export interface Config {
   opentalkOutlookWebAppUrl: string;
   opentalkOutlookOidcScopes: string;
   opentalkExperimentalEnableE2EE: boolean;
+  opentalkExperimentalEnableE2EEDefault: boolean;
 }
 
 interface ControllerBody {

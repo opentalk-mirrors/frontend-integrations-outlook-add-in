@@ -31,6 +31,8 @@ ENV OPENTALK_OUTLOOK_OIDC_CLIENT_ID=device
 ENV OPENTALK_OUTLOOK_WEBAPP_URL=localhost:8000
 ENV OPENTALK_OUTLOOK_OIDC_SCOPES="profile email openid"
 ENV OPENTALK_EXPERIMENTAL_ENABLE_E2EE="false"
+# To enbale all meetings to enable e2ee on default, the experimental e2ee feature must be enabled
+ENV OPENTALK_EXPERIMENTAL_ENABLE_E2EE_DEFAULT="false"
 
 COPY ./ci/entrypoint.sh /docker-entrypoint.d/40-configure-app.sh
 RUN chmod +x /docker-entrypoint.d/40-configure-app.sh

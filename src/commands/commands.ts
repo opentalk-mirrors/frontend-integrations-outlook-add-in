@@ -50,6 +50,9 @@ async function createMeeting(event: Office.AddinCommands.Event) {
       waitingRoom: false,
       sharedFolder: false,
       showMeetingDetails: true,
+      e2eEncryption:
+        client.config.opentalkExperimentalEnableE2EE &&
+        client.config.opentalkExperimentalEnableE2EEDefault,
     };
 
     if (existingEventId) {
