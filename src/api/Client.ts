@@ -121,6 +121,9 @@ export class Client {
         opentalkOutlookOidcClientId: process.env.OPENTALK_OUTLOOK_OIDC_CLIENT_ID,
         opentalkOutlookOidcScopes: process.env.OPENTALK_OUTLOOK_OIDC_SCOPES,
         opentalkExperimentalEnableE2EE: getEnvBool(process.env.OPENTALK_EXPERIMENTAL_ENABLE_E2EE),
+        opentalkExperimentalEnableE2EEDefault: getEnvBool(
+          process.env.OPENTALK_EXPERIMENTAL_ENABLE_E2EE_DEFAULT
+        ),
       };
     }
     const uri = this.getBaseUri();
