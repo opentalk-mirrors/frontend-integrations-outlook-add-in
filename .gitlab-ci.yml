@@ -1,4 +1,21 @@
 ---
+spec:
+  inputs:
+    release_version:
+      description: |
+        Version number, e.g. `1.2.3`. Must be in format `<major>.<minor>.<patch>`.
+        Keep at `0.0.0` unless you're in the process of creating a release.
+      type: string
+      regex: ^([0]|([1-9]\d*))\.([0]|([1-9]\d*))\.([0]|([1-9]\d*))$
+      default: 0.0.0
+    release_issue:
+      description: |
+        The number of an issue which should be closed by a release MR created by this pipeline.
+        Keep empty or unset unless you're in the process of creating a release.
+      type: string
+      regex: ^\d*$
+      default: ''
+---
 default:
   image:
     name: node:24.13.0-alpine
@@ -10,6 +27,7 @@ stages:
   - package
   - push
   - scan
+  - release
 
 variables:
   KANIKO_IMAGE: git.opentalk.dev:5050/opentalk/opentalk-devops/containers/kaniko:debug-1.25.5
@@ -20,6 +38,17 @@ variables:
   - corepack enable
   - corepack prepare pnpm@10.6.2 --activate
   - pnpm config set store-dir .pnpm-store
+
+include:
+  - project: opentalk/ci/templates/collect-commit-evidence
+    ref: v1
+    file: .gitlab-ci-template.yml
+  - project: opentalk/ci/templates/release-creation
+    inputs:
+      version: $[[ inputs.release_version ]]
+      issue: $[[ inputs.release_issue]]
+    ref: v1
+    file: .gitlab-ci-template.yml
 
 lint:prettier+eslint:
   stage: lint
@@ -102,11 +131,6 @@ trigger_changelog_preview:
     PIPELINE_MERGE_REQUEST_SOURCE_BRANCH_NAME: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
     PIPELINE_MERGE_REQUEST_IID: $CI_MERGE_REQUEST_IID
   trigger: opentalk/tools/check-changelog
-
-include:
-  - project: opentalk/ci/templates/collect-commit-evidence
-    ref: v1
-    file: .gitlab-ci-template.yml
 
 package:container-addin-mr:
   stage: package
