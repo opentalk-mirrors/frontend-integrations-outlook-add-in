@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-02-13
+
+[0.3.2]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.1...v0.3.2
+
+### 🚀 New features
+
+- Add option to enable high secure mode by default ([!238](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/238))
+- (ci) Add release mr creation job ([!239](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/239), [#77](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/77))
+
+### 📦 Dependencies
+
+- (deps) Update node.js to v24 ([!220](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/220))
+- (deps) Update dependency eslint to ^9.39.2 ([!199](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/199))
+- (deps) Update dependency webpack-dev-server to v5.2.3 ([!234](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/234))
+
 ## [0.3.1] - 2026-01-23
 
 [0.3.1]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.0...v0.3.1
