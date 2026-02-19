@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.3] - 2026-02-19
+
+[0.3.3]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.2...v0.3.3
+
+### 🐛 Bug fixes
+
+- (config) Missing trailing comma in config json ([!245](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/245), [#79](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/79))
+
+### 📦 Dependencies
+
+- (deps) Update dependency office-addin-debugging to ^6.0.6 ([!214](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/214))
+- (deps) Update dependency webpack to ^5.105.2 ([!205](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/205))
+- (deps) Update alpine/git docker tag to v2.52.0 ([!221](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/221))
+- (deps) Update pnpm to v10.29.3 ([!206](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/206))
+
 ## [0.3.2] - 2026-02-13
 
 [0.3.2]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.1...v0.3.2
