@@ -12,7 +12,7 @@
   <Description DefaultValue="OpenTalk Outlook Add-In" />
   <IconUrl DefaultValue="https://localhost:3001/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3001/assets/icon-128.png" />
-  <SupportUrl DefaultValue="https://opentalk.eu/contact-our-support-team" />
+  <SupportUrl DefaultValue="https://opentalk.eu/en/contact-our-support-team" />
   <AppDomains>
     <AppDomain>https://opentalk.eu</AppDomain>
   </AppDomains>
