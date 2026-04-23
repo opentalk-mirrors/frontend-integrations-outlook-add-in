@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2026-04-23
+
+[0.3.6]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.5...v0.3.6
+
+### 🐛 Bug fixes
+
+- Update icon sizes to ensure marketplace compliance ([!262](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/262))
+- Support url ([!262](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/262))
+
+### 📦 Dependencies
+
+- (deps) Update dependency eslint to ^9.39.4 ([!250](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/250))
+- (deps) Remove dev dependency office-addin-debugging ([!256](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/256))
+- (deps) Update dependency office-addin-dev-certs to ^2.0.7 ([!215](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/215))
+- (deps) Update dependency knip to ^5.88.1 ([!237](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/237))
+- (deps) Update dependency babel-loader to v10 ([!217](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/217))
+- (deps) Update dependency i18next-http-backend to 3.0.5 ([!264](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/264))
+
+### ⚙ Miscellaneous
+
+- Serve dev server with pnpm start ([!256](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/256))
+
 ## [0.3.5] - 2026-04-10
 
 [0.3.5]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.4...v0.3.5
