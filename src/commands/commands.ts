@@ -6,6 +6,7 @@ import { EventService } from "../services/EventService";
 import { OPENTALK_EVENT_ID } from "../constants";
 import { callbackAsPromise } from "../utils/OfficeHelpers";
 import { setTaskpaneCloseSignal } from "../utils/taskpaneSignal";
+import { GuestAccess } from "../api/types/events";
 
 // Helper to access CustomProperties easily
 async function getCustomProperty(key: string): Promise<string | null> {
@@ -53,6 +54,7 @@ async function createMeeting(event: Office.AddinCommands.Event) {
       e2eEncryption:
         client.config.opentalkExperimentalEnableE2EE &&
         client.config.opentalkExperimentalEnableE2EEDefault,
+      guestAccess: GuestAccess.DirectAccess,
     };
 
     if (existingEventId) {

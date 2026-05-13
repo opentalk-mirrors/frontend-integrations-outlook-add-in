@@ -6,6 +6,7 @@ import {
   UpdateEventPayload,
   UpdateEventQueryParams,
   TrainingParticipationReportParameterSet,
+  GuestAccess,
 } from "../api/types/events";
 import { EmailUser } from "../api/types/user";
 import { APIClient } from "../api/apiService";
@@ -35,6 +36,7 @@ export interface MeetingOptions {
   password?: string | null;
   streamingTargets?: StreamingTargetPayload[];
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
+  guestAccess: GuestAccess;
 }
 
 type TranslationOptions = Record<string, string | number | boolean>;
@@ -96,6 +98,7 @@ export class EventService {
         options.trainingParticipationReport === undefined
           ? null
           : options.trainingParticipationReport,
+      guestAccess: options.guestAccess,
     } as CreateEventPayload;
   }
 

@@ -51,6 +51,7 @@ export interface CreateEventPayload {
   hasSharedFolder?: boolean;
   streamingTargets?: StreamingTargetPayload[];
   trainingParticipationReport?: TrainingParticipationReportParameterSet | null;
+  guestAccess: GuestAccess;
 }
 
 export type UpdateEventPayload = Partial<CreateEventPayload>;
@@ -80,6 +81,7 @@ type EventRoomInfo = {
   waitingRoom: boolean;
   e2eEncryption: boolean;
   callIn?: CallInInfo;
+  guestAccess: GuestAccess;
 };
 
 export type CallInInfo = {
@@ -161,6 +163,12 @@ export interface TrainingParticipationReportParameterSet {
    * default: { "after": 6300, "within": 1800 }
    */
   checkpointInterval: TimeRange;
+}
+
+export enum GuestAccess {
+  Disabled = "disabled",
+  WaitingRoom = "waiting_room",
+  DirectAccess = "direct_access",
 }
 
 /**

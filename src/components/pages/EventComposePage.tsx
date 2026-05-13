@@ -1,55 +1,59 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
 import {
-  Stack,
-  Button,
-  Typography,
+  Alert,
   Box,
-  TextField,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Paper,
+  Stack,
   Step,
   StepButton,
   StepLabel,
   Stepper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  FormControlLabel,
-  Checkbox,
-  Alert,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
-import { useClientContext } from "../../providers/ClientProvider";
-import {
-  Event,
-  DeleteEventQueryParams,
-  TrainingParticipationReportParameterSet,
-  EventInvite,
-} from "../../api/types/events";
-import { FormSwitch } from "../FormSwitch/FormSwitch";
-import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE, OPENTALK_OWNER_ID } from "../../constants";
+import StepIcon, { StepIconProps } from "@mui/material/StepIcon";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RequestError } from "../../api/types/client";
-import { useStreamingTarget } from "../../hooks/useStreamingTarget";
-import { StreamingTargetFields } from "../StreamingTargetFields";
-import { ProfileHeader } from "../ProfileHeader";
-import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
-import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
+import {
+  DeleteEventQueryParams,
+  Event,
+  EventInvite,
+  GuestAccess,
+  TrainingParticipationReportParameterSet,
+} from "../../api/types/events";
 import { LockReason, lockMessageKey } from "../../api/types/lockReason";
+import { OPENTALK_EVENT_ID, OPENTALK_INVITE_CODE, OPENTALK_OWNER_ID } from "../../constants";
+import { useStreamingTarget } from "../../hooks/useStreamingTarget";
+import { useTrainingParticipation } from "../../hooks/useTrainingParticipation";
+import { useClientContext } from "../../providers/ClientProvider";
 import { EventService, MeetingOptions } from "../../services/EventService";
 import { removeOldMeetingBody } from "../../utils/meetingBody";
-import { EventParticipantsPage, EventParticipantsPageHandle } from "./EventParticipantsPage";
 import {
   buildMeetingLink,
   normalizeLocationString,
   removeMeetingLinkByBase,
   removeMeetingLinkFromLocation,
 } from "../../utils/meetingLocation";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import { StepIconProps } from "@mui/material/StepIcon";
-import StepIcon from "@mui/material/StepIcon";
+import { callbackAsPromise, setAsyncAsPromise } from "../../utils/OfficeHelpers";
+import { FormSwitch } from "../FormSwitch/FormSwitch";
+import { ProfileHeader } from "../ProfileHeader";
+import { StreamingTargetFields } from "../StreamingTargetFields";
+import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
+import { EventParticipantsPage, EventParticipantsPageHandle } from "./EventParticipantsPage";
 import { LoadingPage } from "./LoadingPage";
 
 const EVENT_INVITEES = 10;
@@ -76,11 +80,13 @@ const EventComposePage: FC = () => {
   const isTrainingParticipationReportAvailable = !!tariff?.modules?.trainingParticipationReport;
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
   const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(
-    client.config.opentalkExperimentalEnableE2EE &&
-      client.config.opentalkExperimentalEnableE2EEDefault
+    (client?.config.opentalkExperimentalEnableE2EE &&
+      client?.config.opentalkExperimentalEnableE2EEDefault) ||
+      false
   );
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
+  const [guestAccess, setGuestAccess] = useState<GuestAccess>(GuestAccess.DirectAccess);
   const [password, setPassword] = useState("");
   const { t } = useTranslation();
   const {
@@ -158,6 +164,7 @@ const EventComposePage: FC = () => {
             setSharedFolderEnabled(!!event.sharedFolder);
             setMeetingDetailsEnabled(event.showMeetingDetails);
             setPassword(event.room.password ?? "");
+            setGuestAccess(event.room.guestAccess ?? GuestAccess.DirectAccess);
             const [firstTarget] = event.streamingTargets ?? [];
             if (firstTarget) {
               toggleLivestream(true);
@@ -225,6 +232,7 @@ const EventComposePage: FC = () => {
       trainingParticipationReport: trainingParticipationEnabled
         ? (trainingParticipationParams ?? null)
         : null,
+      guestAccess,
     };
   };
 
@@ -500,14 +508,24 @@ const EventComposePage: FC = () => {
               <FormSwitch
                 label={t("waiting-room-switch", { ns: "dashboard" })}
                 flag={waitingRoomEnabled}
-                setFlag={setWaitingRoomEnabled}
+                setFlag={(checked) => {
+                  setWaitingRoomEnabled(checked);
+                  if (checked && guestAccess === GuestAccess.DirectAccess) {
+                    setGuestAccess(GuestAccess.WaitingRoom);
+                  }
+                }}
                 switchProps={switchProps}
               />
-              {client.config.opentalkExperimentalEnableE2EE && (
+              {client?.config.opentalkExperimentalEnableE2EE && (
                 <FormSwitch
                   label={t("e2e-encryption-switch", { ns: "dashboard" })}
                   flag={e2eEncryptionEnabled}
-                  setFlag={setE2eEncryptionEnabled}
+                  setFlag={(checked) => {
+                    setE2eEncryptionEnabled(checked);
+                    if (checked) {
+                      setGuestAccess(GuestAccess.Disabled);
+                    }
+                  }}
                   switchProps={switchProps}
                 />
               )}
@@ -541,6 +559,35 @@ const EventComposePage: FC = () => {
                   parameter={trainingParticipationParams}
                   onChange={handleTrainingReportChange}
                 />
+              )}
+              {!e2eEncryptionEnabled && (
+                <FormControl component="fieldset" disabled={isLocked}>
+                  <FormLabel component="legend" sx={{ color: "text.primary" }}>
+                    {t("guest-access-switch", { ns: "dashboard" })}
+                  </FormLabel>
+                  <ToggleButtonGroup
+                    value={guestAccess}
+                    exclusive
+                    onChange={(_event, value: GuestAccess) => {
+                      if (value !== null) {
+                        setGuestAccess(value);
+                      }
+                    }}
+                    aria-label={t("guest-access-switch", { ns: "dashboard" })}
+                    size="small"
+                    sx={{ mt: 1 }}
+                  >
+                    <ToggleButton value={GuestAccess.Disabled}>
+                      {t("guest-access-disabled", { ns: "dashboard" })}
+                    </ToggleButton>
+                    <ToggleButton value={GuestAccess.WaitingRoom}>
+                      {t("guest-access-waiting-room", { ns: "dashboard" })}
+                    </ToggleButton>
+                    <ToggleButton value={GuestAccess.DirectAccess} disabled={waitingRoomEnabled}>
+                      {t("guest-access-direct-access", { ns: "dashboard" })}
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </FormControl>
               )}
             </Stack>
           </Box>

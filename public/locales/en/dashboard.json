@@ -50,5 +50,10 @@
   "participants-pending-tooltip": "Update the meeting to make this user a moderator.",
   "participants-disclaimer": "Only registered users can receive moderator rights.",
   "participants-promote-to-moderator": "Grant moderator rights",
-  "participants-empty": "No invitees found."
+  "participants-empty": "No invitees found.",
+
+  "guest-access-switch": "Guest access",
+  "guest-access-disabled": "Disabled",
+  "guest-access-waiting-room": "Waiting room",
+  "guest-access-direct-access": "Direct access"
 }

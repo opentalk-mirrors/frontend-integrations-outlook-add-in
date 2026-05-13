@@ -348,7 +348,7 @@ export class Client {
     method: HttpMethod,
     payload: BodyInit = undefined,
     headers: HeadersInit = undefined
-  ): Promise<T | null | RequestError> {
+  ): Promise<T | RequestError> {
     const resp = await fetch(`${host}${endPoint}`, {
       method,
       body: payload,
@@ -363,7 +363,7 @@ export class Client {
 
     const jsonResponse = await safeJson(resp);
     if (!jsonResponse) {
-      return null;
+      return new RequestError(resp.status, resp.statusText, "Response body is not valid JSON");
     }
 
     const convertedResponse = toCamelCaseKeys<T>(jsonResponse);
@@ -491,5 +491,10 @@ const sleep = (ms: number): Promise<void> => {
 
 async function safeJson(response: Response) {
   const text = await response.text();
-  return text ? JSON.parse(text) : null;
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
 }
