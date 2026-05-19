@@ -49,5 +49,10 @@
   "participants-pending-tooltip": "Aktualisiere das Meeting, um diesen Benutzer zum Moderator zu machen.",
   "participants-disclaimer": "Nur registrierte Nutzer können Moderatorenrechte erhalten.",
   "participants-promote-to-moderator": "Moderatorenrechte gewähren",
-  "participants-empty": "Keine Teilnehmer gefunden."
+  "participants-empty": "Keine Teilnehmer gefunden.",
+
+  "guest-access-switch": "Gastzugang",
+  "guest-access-disabled": "Deaktiviert",
+  "guest-access-waiting-room": "Warteraum",
+  "guest-access-direct-access": "Direkter Zugang"
 }
