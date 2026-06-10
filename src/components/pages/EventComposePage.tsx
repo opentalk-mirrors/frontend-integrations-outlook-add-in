@@ -10,9 +10,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControl,
   FormControlLabel,
-  FormLabel,
   Paper,
   Stack,
   Step,
@@ -20,8 +18,6 @@ import {
   StepLabel,
   Stepper,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import StepIcon, { StepIconProps } from "@mui/material/StepIcon";
@@ -55,6 +51,7 @@ import { StreamingTargetFields } from "../StreamingTargetFields";
 import { TrainingParticipationReportSelect } from "../TrainingParticipatationReportSelect/TrainingParticipationReportSelect";
 import { EventParticipantsPage, EventParticipantsPageHandle } from "./EventParticipantsPage";
 import { LoadingPage } from "./LoadingPage";
+import { AccessSettings } from "./AccessSettings";
 
 const EVENT_INVITEES = 10;
 const SUPPRESS_DELETE_WARNING_KEY = "suppress-delete-warning";
@@ -79,14 +76,17 @@ const EventComposePage: FC = () => {
     tariff?.modules?.recording?.features?.some((feature) => feature.includes("stream")) ?? false;
   const isTrainingParticipationReportAvailable = !!tariff?.modules?.trainingParticipationReport;
   const [waitingRoomEnabled, setWaitingRoomEnabled] = useState(false);
-  const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(
+  const e2eEncryptionDefault =
     (client?.config.opentalkExperimentalEnableE2EE &&
       client?.config.opentalkExperimentalEnableE2EEDefault) ||
-      false
-  );
+    false;
+  const [e2eEncryptionEnabled, setE2eEncryptionEnabled] = useState(e2eEncryptionDefault);
+
   const [sharedFolderEnabled, setSharedFolderEnabled] = useState(false);
   const [meetingDetailsEnabled, setMeetingDetailsEnabled] = useState(true);
-  const [guestAccess, setGuestAccess] = useState<GuestAccess>(GuestAccess.DirectAccess);
+  const [guestAccess, setGuestAccess] = useState<GuestAccess>(
+    e2eEncryptionDefault ? GuestAccess.Disabled : GuestAccess.DirectAccess
+  );
   const [password, setPassword] = useState("");
   const { t } = useTranslation();
   const {
@@ -505,17 +505,6 @@ const EventComposePage: FC = () => {
                 sx={{ mt: 1 }}
                 disabled={isLocked}
               />
-              <FormSwitch
-                label={t("waiting-room-switch", { ns: "dashboard" })}
-                flag={waitingRoomEnabled}
-                setFlag={(checked) => {
-                  setWaitingRoomEnabled(checked);
-                  if (checked && guestAccess === GuestAccess.DirectAccess) {
-                    setGuestAccess(GuestAccess.WaitingRoom);
-                  }
-                }}
-                switchProps={switchProps}
-              />
               {client?.config.opentalkExperimentalEnableE2EE && (
                 <FormSwitch
                   label={t("e2e-encryption-switch", { ns: "dashboard" })}
@@ -560,35 +549,15 @@ const EventComposePage: FC = () => {
                   onChange={handleTrainingReportChange}
                 />
               )}
-              {!e2eEncryptionEnabled && (
-                <FormControl component="fieldset" disabled={isLocked}>
-                  <FormLabel component="legend" sx={{ color: "text.primary" }}>
-                    {t("guest-access-switch", { ns: "dashboard" })}
-                  </FormLabel>
-                  <ToggleButtonGroup
-                    value={guestAccess}
-                    exclusive
-                    onChange={(_event, value: GuestAccess) => {
-                      if (value !== null) {
-                        setGuestAccess(value);
-                      }
-                    }}
-                    aria-label={t("guest-access-switch", { ns: "dashboard" })}
-                    size="small"
-                    sx={{ mt: 1 }}
-                  >
-                    <ToggleButton value={GuestAccess.Disabled}>
-                      {t("guest-access-disabled", { ns: "dashboard" })}
-                    </ToggleButton>
-                    <ToggleButton value={GuestAccess.WaitingRoom}>
-                      {t("guest-access-waiting-room", { ns: "dashboard" })}
-                    </ToggleButton>
-                    <ToggleButton value={GuestAccess.DirectAccess} disabled={waitingRoomEnabled}>
-                      {t("guest-access-direct-access", { ns: "dashboard" })}
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                </FormControl>
-              )}
+              <AccessSettings
+                waitingRoomEnabled={waitingRoomEnabled}
+                guestAccess={guestAccess}
+                setWaitingRoomEnabled={setWaitingRoomEnabled}
+                setGuestAccess={setGuestAccess}
+                guestAccessAllowed={!e2eEncryptionEnabled}
+                isLocked={isLocked}
+                switchProps={switchProps}
+              />
             </Stack>
           </Box>
 

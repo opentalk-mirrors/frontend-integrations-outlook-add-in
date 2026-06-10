@@ -12,19 +12,15 @@
   "livestream-required": "Pflichtfeld",
   "livestream-invalid-url": "Bitte eine gültige URL eingeben",
   "livestream-unavailable": "Livestreaming ist für Ihren Tarif nicht verfügbar.",
-
   "e2e-encryption-switch": "Sehr hohes Schutzniveau aktivieren",
-  
   "outlook-meeting-cancel-success": "Meeting erfolgreich abgesagt",
   "outlook-meeting-cancel-note": "Sie müssen es manuell in Outlook absagen.",
-
   "dashboard-meeting-training-participation-report-switch": "Teilnahmebericht für Schulungen",
   "dashboard-meeting-training-participation-report-option-every-thirty-min": "Alle 30 Min. nachfragen",
   "dashboard-meeting-training-participation-report-option-every-sixty-min": "Alle 60 Min. nachfragen",
   "dashboard-meeting-training-participation-report-option-thirty-to-sixty-min": "Variabel alle 30 - 60 Min. nachfragen",
   "dashboard-meeting-training-participation-report-option-ninety-to-hundred-twenty-min": "Variabel alle 90 - 120 Min. nachfragen",
   "dashboard-meeting-training-participation-report-option-custom": "Benutzerdefiniert",
-
   "dashboard-custom-training-participation-report-dialog-title": "Benutzerdefinierte Abfragezeiten",
   "dashboard-custom-training-participation-report-dialog-initial-timeout": "Erste Bestätigungsabfrage variabel nach",
   "dashboard-custom-training-participation-report-dialog-interval-duration": "Nachfolgende Abfragen variabel nach",
@@ -40,7 +36,6 @@
   "delete-meeting-title": "Meeting absagen?",
   "delete-meeting-description": "Das Meeting wird gelöscht und der Meeting-Link ungültig. Sie müssen das Meeting anschließend in Outlook absagen.",
   "do-not-show-again": "Diesen Hinweis nicht mehr anzeigen.",
-
   "step-meeting": "Meeting",
   "step-participants": "Teilnehmer",
   "invited": "Eingeladen",
@@ -50,9 +45,11 @@
   "participants-disclaimer": "Nur registrierte Nutzer können Moderatorenrechte erhalten.",
   "participants-promote-to-moderator": "Moderatorenrechte gewähren",
   "participants-empty": "Keine Teilnehmer gefunden.",
-
   "guest-access-switch": "Gastzugang",
   "guest-access-disabled": "Deaktiviert",
   "guest-access-waiting-room": "Warteraum",
-  "guest-access-direct-access": "Direkter Zugang"
+  "guest-access-direct-access": "Direkter Zugang",
+  "waiting-room-option-disabled": "Aus",
+  "waiting-room-option-all-participants": "Alle",
+  "waiting-room-option-guests-only": "Nur Gäste"
 }
