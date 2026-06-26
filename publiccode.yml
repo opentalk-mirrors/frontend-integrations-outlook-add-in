@@ -4,7 +4,7 @@
 
 ---
 publiccodeYmlVersion: '0.2'
-name: OpenTalk Outlook Add-in
+name: OpenTalk Add-in for outlook
 applicationSuite: OpenTalk
 logo: logo.svg
 monochromeLogo: logo_mono.svg
@@ -52,7 +52,7 @@ it:
 description:
   en:
     localisedName: OpenTalk
-    genericName: OpenTalk Outlook Add-in
+    genericName: OpenTalk Add-in for outlook
     documentation: https://docs.opentalk.eu/user/Handbuch/Outlook/
     shortDescription: >-
       The Outlook add-in for seamless OpenTalk integration directly in your calendar.

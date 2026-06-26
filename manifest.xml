@@ -9,7 +9,7 @@
   <ProviderName>OpenTalk GmbH</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="OpenTalk" />
-  <Description DefaultValue="OpenTalk Outlook Add-In" />
+  <Description DefaultValue="OpenTalk Add-in for outlook" />
   <IconUrl DefaultValue="https://localhost:3001/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3001/assets/icon-128.png" />
   <SupportUrl DefaultValue="https://opentalk.eu/en/contact-our-support-team" />

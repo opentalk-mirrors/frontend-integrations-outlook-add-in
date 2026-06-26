@@ -6,9 +6,15 @@ export const AuthenticationPage: FC = () => {
   const { t } = useTranslation();
 
   return (
-    <Stack alignItems="center" justifyContent="center" height="100%">
-      <Typography variant="h6" gutterBottom>
-        {t("please-sign-in")}
+    <Stack alignItems="center" justifyContent="center" height="100%" spacing={2} p={2}>
+      <Typography variant="h6" align="center" gutterBottom>
+        {t("fre-headline")}
+      </Typography>
+      <Typography variant="body2" align="center" color="text.secondary">
+        {t("fre-description")}
+      </Typography>
+      <Typography variant="body2" align="center" color="text.secondary">
+        {t("fre-account-hint")}
       </Typography>
       <Button
         variant="contained"

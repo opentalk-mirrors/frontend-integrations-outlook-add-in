@@ -8,23 +8,30 @@ import App from "./App";
 import ClientProvider from "./providers/ClientProvider";
 import { createOpenTalkTheme } from "./themes/opentalk";
 import { Suspense } from "react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 import { setLanguageOnOfficeReady } from "./i18n";
 
 const rootElement: HTMLElement | null = document.getElementById("container");
 
-/* Render application after Office initializes */
 Office.onReady(() => {
-  setLanguageOnOfficeReady();
+  try {
+    setLanguageOnOfficeReady();
+  } catch (error) {
+    console.error("Unable to set language on Office ready:", error);
+  }
+
   ReactDOM.render(
-    <Suspense fallback={<h2>Loading...</h2>}>
-      <ClientProvider>
-        <ThemeProvider theme={createOpenTalkTheme()}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
-      </ClientProvider>
-    </Suspense>,
+    <ErrorBoundary>
+      <Suspense fallback={<h2>Loading...</h2>}>
+        <ClientProvider>
+          <ThemeProvider theme={createOpenTalkTheme()}>
+            <CssBaseline />
+            <App />
+          </ThemeProvider>
+        </ClientProvider>
+      </Suspense>
+    </ErrorBoundary>,
     rootElement
   );
 });

@@ -8,23 +8,24 @@
   "cancel-meeting": "Cancel meeting",
   "important": "Important",
   "please-sign-in": "Please sign in.",
-
+  "fre-headline": "Schedule secure OpenTalk video meetings from Outlook",
+  "fre-description": "Add an OpenTalk meeting link to any appointment and manage guest access and invitees right from your calendar.",
+  "fre-account-hint": "Sign in with your OpenTalk account to get started. An active OpenTalk account is required.",
+  "error-boundary-message": "Something went wrong while loading the OpenTalk add-in.",
+  "reload": "Reload",
   "title": "Title",
   "description": "Description",
   "time": "Time",
   "password": "Password",
-
   "meeting-link": "Link to meeting",
   "guest-link": "Guest link",
   "meeting-information": "Meeting information",
   "livestream": "Livestream",
   "livestream-public-info": "This is a public meeting, the link to the livestream: {{name}}:",
-
   "call-in-number": "Number",
   "call-in-conference-id": "Conference-ID",
   "call-in-conference-pin": "Conference-PIN",
   "call-in-quick-dial": "Quick-Dial",
-
   "shared-folder-link": "Shared folder",
   "shared-folder-password": "Shared folder password"
 }
