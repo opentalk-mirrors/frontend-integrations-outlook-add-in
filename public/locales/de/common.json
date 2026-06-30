@@ -8,23 +8,24 @@
   "cancel-meeting": "Absagen",
   "important": "Wichtig",
   "please-sign-in": "Bitte melden Sie sich an.",
-
+  "fre-headline": "Sichere OpenTalk-Videomeetings direkt aus Outlook planen",
+  "fre-description": "Fügen Sie jedem Termin einen OpenTalk-Meetinglink hinzu und verwalten Sie Gastzugang und Eingeladene direkt in Ihrem Kalender.",
+  "fre-account-hint": "Melden Sie sich mit Ihrem OpenTalk-Konto an, um zu starten. Ein aktives OpenTalk-Konto ist erforderlich – die kostenlose Version genügt ebenfalls.",
+  "error-boundary-message": "Beim Laden des OpenTalk-Add-ins ist ein Fehler aufgetreten.",
+  "reload": "Neu laden",
   "title": "Titel",
   "description": "Beschreibung",
   "time": "Uhrzeit",
   "password": "Passwort",
-
   "meeting-link": "Link zum Meeting",
   "guest-link": "Gastlink",
   "meeting-information": "Informationen zum Meeting",
   "livestream": "Livestream",
   "livestream-public-info": "Dies ist ein öffentliches Meeting, der Link zum Livestream: {{name}}:",
-
   "call-in-number": "Telefonnummer",
   "call-in-conference-id": "Konferenz-ID",
   "call-in-conference-pin": "Konferenz-PIN",
   "call-in-quick-dial": "Schnelleinwahl",
-
   "shared-folder-link": "Geteilter Ordner",
   "shared-folder-password": "Ordnerpasswort"
 }
