@@ -3,6 +3,7 @@
   "update": "Update",
   "loading": "Loading...",
   "logout": "Log out",
+  "reauthenticate": "Sign in again",
   "login": "Log in",
   "cancel": "Cancel",
   "cancel-meeting": "Cancel meeting",

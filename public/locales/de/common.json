@@ -3,6 +3,7 @@
   "update": "Aktualisieren",
   "loading": "Wird geladen...",
   "logout": "Abmelden",
+  "reauthenticate": "Erneut anmelden",
   "login": "Anmelden",
   "cancel": "Abbrechen",
   "cancel-meeting": "Absagen",
