@@ -3,6 +3,15 @@
 // SPDX-License-Identifier: EUPL-1.2
 import { PaletteMode, PaletteOptions } from "@mui/material";
 
+export const brandPrimary = "#D1E545";
+export const brandOutline = "#DBE0E2";
+export const textPrimaryLight = "#20434F";
+export const textPrimaryDark = "#FFF";
+export const backgroundGradientLight =
+  "linear-gradient(81deg, rgba(32,67,79,0.05) 0%, rgba(209,229,69,0.05) 100%)";
+export const backgroundGradientDark =
+  "linear-gradient(109deg, rgba(32,67,79,1) 0%, rgba(30,59,69,1) 100%)";
+
 export const avatarBg = "#00212E";
 
 export const avatarColorTable: Array<string> = [
@@ -27,9 +36,9 @@ export const avatarColorTable: Array<string> = [
 const lightPalette: PaletteOptions = {
   primary: {
     light: "#DEED7B",
-    main: "#D1E545",
+    main: brandPrimary,
     dark: "#C6D941",
-    contrastText: "#20434F",
+    contrastText: textPrimaryLight,
   },
   secondary: {
     lightest: "#EAECEB",
@@ -39,7 +48,7 @@ const lightPalette: PaletteOptions = {
     dark: "#19353F",
     contrastText: "#FFF",
   },
-  outline: "#DBE0E2",
+  outline: brandOutline,
   error: {
     light: "#EA8F8F",
     main: "#D32F2F",
@@ -69,16 +78,16 @@ const lightPalette: PaletteOptions = {
     contrastOutline: "2px solid #deed7b",
   },
   text: {
-    primary: "#20434F",
+    primary: textPrimaryLight,
     secondary: "#FFF",
     disabled: "#72757B",
     placeholder: "#53616c",
   },
   background: {
     default: "#FFF",
-    defaultGradient: "linear-gradient(81deg, rgba(32,67,79,0.05) 0%, rgba(209,229,69,0.05) 100%)",
+    defaultGradient: backgroundGradientLight,
     paper: "#F4F4F4",
-    overlay: "linear-gradient(81deg, rgba(32,67,79,0.05) 0%, rgba(209,229,69,0.05) 100%)",
+    overlay: backgroundGradientLight,
     video: "#01010166",
     secondaryOverlay: "#20434f66",
     voteResult: "#385865",
@@ -96,9 +105,9 @@ const lightPalette: PaletteOptions = {
 const darkPalette: PaletteOptions = {
   primary: {
     light: "#E3EAB0",
-    main: "#D1E545",
+    main: brandPrimary,
     dark: "#C6D941",
-    contrastText: "#DBE0E2",
+    contrastText: brandOutline,
   },
   secondary: {
     light: "#E0E5E6",
@@ -108,7 +117,7 @@ const darkPalette: PaletteOptions = {
     lighter: "#1F3E49",
     contrastText: "#17313A",
   },
-  outline: "#DBE0E2",
+  outline: brandOutline,
   error: {
     main: "#FE5F60",
     contrastText: "#FFF",
@@ -138,16 +147,16 @@ const darkPalette: PaletteOptions = {
     contrastOutline: "2px solid #005392",
   },
   text: {
-    primary: "#FFF",
+    primary: textPrimaryDark,
     secondary: "#20434F",
     disabled: "#72757B",
     placeholder: "#cccccc",
   },
   background: {
     default: "#000",
-    defaultGradient: "linear-gradient(109deg, rgba(32,67,79,1) 0%, rgba(30,59,69,1) 100%)",
+    defaultGradient: backgroundGradientDark,
     paper: "#17313A",
-    overlay: "linear-gradient(109deg, rgba(32,67,79,1) 0%, rgba(30,59,69,1) 100%)",
+    overlay: backgroundGradientDark,
     video: "#01010166",
     secondaryOverlay: "#20434f66",
     voteResult: "#385865",
