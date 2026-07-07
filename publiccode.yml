@@ -11,8 +11,8 @@ monochromeLogo: logo_mono.svg
 url: https://gitlab.opencode.de/opentalk/opentalk-outlook-add-in
 landingURL: https://gitlab.opencode.de/opentalk/opentalk-outlook-add-in
 roadmap: https://opentalk.eu/de/produkt/features
-releaseDate: '2026-05-18'
-softwareVersion: v0.3.6-1
+releaseDate: '2026-07-06'
+softwareVersion: v0.4.0
 platforms:
   - web
 softwareType: standalone/web

@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-07-06
+
+[0.4.0]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.6-2...v0.4.0
+
+### 🚀 New features
+
+- Add guest access mode compatibility ([!266](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/266), [#86](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/86))
+- (meeting-form) Restructure guest-access & waiting-room controls ([!270](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/270), [#91](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/91))
+- Improve visuals and add logout to the error page ([!278](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/278), [#97](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/issues/97))
+
+### 🐛 Bug fixes
+
+- (ci) Failing container build ([!270](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/270))
+
+### 📦 Dependencies
+
+- (deps) Update dependency office-addin-dev-certs to ^2.0.9 ([!269](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/269))
+- (deps) Update typescript-eslint monorepo to ^8.61.0 ([!244](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/244))
+- (deps) Update dependency webpack-dev-server to v5.2.4 ([!271](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/271))
+
+### ⚙ Miscellaneous
+
+- (justfile) Create gitlab release ([!276](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/276))
+- Address outlook store review feedback ([!277](https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/merge_requests/277))
+
 ## [0.3.6] - 2026-04-23
 
 [0.3.6]: https://git.opentalk.dev/opentalk/frontend/integrations/outlook-add-in/-/compare/v0.3.5...v0.3.6
