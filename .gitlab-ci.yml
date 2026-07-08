@@ -23,6 +23,7 @@ default:
 
 stages:
   - lint
+  - test
   - trigger
   - package
   - push
@@ -121,6 +122,26 @@ lint:shellcheck:
     - apk update && apk add shellcheck git
   script:
     - git ls-files --exclude='*.sh' --ignored -c -z | xargs -0r shellcheck
+
+
+test:unit:
+  stage: test
+  needs: []
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG && $CI_PROJECT_ROOT_NAMESPACE == 'opentalk'
+  before_script:
+    - *setup-pnpm
+    - pnpm install
+  script:
+    - pnpm test:ci
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  coverage: /All files[^|]*\|[^|]*\s+([\d.]+)/
 
 package:container-addin-mr:
   stage: package
